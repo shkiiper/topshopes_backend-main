@@ -1,0 +1,16 @@
+venv/
+migrations/
+__pycache__/
+.mypy_chache/
+media/
+setup.cfg
+*.sqlite3
+db.sqlite3
+.fleet
+.idea
+.pytest_cache
+.vscode
+test.py
+.env
+staticfiles
+.env
