@@ -34,6 +34,7 @@ urlpatterns = [
     path("api/", include("reviews.urls"), name="reviews_base_API"),
     path("api/", include("shops.urls"), name="shops_base_API"),
     path("api/", include("posts.urls"), name="posts_base_API"),
+    path("api/", include("payments.urls"), name="payments_base_API"),
     # path("api/", include("attributes.urls"), name="attributes_base_API"),
     # auth routes
     path("api/auth/login/", TokenObtainPairView.as_view(), name="token_create"),

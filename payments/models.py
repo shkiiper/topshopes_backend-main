@@ -55,6 +55,7 @@ class TransferMoney(models.Model):
     confirm_photo = models.ImageField(
         upload_to=PathAndRename("payment/transfer/confirm_photo"), blank=True, null=True
     )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.payment} {self.amount}"
