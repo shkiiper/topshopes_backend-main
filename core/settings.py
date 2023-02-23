@@ -1,5 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
+import psycopg2
 
 from decouple import config
 
