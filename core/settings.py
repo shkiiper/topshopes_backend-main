@@ -2,6 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 import psycopg2
 
+
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
