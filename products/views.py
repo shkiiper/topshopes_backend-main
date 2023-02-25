@@ -255,7 +255,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
         """
         Update product
         """
-        if "cateogory" in request.data:
+        if "category" in request.data:
             product = self.get_object()
             variants = product.variants.all()
             for variant in variants:
