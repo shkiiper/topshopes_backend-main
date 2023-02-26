@@ -85,14 +85,24 @@ class AdminMoneyTransferViewSet(viewsets.ModelViewSet):
         return PaymentSerializer
 
 
+# class ReportAdmin(APIView):
+#     def get(self, request):
+#         if self.request.user.is_superuser or self.request.user.is_staff:
+#             year = request.data.get('year', '')
+#             month = request.data.get('month', '')
+#             serializer = ReportSerializer(Shop.objects.all(), many=True, context={'request': request})
+#             return Response(serializer.data)
+#         return Response(data={"You are not authorized!!!"}, status=status.HTTP_401_UNAUTHORIZED)
+
 class ReportAdmin(APIView):
-    def get(self, request):
+    def post(self, request):
         if self.request.user.is_superuser or self.request.user.is_staff:
-            year = request.data.get('year', '')
-            month = request.data.get('month', '')
+            year = request.POST.get('year', '')
+            month = request.POST.get('month', '')
             serializer = ReportSerializer(Shop.objects.all(), many=True, context={'request': request})
             return Response(serializer.data)
         return Response(data={"You are not authorized!!!"}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 # class ReportClient(APIView):
