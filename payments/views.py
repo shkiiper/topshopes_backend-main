@@ -95,10 +95,45 @@ class ReportAdmin(APIView):
         return Response(data={"You are not authorized!!!"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+# class ReportClient(APIView):
+#     def get(self, request):
+#         month = request.data.get('month', '')
+#         year = request.data.get('year', '')
+#
+#         if not self.request.user.is_authenticated:
+#             return Response(data='User not authorized!!!', status=status.HTTP_401_UNAUTHORIZED)
+#
+#         if not self.request.user.shop:
+#             return Response(data='User has not shop!!!', status=status.HTTP_404_NOT_FOUND)
+#
+#         if not (month and year):
+#             return Response(data='Month and year is required fields!!!', status=status.HTTP_400_BAD_REQUEST)
+#
+#         data = []
+#         days_of_month = monthrange(year, month)[1]
+#         print(days_of_month, 'asdfasjdfbkajsbdfasjdbf')
+#         for i in range(1, days_of_month):
+#             dict_data = {
+#                 'day': i,
+#                 'name': self.request.user.shop.name,
+#                 'total_amount': TransferMoney.objects.filter(shop_id=self.request.user.shop.id,
+#                                                              created_at__year=year,
+#                                                              created_at__month=month,
+#                                                              created_at__day=i
+#                                                              ).aggregate(Sum('amount'))['amount__sum'],
+#                 'total_tax': TransferMoney.objects.filter(shop_id=self.request.user.shop.id,
+#                                                              created_at__year=year,
+#                                                              created_at__month=month,
+#                                                              created_at__day=i
+#                                                              ).aggregate(Sum('tax'))['tax__sum'],
+#             }
+#             data.append(dict_data)
+#         return Response(data=data, status=status.HTTP_200_OK)
+
 class ReportClient(APIView):
-    def get(self, request):
-        month = request.data.get('month', '')
-        year = request.data.get('year', '')
+    def post(self, request):
+        month = request.POST.get('month', '')
+        year = request.POST.get('year', '')
 
         if not self.request.user.is_authenticated:
             return Response(data='User not authorized!!!', status=status.HTTP_401_UNAUTHORIZED)
