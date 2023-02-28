@@ -77,7 +77,7 @@ class ProductViewSet(
                     ),
                     price=Subquery(
                         ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "price"
+                            "-price"
                         )[:1]
                     ),
                     discount=Subquery(
