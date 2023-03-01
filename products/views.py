@@ -58,8 +58,8 @@ class ProductViewSet(
     filterset_fields = ["id", "category"]
     search_fields = ["name", "id"]
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount"]
-    products = Product.objects.all().order_by('-price')
-    products = Product.objects.all().order_by('price')
+    # products = Product.objects.all().order_by('-price')
+    # products = Product.objects.all().order_by('price')
     def get_queryset(self):
         if self.action == "list":
             return (
