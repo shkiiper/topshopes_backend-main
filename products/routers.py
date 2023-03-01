@@ -20,6 +20,6 @@ router.register(
 router.register(r"products/variants", ProductVariantViewSet, basename="variant")
 router.register(r"products", ShopProductViewSet, basename="product")
 # routes for all users
-router.register(r"shops/categories", CategoryViewSet, basename="category")
-router.register(r"shops/brand", BrandViewSet, basename="brand")
-router.register(r"shops/products", ProductViewSet, basename="products")
+router.register(r"shop/categories", CategoryViewSet, basename="category")
+router.register(r"shop/brand", BrandViewSet, basename="brand")
+router.register(r"shop/products", ProductViewSet, basename="products")
