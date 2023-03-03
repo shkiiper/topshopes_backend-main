@@ -8,7 +8,15 @@ class ProductFilter(FilterSet):
     min_price = django_filters.CharFilter(field_name="price", lookup_expr="gte")
     brand = django_filters.CharFilter(field_name="brand__name", lookup_expr="icontains")
     category = django_filters.CharFilter(field_name="category__name", lookup_expr="icontains")
+    products = Product.objects.filter(is_published=True).order_by('price')
+    context = {
+        'products': products
+    }
+    products = Product.objects.filter(is_published=True).order_by('-price')
+    context = {
+        'products': products
+    }
 
     class Meta:
         model = Product
-        fields = ["max_price", "min_price", "brand", "category"]
+        fields = ["max_price", "min_price", "brand", "category", "price", "-price"]
