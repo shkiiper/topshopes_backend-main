@@ -1,13 +1,14 @@
+from django_filters import MultipleChoiceFilter
 from django_filters.rest_framework import FilterSet
 import django_filters
-from django_filters import MultipleChoiceFilter
+
 from .models import Product
 
 
-class ProductFilter(FilterSet):
+class ProductFilter(django_filters.FilterSet):
     max_price = django_filters.CharFilter(field_name="price", lookup_expr="lte")
     min_price = django_filters.CharFilter(field_name="price", lookup_expr="gte")
-    brand = MultipleChoiceFilter(field_name='brand__name', lookup_expr='icontains')
+    brand = django_filters.MultipleChoiceFilter(field_name='brand__name', lookup_expr='icontains')
     category = django_filters.CharFilter(field_name="category__name", lookup_expr="icontains")
 
     class Meta:
