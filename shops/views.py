@@ -103,9 +103,15 @@ class ShopViewSet(
             return SingleShopSerializer
         return ShopSerializer
 
+    # @extend_schema(
+    #     description="Get shop products",
+    #     parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+    #     responses={200: ProductSerializer},
+    #     tags=["All"],
+    # )
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
         responses={200: ProductSerializer},
         tags=["All"],
     )

@@ -209,6 +209,7 @@ class ProductVariantViewSet(
 )
 @extend_schema_view(
     retrieve=extend_schema(
+        parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
         description="Get one shops product",
         responses={200: SingleShopSerializer},
         tags=["All"],
@@ -221,7 +222,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
     filter_backends = [filters.SearchFilter]
-    search_fields = ["slug"]
+    search_fields = ["id"]
 
     def get_queryset(self):
         """
