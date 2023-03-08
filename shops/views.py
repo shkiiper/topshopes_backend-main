@@ -149,20 +149,9 @@ class ShopViewSet(
 
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
         responses={200: ProductSerializer},
         tags=["All"],
-     #    retrieve=extend_schema(
-     #    description="Get shop products",
-     #    parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
-     #    responses={200: SingleShopSerializer},
-     #    tags=["All"],
-     # )
-        # retrieve=extend_schema(
-        #     description="Get one shop",
-        #     responses={200: SingleShopSerializer},
-        #     tags=["All"],
-        # ),
     )
     @action(detail=True, methods=["get"])
     def products(self, request, pk=None):
