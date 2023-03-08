@@ -131,51 +131,6 @@ class ShopViewSet(
         serializer = ProductSerializer(products, many=True)
         print(serializer.data)
         return Response(data=serializer.data)
-class ShopViewSet(
-    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
-):
-    """
-    Viewset to get all Shops
-    Only to get
-    """
-
-    queryset = Shop.objects.all()
-    permission_classes = [permissions.AllowAny]
-
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return SingleShopSerializer
-        return ShopSerializer
-
-    @extend_schema(
-        description="Get shop products",
-        parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer},
-        tags=["All"],
-    )
-    @action(detail=True, methods=["get"])
-    def products(self, request, pk=None):
-        products = Product.objects.filter(shop=pk).annotate(
-            overall_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "overall_price"
-                )[:1]
-            ),
-            discount_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "discount_price"
-                )[:1]
-            ),
-            thumbnail=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "thumbnail"
-                )[:1]
-            ),
-        )
-        serializer = ProductSerializer(products, many=True)
-        print(serializer.data)
-        return Response(data=serializer.data)
-
 
 @extend_schema(
     description="Viewset to control only user's shop links",

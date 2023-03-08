@@ -213,7 +213,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
     filter_backends = [filters.SearchFilter]
-    search_fields = ["id"]
+    search_fields = ["slug"]
 
     def get_queryset(self):
         """
