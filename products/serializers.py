@@ -185,7 +185,7 @@ class SingleProductSerializer(serializers.ModelSerializer):
     variants = ProductVariantSerializer(many=True, read_only=True)
     attributes = AttributeSerializer(many=True, read_only=True)
     reviews = ReviewSerializer(many=True, read_only=True)
-    shop = ShopProductSerializer(read_only=True)
+    shop = ShopSingleProductSerializer(read_only=True)
     brand = BrandReadSerializer(read_only=True)
     category = CategoryReadOnlySerializer(read_only=True)
 
@@ -213,7 +213,7 @@ class ProductSerializer(serializers.ModelSerializer):
     Product serializer
     """
 
-    shop = ShopProductSerializer(read_only=True)
+    shop = ShopSingleProductSerializer(read_only=True)
     category: Field = serializers.SlugRelatedField(
         slug_field="name", queryset=Category.objects.all()
     )

@@ -7,7 +7,7 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from shops.serializers import ShopSerializer, SingleShopSerializer
+from shops.serializers import SingleShopSerializer
 from .filters import ProductFilter
 
 from attributes.serializers import AttributeSerializer, CreateAttributeValueSerializer
@@ -259,13 +259,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
                 ),
             )
         )
-
-    # class ShopIDProductsView(generics.ListAPIView):
-    #     serializer_class = ProductSerializer
-    #
-    #     def get_queryset(self):
-    #         shop_id = self.kwargs['shop_id']
-    #         return Product.objects.filter(shop=shop_id)
     def update(self, request, *args, **kwargs):
         """
         Update product
