@@ -207,14 +207,14 @@ class ProductVariantViewSet(
     responses={200: ProductSerializer},
     tags=["Owner"],
 )
-@extend_schema_view(
-    retrieve=extend_schema(
-        parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
-        description="Get one shops product",
-        responses={200: SingleShopSerializer},
-        tags=["All"],
-    ),
-)
+# @extend_schema_view(
+#     retrieve=extend_schema(
+#         parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
+#         description="Get one shops product",
+#         responses={200: SingleShopSerializer},
+#         tags=["All"],
+#     ),
+# )
 class ShopProductViewSet(viewsets.ModelViewSet):
     """
     Viewset allows the owner of shop to edit products
