@@ -214,7 +214,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
     filter_backends = [filters.SearchFilter]
     search_fields = ["id"]
-
+#r
     def get_queryset(self):
         """
         Returns only current user's shop products
