@@ -9,6 +9,8 @@ from drf_spectacular.views import (
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+from users.views import CustomTokenObtainPairView
+
 urlpatterns = [
     # swagger
     path("server/schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -38,6 +40,7 @@ urlpatterns = [
     # path("api/", include("attributes.urls"), name="attributes_base_API"),
     # auth routes
     path("server/auth/login/", TokenObtainPairView.as_view(), name="token_create"),
+    path('server/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path("server/auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     # pages routes
     path("server/", include("pages.urls"), name="pages_base_API"),

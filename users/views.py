@@ -2,6 +2,9 @@ from django.contrib.auth.hashers import make_password
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, permissions
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.response import Response
+from rest_framework import status
 
 from core.permissions import IsAnonymous
 
@@ -82,3 +85,28 @@ class AddressViewSet(ModelViewSet):
         if self.action in ["create", "update", "partial_update"]:
             return CreateAddressSerializer
         return AddressSerializer
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """
+    Custom TokenObtainPairView that includes user data in the response.
+    """
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        token_data = response.data
+
+        # Get user instance
+        user = request.user
+
+        # Add custom user data to token response
+        token_data['user_id'] = user.id
+        token_data['email'] = user.email
+        token_data['first_name'] = user.first_name
+        token_data['last_name'] = user.last_name
+        token_data['phone'] = user.phone
+        token_data['avatar'] = user.avatar
+        token_data['is_superuser'] = user.is_superuser
+        token_data['is_seller'] = user.is_seller
+
+        return Response(token_data, status=status.HTTP_200_OK)
