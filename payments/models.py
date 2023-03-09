@@ -10,11 +10,8 @@ from core.helpers import PathAndRename
 
 class Payment(models.Model):
     TYPES = (
-        ("elsom", "Elsom"),
-        ("visa", "Visa"),
-        ("o_dengi", "O'Dengi"),
-        ("balance", "Balance"),
-        ("mbank", "Mbank"),
+        ("bakai", "Bakai"),
+
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     payment_type = models.CharField(
@@ -26,7 +23,7 @@ class Payment(models.Model):
     is_verified = models.BooleanField(
         verbose_name=_("Is Verified"), null=True, blank=True
     )
-
+    created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.payment_type} {self.phone_number} {self.bank_account}"
 

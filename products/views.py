@@ -60,7 +60,6 @@ class ProductViewSet(
 
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
 
-    ordering_fields = ["name", "rating", "overall_price", "created_at", "discount"]
 
     def get_queryset(self):
         if self.action == "list":
@@ -219,9 +218,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
 
     search_fields = ["id"]
-
-    search_fields = ["name"]
-
 
     def get_queryset(self):
         """

@@ -12,6 +12,7 @@ from reviews.models import Review
 from reviews.serializers import ShopReviewSerializer
 from payments.models import TransferMoney
 from payments.serializers import TransferMoneySerializer
+from django.shortcuts import get_object_or_404
 
 
 from .models import Link, Shop
@@ -102,6 +103,15 @@ class ShopViewSet(
         if self.action == "retrieve":
             return SingleShopSerializer
         return ShopSerializer
+
+    def retrieve(self, request, pk=None):
+        """
+        Получение магазина по его ID.
+        """
+        queryset = Shop.objects.all()
+        shop = get_object_or_404(queryset, pk=pk)
+        serializer = ShopSerializer(shop)
+        return Response(serializer.data)
 
     @extend_schema(
         description="Get shop products",
