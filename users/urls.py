@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from users.views import CustomerViewSet, CustomTokenObtainPairView
+from users.views import CustomerViewSet, CustomTokenObtainPairView, CustomAuthToken
 
 from .routers import router
 
@@ -19,5 +19,5 @@ urlpatterns = [
     ),
     path("profile/", include("applications.urls")),
     path("profile/", include(router.urls)),
-    path('server/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api-token-auth/', CustomAuthToken.as_view())
 ]

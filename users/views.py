@@ -5,8 +5,10 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from rest_framework import status
-
 from core.permissions import IsAnonymous
+
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
 
 from .models import Address, Customer
 from .serializers import (
@@ -87,26 +89,16 @@ class AddressViewSet(ModelViewSet):
         return AddressSerializer
 
 
-class CustomTokenObtainPairView(TokenObtainPairView):
-    """
-    Custom TokenObtainPairView that includes user data in the response.
-    """
+class CustomAuthToken(ObtainAuthToken):
 
     def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        token_data = response.data
-
-        # Get user instance
-        user = request.user
-
-        # Add custom user data to token response
-        token_data['user_id'] = user.id
-        token_data['email'] = user.email
-        token_data['first_name'] = user.first_name
-        token_data['last_name'] = user.last_name
-        token_data['phone'] = user.phone
-        token_data['avatar'] = user.avatar
-        token_data['is_superuser'] = user.is_superuser
-        token_data['is_seller'] = user.is_seller
-
-        return Response(token_data, status=status.HTTP_200_OK)
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email
+        })
