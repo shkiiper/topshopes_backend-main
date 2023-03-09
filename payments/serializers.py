@@ -1,3 +1,4 @@
+
 from django.db.models import Sum
 from rest_framework import serializers
 
@@ -5,6 +6,12 @@ from head.serializers import AdminShopSerializer
 from orders.serializers import OrderSerializer
 from shops.models import Shop
 from .models import Payment, TransferMoney
+
+from rest_framework import serializers
+from orders.serializers import OrderSerializer, OrderInfoSerializer
+from .models import Payment, TransferMoney
+from head.serializers import AdminShopSerializer
+
 
 
 class CreatePaymentSerialzier(serializers.ModelSerializer):
@@ -80,6 +87,7 @@ class TransferMoneySerializer(serializers.ModelSerializer):
         fields = ["id", "payment", "amount", "shop", "tax", "confirm_photo"]
 
 
+
 class ReportSerializer(serializers.ModelSerializer):
     total_tax = serializers.SerializerMethodField()
     total_amount = serializers.SerializerMethodField()
@@ -102,3 +110,4 @@ class ReportSerializer(serializers.ModelSerializer):
         return obj.transfermoney_set.filter(
             created_at__year=year,
             created_at__month=month).aggregate(Sum('amount'))['amount__sum']
+

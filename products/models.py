@@ -25,6 +25,7 @@ class Image(models.Model):
     Product image model
     """
 
+    order = models.IntegerField(verbose_name="order_img")
     product_variant = models.ForeignKey(
         "ProductVariant", on_delete=models.CASCADE, related_name="images"
     )

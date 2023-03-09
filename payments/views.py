@@ -10,7 +10,6 @@ from .serializers import (
     CreatePaymentSerialzier,
     PaymentSerializer,
     SinglePaymentSerializer, ReportSerializer,
-
 )
 from .models import Payment, TransferMoney
 
@@ -83,6 +82,7 @@ class AdminMoneyTransferViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             return CreatePaymentSerialzier
         return PaymentSerializer
+
 
 
 # class ReportAdmin(APIView):
@@ -174,3 +174,4 @@ class ReportClient(APIView):
             }
             data.append(dict_data)
         return Response(data=data, status=status.HTTP_200_OK)
+

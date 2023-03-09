@@ -57,7 +57,11 @@ class ProductViewSet(
     filterset_class = ProductFilter
     filterset_fields = ["id", "category"]
     search_fields = ["name", "id"]
+
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
+
+    ordering_fields = ["name", "rating", "overall_price", "created_at", "discount"]
+
     def get_queryset(self):
         if self.action == "list":
             return (
@@ -213,8 +217,12 @@ class ShopProductViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
     filter_backends = [filters.SearchFilter]
+
     search_fields = ["id"]
-#r
+
+    search_fields = ["name"]
+
+
     def get_queryset(self):
         """
         Returns only current user's shop products
@@ -233,7 +241,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
                         "discount_price"
                     )[:1]
                 ),
-                #
+
                 price=Subquery(
                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
                         "price"
@@ -256,6 +264,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
         """
         Update product
         """
+
         if "category" in request.data:
             product = self.get_object()
             variants = product.variants.all()
