@@ -19,5 +19,5 @@ urlpatterns = [
     ),
     path("profile/", include("applications.urls")),
     path("profile/", include(router.urls)),
-    path('login/', CustomAuthToken.as_view())
+
 ]
