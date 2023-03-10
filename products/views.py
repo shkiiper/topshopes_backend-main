@@ -6,6 +6,9 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import filters, mixins, permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+#22
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny
 
 from .filters import ProductFilter
 
@@ -287,83 +290,13 @@ class ProductVariantViewSet(
 #
 #     def get_serializer_context(self):
 #         return {"request": self.request}
-class ShopProductViewSet(viewsets.ModelViewSet):
-    """
-    Viewset allows the owner of shop to edit products
-    """
-
-    permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ["shop__id"]
+class ShopProductsListView(ListAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        """
-        Returns products for the shop specified by id or for current user's shop if id is not specified
-        """
-        shop_id = self.kwargs.get("shop_pk")
-        if shop_id:
-            return (
-                Product.objects.prefetch_related("variants")
-                .filter(shop_id=shop_id)
-                .annotate(
-                    overall_price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "overall_price"
-                        )[:1]
-                    ),
-                    discount_price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "discount_price"
-                        )[:1]
-                    ),
-                    price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "price"
-                        )[:1]
-                    ),
-                    discount=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "discount"
-                        )[:1]
-                    ),
-                    thumbnail=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "thumbnail"
-                        )[:1]
-                    ),
-                )
-            )
-        return (
-            Product.objects.prefetch_related("variants")
-            .filter(shop=self.request.user.shop)
-            .annotate(
-                overall_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "overall_price"
-                    )[:1]
-                ),
-                discount_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "discount_price"
-                    )[:1]
-                ),
-                price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "price"
-                    )[:1]
-                ),
-                discount=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "discount"
-                    )[:1]
-                ),
-                thumbnail=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "thumbnail"
-                    )[:1]
-                ),
-            )
-        )
+        shop_id = self.kwargs.get("shop_id")
+        return Product.objects.filter(shop__id=shop_id)
 
 
 @extend_schema(
