@@ -2,7 +2,6 @@ from django.contrib.auth.hashers import make_password
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, permissions
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
-
 from core.permissions import IsAnonymous
 
 
@@ -83,4 +82,3 @@ class AddressViewSet(ModelViewSet):
         if self.action in ["create", "update", "partial_update"]:
             return CreateAddressSerializer
         return AddressSerializer
-
