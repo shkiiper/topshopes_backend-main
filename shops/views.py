@@ -99,9 +99,16 @@ class ShopViewSet(
     queryset = Shop.objects.all()
     permission_classes = [permissions.AllowAny]
 
+    # def get_serializer_class(self):
+    #     if self.action == "retrieve":
+    #         return ShopSerializer
+    #     return SingleShopSerializer
+
     def get_serializer_class(self):
         if self.action == "retrieve":
             return ShopSerializer
+        elif self.action == "list":
+            return ProductSerializer
         return SingleShopSerializer
 
     def retrieve(self, request, pk=None):
