@@ -209,6 +209,84 @@ class ProductVariantViewSet(
     responses={200: ProductSerializer},
     tags=["Owner"],
 )
+# class ShopProductViewSet(viewsets.ModelViewSet):
+#     """
+#     Viewset allows the owner of shop to edit products
+#     """
+#
+#     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
+#     filter_backends = [filters.SearchFilter]
+#     search_fields = ["id"]
+#
+#     def get_queryset(self):
+#         """
+#         Returns only current user's shop products
+#         """
+#         return (
+#             Product.objects.prefetch_related("variants")
+#             .filter(shop=self.request.user.shop)  # type: ignore
+#             .annotate(
+#                 overall_price=Subquery(
+#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                         "overall_price"
+#                     )[:1]
+#                 ),
+#                 discount_price=Subquery(
+#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                         "discount_price"
+#                     )[:1]
+#                 ),
+#
+#                 price=Subquery(
+#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                         "price"
+#                     )[:1]
+#                 ),
+#                 discount=Subquery(
+#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                         "discount"
+#                     )[:1]
+#                 ),
+#                 thumbnail=Subquery(
+#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                         "thumbnail"
+#                     )[:1]
+#                 ),
+#             )
+#         )
+#
+#     def update(self, request, *args, **kwargs):
+#         """
+#         Update product
+#         """
+#
+#         if "category" in request.data:
+#             product = self.get_object()
+#             variants = product.variants.all()
+#             for variant in variants:
+#                 variant.attribute_values.all().delete()
+#             product.category = Category.objects.get(id=request.data["category"])
+#             product.save()
+#         return super().update(request, *args, **kwargs)
+#
+#     def perform_create(self, serializer):
+#         """
+#         On create product set shop to user's
+#         """
+#         if self.request.user.shop is not None:
+#             serializer.save(shop=self.request.user.shop)  # type: ignore
+#         else:
+#             raise serializers.ValidationError("Shop not found")
+#
+#     def get_serializer_class(self):
+#         if self.action in ["create", "update", "partial_update"]:
+#             return CreateProductSerializer
+#         if self.action == "retrieve":
+#             return SingleProductSerializer
+#         return ProductSerializer
+#
+#     def get_serializer_context(self):
+#         return {"request": self.request}
 class ShopProductViewSet(viewsets.ModelViewSet):
     """
     Viewset allows the owner of shop to edit products
@@ -216,16 +294,48 @@ class ShopProductViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
     filter_backends = [filters.SearchFilter]
-
     search_fields = ["id"]
 
     def get_queryset(self):
         """
-        Returns only current user's shop products
+        Returns products for the shop specified by id or for current user's shop if id is not specified
         """
+        shop_id = self.kwargs.get("shop_pk")
+        if shop_id:
+            return (
+                Product.objects.prefetch_related("variants")
+                .filter(shop_id=shop_id)
+                .annotate(
+                    overall_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "overall_price"
+                        )[:1]
+                    ),
+                    discount_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount_price"
+                        )[:1]
+                    ),
+                    price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "price"
+                        )[:1]
+                    ),
+                    discount=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount"
+                        )[:1]
+                    ),
+                    thumbnail=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "thumbnail"
+                        )[:1]
+                    ),
+                )
+            )
         return (
             Product.objects.prefetch_related("variants")
-            .filter(shop=self.request.user.shop)  # type: ignore
+            .filter(shop=self.request.user.shop)
             .annotate(
                 overall_price=Subquery(
                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
@@ -237,7 +347,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
                         "discount_price"
                     )[:1]
                 ),
-
                 price=Subquery(
                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
                         "price"
@@ -255,39 +364,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
                 ),
             )
         )
-
-    def update(self, request, *args, **kwargs):
-        """
-        Update product
-        """
-
-        if "category" in request.data:
-            product = self.get_object()
-            variants = product.variants.all()
-            for variant in variants:
-                variant.attribute_values.all().delete()
-            product.category = Category.objects.get(id=request.data["category"])
-            product.save()
-        return super().update(request, *args, **kwargs)
-
-    def perform_create(self, serializer):
-        """
-        On create product set shop to user's
-        """
-        if self.request.user.shop is not None:
-            serializer.save(shop=self.request.user.shop)  # type: ignore
-        else:
-            raise serializers.ValidationError("Shop not found")
-
-    def get_serializer_class(self):
-        if self.action in ["create", "update", "partial_update"]:
-            return CreateProductSerializer
-        if self.action == "retrieve":
-            return SingleProductSerializer
-        return ProductSerializer
-
-    def get_serializer_context(self):
-        return {"request": self.request}
 
 
 @extend_schema(
