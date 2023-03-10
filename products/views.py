@@ -6,9 +6,6 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import filters, mixins, permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-#22
-from rest_framework.generics import ListAPIView
-from rest_framework.permissions import AllowAny
 
 from .filters import ProductFilter
 
@@ -212,91 +209,84 @@ class ProductVariantViewSet(
     responses={200: ProductSerializer},
     tags=["Owner"],
 )
-# class ShopProductViewSet(viewsets.ModelViewSet):
-#     """
-#     Viewset allows the owner of shop to edit products
-#     """
-#
-#     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
-#     filter_backends = [filters.SearchFilter]
-#     search_fields = ["id"]
-#
-#     def get_queryset(self):
-#         """
-#         Returns only current user's shop products
-#         """
-#         return (
-#             Product.objects.prefetch_related("variants")
-#             .filter(shop=self.request.user.shop)  # type: ignore
-#             .annotate(
-#                 overall_price=Subquery(
-#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                         "overall_price"
-#                     )[:1]
-#                 ),
-#                 discount_price=Subquery(
-#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                         "discount_price"
-#                     )[:1]
-#                 ),
-#
-#                 price=Subquery(
-#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                         "price"
-#                     )[:1]
-#                 ),
-#                 discount=Subquery(
-#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                         "discount"
-#                     )[:1]
-#                 ),
-#                 thumbnail=Subquery(
-#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                         "thumbnail"
-#                     )[:1]
-#                 ),
-#             )
-#         )
-#
-#     def update(self, request, *args, **kwargs):
-#         """
-#         Update product
-#         """
-#
-#         if "category" in request.data:
-#             product = self.get_object()
-#             variants = product.variants.all()
-#             for variant in variants:
-#                 variant.attribute_values.all().delete()
-#             product.category = Category.objects.get(id=request.data["category"])
-#             product.save()
-#         return super().update(request, *args, **kwargs)
-#
-#     def perform_create(self, serializer):
-#         """
-#         On create product set shop to user's
-#         """
-#         if self.request.user.shop is not None:
-#             serializer.save(shop=self.request.user.shop)  # type: ignore
-#         else:
-#             raise serializers.ValidationError("Shop not found")
-#
-#     def get_serializer_class(self):
-#         if self.action in ["create", "update", "partial_update"]:
-#             return CreateProductSerializer
-#         if self.action == "retrieve":
-#             return SingleProductSerializer
-#         return ProductSerializer
-#
-#     def get_serializer_context(self):
-#         return {"request": self.request}
-class ShopProductsListView(ListAPIView):
-    serializer_class = ProductSerializer
-    permission_classes = [AllowAny]
+class ShopProductViewSet(viewsets.ModelViewSet):
+    """
+    Viewset allows the owner of shop to edit products
+    """
+
+    permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["id"]
 
     def get_queryset(self):
-        shop_id = self.kwargs.get("shop_id")
-        return Product.objects.filter(shop__id=shop_id)
+        """
+        Returns only current user's shop products
+        """
+        return (
+            Product.objects.prefetch_related("variants")
+            .filter(shop=self.request.user.shop)  # type: ignore
+            .annotate(
+                overall_price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "overall_price"
+                    )[:1]
+                ),
+                discount_price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "discount_price"
+                    )[:1]
+                ),
+
+                price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "price"
+                    )[:1]
+                ),
+                discount=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "discount"
+                    )[:1]
+                ),
+                thumbnail=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "thumbnail"
+                    )[:1]
+                ),
+            )
+        )
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update product
+        """
+
+        if "category" in request.data:
+            product = self.get_object()
+            variants = product.variants.all()
+            for variant in variants:
+                variant.attribute_values.all().delete()
+            product.category = Category.objects.get(id=request.data["category"])
+            product.save()
+        return super().update(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        """
+        On create product set shop to user's
+        """
+        if self.request.user.shop is not None:
+            serializer.save(shop=self.request.user.shop)  # type: ignore
+        else:
+            raise serializers.ValidationError("Shop not found")
+
+    def get_serializer_class(self):
+        if self.action in ["create", "update", "partial_update"]:
+            return CreateProductSerializer
+        if self.action == "retrieve":
+            return SingleProductSerializer
+        return ProductSerializer
+
+    def get_serializer_context(self):
+        return {"request": self.request}
 
 
 @extend_schema(
