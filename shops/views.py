@@ -101,8 +101,8 @@ class ShopViewSet(
 
     def get_serializer_class(self):
         if self.action == "retrieve":
-            return SingleShopSerializer
-        return ShopSerializer
+            return ShopSerializer
+        return SingleShopSerializer
 
     def retrieve(self, request, pk=None):
         """
