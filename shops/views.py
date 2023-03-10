@@ -183,4 +183,3 @@ class TransferMoneyViewSet(mixins.ListModelMixin):
 
     def get_queryset(self):
         return TransferMoney.objects.filter(shop=self.request.user.shop)
-    #12345
