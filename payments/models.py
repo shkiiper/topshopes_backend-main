@@ -1,5 +1,5 @@
 import uuid
-
+from datetime import datetime
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -23,7 +23,7 @@ class Payment(models.Model):
     is_verified = models.BooleanField(
         verbose_name=_("Is Verified"), null=True, blank=True
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    create_date = models.DateTimeField(default=datetime.now)
     def __str__(self):
         return f"{self.payment_type} {self.phone_number} {self.bank_account}"
 
