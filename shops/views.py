@@ -114,6 +114,15 @@ class ShopViewSet(
 
     def list(self, request, **kwargs):
         """
+        Получение магазина по его ID и его продуктов.
+        """
+        queryset = Shop.objects.all()
+        shop = get_object_or_404(queryset)
+        serializer = SingleShopSerializer(shop)
+        return Response(serializer.data)
+
+    def list(self, request, **kwargs):
+        """
         Получение всех магазинов или всех продуктов для магазина по ID.
         """
         pk = kwargs.get('pk')
