@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from rest_framework import routers
 from django.urls import path, include
 
@@ -28,3 +30,13 @@ router.register(r"shops/brand", BrandViewSet, basename="brand")
 router.register(r"shops/products", ProductViewSet, basename="products")
 router.register(r"shops", ShopViewSet, basename="shops")
 router.register(r"products", ProductViewSet, basename="products")
+urlpatterns = [
+    path('shops/<uuid:id>/products', ProductViewSet, basename="products"),
+]
+def uuid_converter(value):
+    try:
+        return UUID(value)
+    except ValueError:
+        return None
+
+register_converter(UUID, uuid_converter)
