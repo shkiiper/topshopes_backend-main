@@ -33,10 +33,3 @@ router.register(r"products", ProductViewSet, basename="products")
 urlpatterns = [
     path('shops/<uuid:id>/products', ProductViewSet, basename="products"),
 ]
-def uuid_converter(value):
-    try:
-        return UUID(value)
-    except ValueError:
-        return None
-
-register_converter(UUID, uuid_converter)
