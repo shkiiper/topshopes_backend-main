@@ -248,12 +248,10 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_thumbnail(self, obj):
-        variant = obj.variants.first().thumbnail
-        return self.context['request'].build_absolute_uri(variant.url)
-
-    # def get_thumbnail(self, object):
-    #     variant = object.variants.first().thumbnail
-    #     return self.context['request'].build_absolute_uri(variant.url)
+        variant = obj.variants.first()
+        if variant:
+            return self.context['request'].build_absolute_uri(variant.thumbnail.url)
+        return None
 
 
 class SingleCategorySerializer(serializers.ModelSerializer):
