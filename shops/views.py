@@ -165,6 +165,15 @@ class ShopViewSet(
             return SingleShopSerializer
         return ShopSerializer
 
+    def retrieve(self, request, pk=None):
+        """
+        Получение магазина по его ID.
+        """
+        queryset = Shop.objects.all()
+        shop = get_object_or_404(queryset, pk=pk)
+        serializer = ShopSerializer(shop)
+        return Response(serializer.data)
+
     @extend_schema(
         description="Get shop products",
         parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
