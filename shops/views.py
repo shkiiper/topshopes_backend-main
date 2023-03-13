@@ -14,7 +14,6 @@ from payments.models import TransferMoney
 from payments.serializers import TransferMoneySerializer
 from django.shortcuts import get_object_or_404
 
-
 from .models import Link, Shop
 from .serializers import (
     CreateShopSerializer,
@@ -88,6 +87,68 @@ class MyShopViewSet(
     responses={200: ShopSerializer},
     tags=["All"],
 )
+# class ShopViewSet(
+#     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+# ):
+#     """
+#     Viewset to get all Shops
+#     Only to get
+#     """
+#
+#     queryset = Shop.objects.all()
+#     permission_classes = [permissions.AllowAny]
+#
+#     def get_serializer_class(self):
+#         if self.action == "retrieve":
+#             return ShopSerializer
+#         return SingleShopSerializer
+#
+#     def retrieve(self, request, pk=None):
+#         """
+#         Получение магазина по его ID.
+#         """
+#         queryset = Shop.objects.all()
+#         shop = get_object_or_404(queryset, pk=pk)
+#         serializer = ShopSerializer(shop)
+#         return Response(serializer.data)
+#
+#     @extend_schema(
+#         description="Get shop products",
+#         parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
+#         responses={200: ProductSerializer},
+#         tags=["All"],
+#     )
+#     @action(detail=True, methods=["get"])
+#     def products(self, request, pk=None):
+#         products = Product.objects.filter(shop=pk).annotate(
+#             overall_price=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "overall_price"
+#                 )[:1]
+#             ),
+#             discount_price=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "discount_price"
+#                 )[:1]
+#             ),
+#             thumbnail=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "thumbnail"
+#                 )[:1]
+#             ),
+#         )
+#         serializer = ProductSerializer(products, many=True)
+#         print(serializer.data)
+#         return Response(data=serializer.data)
+#
+#
+# @extend_schema(
+#     description="Viewset to control only user's shop links",
+#     parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
+#     responses={200: LinkSerializer},
+#     tags=["Owner"],
+# )
+
 class ShopViewSet(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
@@ -101,21 +162,12 @@ class ShopViewSet(
 
     def get_serializer_class(self):
         if self.action == "retrieve":
-            return ShopSerializer
-        return SingleShopSerializer
-
-    def retrieve(self, request, pk=None):
-        """
-        Получение магазина по его ID.
-        """
-        queryset = Shop.objects.all()
-        shop = get_object_or_404(queryset, pk=pk)
-        serializer = ShopSerializer(shop)
-        return Response(serializer.data)
+            return SingleShopSerializer
+        return ShopSerializer
 
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
         responses={200: ProductSerializer},
         tags=["All"],
     )
