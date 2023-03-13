@@ -7,6 +7,7 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from shops.serializers import SingleShopSerializer
 from .filters import ProductFilter
 
 from attributes.serializers import AttributeSerializer, CreateAttributeValueSerializer
@@ -90,6 +91,12 @@ class ProductViewSet(
             )
         return Product.objects.all().prefetch_related("variants", "reviews")
 
+    def list(self, request, pk=None):
+        """
+        Получение всех продуктов по ID магазина.
+        """
+        serializer = SingleShopSerializer(shop)
+        return Response(serializer.data)
     def get_serializer_class(self):
         if self.action == "retrieve":
             return SingleProductSerializer

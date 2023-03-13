@@ -28,8 +28,3 @@ router.register(r"products", ShopProductViewSet, basename="product")
 router.register(r"shops/categories", CategoryViewSet, basename="category")
 router.register(r"shops/brand", BrandViewSet, basename="brand")
 router.register(r"shops/products", ProductViewSet, basename="products")
-router.register(r"shops", ShopViewSet, basename="shops")
-router.register(r"products", ProductViewSet, basename="products")
-urlpatterns = [
-    path('shops/<uuid:id>/products', ProductViewSet, basename="products"),
-]
