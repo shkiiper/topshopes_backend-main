@@ -126,39 +126,17 @@ class ShopViewSet(
         serializer = ShopSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    # @extend_schema(
-    #     description="Get shop products",
-    #     parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
-    #     responses={200: ProductSerializer},
-    #     tags=["All"],
-    # )
+    @extend_schema(
+        description="Get shop products",
+        parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        responses={200: ProductSerializer},
+        tags=["All"],
+    )
     @extend_schema(
         description="Get all products for a shop by ID",
         responses={200: ProductSerializer(many=True)},
         tags=["Shop"],
     )
-    # @action(detail=True, methods=["get"])
-    # def products(self, request, pk=None):
-    #     products = Product.objects.filter(shop=pk).annotate(
-    #         overall_price=Subquery(
-    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                 "overall_price"
-    #             )[:1]
-    #         ),
-    #         discount_price=Subquery(
-    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                 "discount_price"
-    #             )[:1]
-    #         ),
-    #         thumbnail=Subquery(
-    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                 "thumbnail"
-    #             )[:1]
-    #         ),
-    #     )
-    #     serializer = ProductSerializer(products, many=True)
-    #     print(serializer.data)
-    #     return Response(data=serializer.data)
     @action(detail=True, methods=["get"])
     def products(self, request, pk=None):
         products = Product.objects.filter(shop=pk).annotate(
