@@ -223,11 +223,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
         responses={200: ProductSerializer(many=True)},
         tags=["Shop"],
     )
-    @api_view(["GET"])
-    def get_products_by_shop_id(request, id):
-        products = Product.objects.filter(shop_id=id)
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_queryset(self):
         """
