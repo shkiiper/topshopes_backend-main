@@ -217,7 +217,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ["name"]
 
-
     def get_queryset(self):
         """
         Returns only current user's shop products
@@ -237,43 +236,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
                     )[:1]
                 ),
 
-                price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "price"
-                    )[:1]
-                ),
-                discount=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "discount"
-                    )[:1]
-                ),
-                thumbnail=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "thumbnail"
-                    )[:1]
-                ),
-            )
-        )
-
-    def get_queryset(self):
-        """
-        Returns shop products by ID
-        """
-        shop_id = self.kwargs.get("shop_id")
-        return (
-            Product.objects.prefetch_related("variants")
-            .filter(shop_id=shop_id)
-            .annotate(
-                overall_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "overall_price"
-                    )[:1]
-                ),
-                discount_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "discount_price"
-                    )[:1]
-                ),
                 price=Subquery(
                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
                         "price"
