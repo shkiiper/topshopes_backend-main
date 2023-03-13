@@ -98,6 +98,18 @@ class ShopViewSet(
     queryset = Shop.objects.all()
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(
+        description="Get shop products",
+        parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        responses={200: ProductSerializer},
+        tags=["All"],
+    )
+    @extend_schema(
+        description="Get all products for a shop by ID",
+        responses={200: ProductSerializer(many=True)},
+        tags=["Shop"],
+    )
+
     def get_serializer_class(self):
         if self.action == "retrieve":
             return ShopSerializer
@@ -128,19 +140,6 @@ class ShopViewSet(
         serializer = ShopSerializer(queryset, many=True)
         return Response(serializer.data)
 
-
-    @extend_schema(
-        description="Get shop products",
-        parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer},
-        tags=["All"],
-    )
-
-    @extend_schema(
-        description="Get all products for a shop by ID",
-        responses={200: ProductSerializer(many=True)},
-        tags=["Shop"],
-    )
     @action(detail=True, methods=["get"])
     def products(self, request, pk=None):
         products = Product.objects.filter(shop=pk).annotate(
@@ -171,7 +170,6 @@ class ShopViewSet(
     responses={200: LinkSerializer},
     tags=["Owner"],
 )
-
 class LinkViewSet(
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
