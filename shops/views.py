@@ -109,7 +109,15 @@ class ShopViewSet(
         """
         queryset = Shop.objects.all()
         shop = get_object_or_404(queryset, pk=pk)
-        serializer = SingleShopSerializer(shop)
+        serializer = ShopSerializer(shop)
+        return Response(serializer.data)
+
+    def list(self, request):
+        """
+        Получение всех магазинов.
+        """
+        queryset = Shop.objects.all()
+        serializer = ShopSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @extend_schema(
