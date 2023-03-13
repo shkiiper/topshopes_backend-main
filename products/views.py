@@ -91,12 +91,6 @@ class ProductViewSet(
             )
         return Product.objects.all().prefetch_related("variants", "reviews")
 
-    def list(self, request, pk=None):
-        """
-        Получение всех продуктов по ID магазина.
-        """
-        serializer = SingleShopSerializer(shop)
-        return Response(serializer.data)
     def get_serializer_class(self):
         if self.action == "retrieve":
             return SingleProductSerializer
