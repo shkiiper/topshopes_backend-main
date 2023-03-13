@@ -2,6 +2,7 @@ from rest_framework import routers
 from django.urls import path, include
 
 from attributes.views import AttributeValueViewset
+from reviews.views import ReviewViewSet
 from shops.views import ShopViewSet
 
 from .views import (
@@ -28,3 +29,7 @@ router.register(r"shops/products", ProductViewSet, basename="products")
 router.register(r"shops", ShopViewSet, basename="shops")
 router.register(r"products", ProductViewSet, basename="products")
 router.register(r"shops/(?P<pk>[^/.]+)/products", ProductViewSet, basename="products")
+router.register(r"shops/(?P<shop_pk>[^/.]+)/products/(?P<product_pk>[^/.]+)/review", ReviewViewSet, basename="reviews")
+urlpatterns = [
+    path("", include(router.urls)),
+]
