@@ -46,8 +46,8 @@ class SingleShopSerializer(serializers.ModelSerializer):
 
     user = CustomerSerializer(read_only=True)
     links = LinkSerializer(many=True, read_only=True)
-    # products = SingleProductSerializer(read_only=True, many=True)
-    products = ProductSerializer(read_only=True, many=True)
+    products = SingleProductSerializer(read_only=True, many=True)
+
 
     class Meta:
         model = Shop
