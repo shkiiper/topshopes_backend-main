@@ -112,22 +112,19 @@ class ShopViewSet(
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
 
-    def list(self, request, pk=None):
+    def list(self, request, **kwargs):
         """
-        Получение всех продуктов по ID магазина.
+        Получение всех магазинов или всех продуктов для магазина по ID.
         """
-        shop = get_object_or_404(Shop, pk=pk)
-        serializer = SingleShopSerializer(shop)
-        return Response(serializer.data)
+        pk = kwargs.get('pk')
+        if pk:
+            shop = get_object_or_404(Shop, pk=pk)
+            serializer = SingleShopSerializer(shop)
+            return Response(serializer.data)
 
-    def list(self, request):
-        """
-        Получение всех магазинов.
-        """
         queryset = Shop.objects.all()
         serializer = ShopSerializer(queryset, many=True)
         return Response(serializer.data)
-
     @extend_schema(
         description="Get shop products",
         parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
