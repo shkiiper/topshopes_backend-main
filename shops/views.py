@@ -1,4 +1,3 @@
-from rest_framework.views import APIView
 from django.db.models import OuterRef, Subquery
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
@@ -171,6 +170,12 @@ class ShopViewSet(
             return SingleShopSerializer
         return ShopSerializer
 
+    def get(self, request, shop_id=None):
+        shop = get_object_or_404(Shop, pk=shop_id)
+        products = Product.objects.filter(shop=shop)
+        product_serializer = ProductSerializer(products, many=True)
+        return Response(product_serializer.data)
+
     @extend_schema(
         description="Get shop products",
         parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
@@ -199,18 +204,6 @@ class ShopViewSet(
         serializer = ProductSerializer(products, many=True)
         print(serializer.data)
         return Response(data=serializer.data)
-
-
-class ProductRetrieveByShop(APIView):
-    """
-    Получение продуктов магазина по его ID.
-    """
-
-    def get(self, request, shop_id=None):
-        shop = get_object_or_404(Shop, pk=shop_id)
-        products = Product.objects.filter(shop=shop)
-        product_serializer = ProductSerializer(products, many=True)
-        return Response(product_serializer.data)
 
 
 @extend_schema(
