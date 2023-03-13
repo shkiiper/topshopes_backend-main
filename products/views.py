@@ -216,7 +216,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
 
     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
     filter_backends = [filters.SearchFilter]
-    search_fields = ["id"]
+    search_fields = ["name"]
 
     def get_queryset(self):
         """
@@ -273,10 +273,10 @@ class ShopProductViewSet(viewsets.ModelViewSet):
         """
         On create product set shop to user's
         """
-        if self.request.user.shop is not None:
-            serializer.save(shop=self.request.user.shop)  # type: ignore
-        else:
+        if self.request.user.shop is None:
             raise serializers.ValidationError("Shop not found")
+        else:
+            serializer.save(shop=self.request.user.shop)  # type: ignore
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "partial_update"]:
