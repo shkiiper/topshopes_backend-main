@@ -259,7 +259,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
         """
         Returns shop products by ID
         """
-        shop_id = self.kwargs.get("id")
+        shop_id = self.kwargs.get("shop_id")
         return (
             Product.objects.prefetch_related("variants")
             .filter(shop_id=shop_id)
