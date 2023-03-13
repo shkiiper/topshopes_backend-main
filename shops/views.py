@@ -84,7 +84,7 @@ class MyShopViewSet(
 @extend_schema(
     description="Viewset to get all Shops",
     parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
-    responses={200: ShopSerializer},
+    responses={200: ProductSerializer},
     tags=["All"],
 )
 @extend_schema(
