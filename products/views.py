@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import filters, mixins, permissions, serializers, status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
 from shops.serializers import SingleShopSerializer
@@ -216,6 +216,18 @@ class ShopProductViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
     filter_backends = [filters.SearchFilter]
     search_fields = ["name"]
+
+    @extend_schema(
+        description="Get all products for a shop by ID",
+        parameters=[OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)],
+        responses={200: ProductSerializer(many=True)},
+        tags=["Shop"],
+    )
+    @api_view(["GET"])
+    def get_products_by_shop_id(request, id):
+        products = Product.objects.filter(shop_id=id)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_queryset(self):
         """
