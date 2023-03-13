@@ -1,4 +1,3 @@
-import APIView as APIView
 from rest_framework.views import APIView
 from django.db.models import OuterRef, Subquery
 from drf_spectacular.types import OpenApiTypes
