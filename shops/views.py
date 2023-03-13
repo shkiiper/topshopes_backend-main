@@ -112,6 +112,14 @@ class ShopViewSet(
         serializer = ShopSerializer(shop)
         return Response(serializer.data)
 
+    def list(self, request, pk=None):
+        """
+        Получение всех продуктов по ID магазина.
+        """
+        queryset = Product.objects.filter(shop=pk)
+        serializer = ProductSerializer(queryset, many=True)
+        return Response(serializer.data)
+
     def list(self, request):
         """
         Получение всех магазинов.
