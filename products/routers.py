@@ -28,8 +28,3 @@ router.register(r"shops/brand", BrandViewSet, basename="brand")
 router.register(r"shops/products", ProductViewSet, basename="products")
 router.register(r"shops", ShopViewSet, basename="shops")
 router.register(r"products", ProductViewSet, basename="products")
-router.register(r"shops/(?P<pk>[^/.]+)/products", ProductViewSet, basename="products")
-router.register(r"shops/(?P<shop_pk>[^/.]+)/products/(?P<product_pk>[^/.]+)/review", ReviewViewSet, basename="reviews")
-urlpatterns = [
-    path("", include(router.urls)),
-]
