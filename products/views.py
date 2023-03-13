@@ -284,12 +284,8 @@ class ShopProductViewSet(viewsets.ModelViewSet):
             return SingleProductSerializer
         return ProductSerializer
 
-    # def get_serializer_context(self):
-    #     return {"request": self.request}
     def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context.update({"request": self.request})
-        return context
+        return {"request": self.request}
 
 
 @extend_schema(

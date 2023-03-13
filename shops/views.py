@@ -83,6 +83,79 @@ class MyShopViewSet(
         return Response(data=serializer.data)
 
 
+# class ShopViewSet(
+#     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+# ):
+#     """
+#     Viewset to get all Shops
+#     Only to get
+#     """
+#
+#     queryset = Shop.objects.all()
+#     permission_classes = [permissions.AllowAny]
+#
+#     def get_serializer_class(self):
+#         if self.action == "retrieve":
+#             return ShopSerializer
+#         return SingleShopSerializer
+#
+#     def retrieve(self, request, pk=None):
+#         """
+#         Получение магазина по его ID.
+#         """
+#         queryset = Shop.objects.all()
+#         shop = get_object_or_404(queryset, pk=pk)
+#         serializer = ShopSerializer(shop)
+#         return Response(serializer.data)
+#
+#     def list(self, request, **kwargs):
+#         """
+#         Получение всех магазинов.
+#         """
+#         queryset = Shop.objects.all()
+#         serializer = ShopSerializer(queryset, many=True)
+#         return Response(serializer.data)
+#
+#     @extend_schema(
+#         description="Viewset to get all Shops",
+#         parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+#         responses={200: ProductSerializer},
+#         tags=["All"],
+#     )
+#     @extend_schema(
+#         description="Get shop products",
+#         parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
+#         responses={200: ProductSerializer},
+#         tags=["All"],
+#     )
+#     @extend_schema(
+#         description="Get all products for a shop by ID",
+#         parameters=[OpenApiParameter("shop_id", OpenApiTypes.STR, OpenApiParameter.PATH)],
+#         responses={200: ProductSerializer(many=True)},
+#         tags=["Shop"],
+#     )
+#     @action(detail=True, methods=["get"])
+#     def products(self, request, pk=None):
+#         products = Product.objects.filter(shop=pk).annotate(
+#             overall_price=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "overall_price"
+#                 )[:1]
+#             ),
+#             discount_price=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "discount_price"
+#                 )[:1]
+#             ),
+#             thumbnail=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "thumbnail"
+#                 )[:1]
+#             ),
+#         )
+#         serializer = ProductSerializer(products, many=True)
+#         print(serializer.data)
+#         return Response(data=serializer.data)
 class ShopViewSet(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
@@ -96,49 +169,14 @@ class ShopViewSet(
 
     def get_serializer_class(self):
         if self.action == "retrieve":
-            return ShopSerializer
-        return SingleShopSerializer
-
-    def retrieve(self, request, pk=None):
-        """
-        Получение магазина по его ID.
-        """
-        queryset = Shop.objects.all()
-        shop = get_object_or_404(queryset, pk=pk)
-        serializer = ShopSerializer(shop)
-        return Response(serializer.data)
-
-    def list(self, request, **kwargs):
-        """
-        Получение всех магазинов или всех продуктов для магазина по ID.
-        """
-        # pk = kwargs.get('pk')
-        # if pk:
-        #     shop = get_object_or_404(Shop, pk=pk)
-        #     serializer = SingleShopSerializer(shop)
-        #     return Response(serializer.data)
-
-        queryset = Shop.objects.all()
-        serializer = ShopSerializer(queryset, many=True)
-        return Response(serializer.data)
+            return SingleShopSerializer
+        return ShopSerializer
 
     @extend_schema(
-        description="Viewset to get all Shops",
+        description="Get shop products",
         parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
         responses={200: ProductSerializer},
         tags=["All"],
-    )
-    @extend_schema(
-        description="Get shop products",
-        parameters=[OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer},
-        tags=["All"],
-    )
-    @extend_schema(
-        description="Get all products for a shop by ID",
-        parameters=[OpenApiParameter("shop_id", OpenApiTypes.STR, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer(many=True)},
-        tags=["Shop"],
     )
     @action(detail=True, methods=["get"])
     def products(self, request, pk=None):
