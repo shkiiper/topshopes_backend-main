@@ -28,8 +28,3 @@ router.register(r"products", ShopProductViewSet, basename="product")
 router.register(r"shops/categories", CategoryViewSet, basename="category")
 router.register(r"shops/brand", BrandViewSet, basename="brand")
 router.register(r"shops/products", ProductViewSet, basename="products")
-urlpatterns = [
-    path('', include(router.urls)),
-    path('server/shops/<uuid:pk>/products/', ShopViewSet.as_view({'get': 'products'}), name='shop-products'),
-
-]
