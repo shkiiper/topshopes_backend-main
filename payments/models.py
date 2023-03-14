@@ -23,7 +23,7 @@ class Payment(models.Model):
     is_verified = models.BooleanField(
         verbose_name=_("Is Verified"), null=True, blank=True
     )
-    Create_at = models.DateTimeField(default=datetime.now, verbose_name=_("Create_at"))
+    create_at = models.DateTimeField(default=datetime.now, verbose_name=_("create_at"))
 
     def __str__(self):
         return f"{self.payment_type} {self.phone_number} {self.bank_account}"

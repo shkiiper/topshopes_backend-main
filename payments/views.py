@@ -70,6 +70,7 @@ class AdminPaymentViewSet(viewsets.ModelViewSet):
             return CreatePaymentSerialzier
         return PaymentSerializer
 
+
 class AdminMoneyTransferViewSet(viewsets.ModelViewSet):
     """Admin money transfer viewset"""
 
@@ -82,7 +83,6 @@ class AdminMoneyTransferViewSet(viewsets.ModelViewSet):
         if self.action == "create":
             return CreatePaymentSerialzier
         return PaymentSerializer
-
 
 
 # class ReportAdmin(APIView):
@@ -102,7 +102,6 @@ class ReportAdmin(APIView):
             serializer = ReportSerializer(Shop.objects.all(), many=True, context={'request': request})
             return Response(serializer.data)
         return Response(data={"You are not authorized!!!"}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 
 # class ReportClient(APIView):
@@ -167,11 +166,10 @@ class ReportClient(APIView):
                                                              created_at__day=i
                                                              ).aggregate(Sum('amount'))['amount__sum'],
                 'total_tax': TransferMoney.objects.filter(shop_id=self.request.user.shop.id,
-                                                             created_at__year=year,
-                                                             created_at__month=month,
-                                                             created_at__day=i
-                                                             ).aggregate(Sum('tax'))['tax__sum'],
+                                                          created_at__year=year,
+                                                          created_at__month=month,
+                                                          created_at__day=i
+                                                          ).aggregate(Sum('tax'))['tax__sum'],
             }
             data.append(dict_data)
         return Response(data=data, status=status.HTTP_200_OK)
-

@@ -1,4 +1,3 @@
-
 from django.db.models import Sum
 from rest_framework import serializers
 
@@ -11,7 +10,6 @@ from rest_framework import serializers
 from orders.serializers import OrderSerializer, OrderInfoSerializer
 from .models import Payment, TransferMoney
 from head.serializers import AdminShopSerializer
-
 
 
 class CreatePaymentSerialzier(serializers.ModelSerializer):
@@ -27,6 +25,7 @@ class CreatePaymentSerialzier(serializers.ModelSerializer):
             "confirm_photo",
             "phone_number",
             "bank_account",
+            "create_at",
         ]
 
 
@@ -43,7 +42,7 @@ class PaymentSerializer(serializers.ModelSerializer):
             "phone_number",
             "bank_account",
             "is_verified",
-            "Create_at",
+            "create_at",
         ]
 
 
@@ -64,6 +63,7 @@ class SinglePaymentSerializer(serializers.ModelSerializer):
             "bank_account",
             "is_verified",
             "orders",
+            "create_at",
         ]
 
 
@@ -88,7 +88,6 @@ class TransferMoneySerializer(serializers.ModelSerializer):
         fields = ["id", "payment", "amount", "shop", "tax", "confirm_photo"]
 
 
-
 class ReportSerializer(serializers.ModelSerializer):
     total_tax = serializers.SerializerMethodField()
     total_amount = serializers.SerializerMethodField()
@@ -111,4 +110,3 @@ class ReportSerializer(serializers.ModelSerializer):
         return obj.transfermoney_set.filter(
             created_at__year=year,
             created_at__month=month).aggregate(Sum('amount'))['amount__sum']
-
