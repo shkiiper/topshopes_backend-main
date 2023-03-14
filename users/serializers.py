@@ -59,8 +59,3 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = ["id", "user", "country", "city", "street", "phone"]
-
-
-class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(max_length=128, required=True)
-    new_password = serializers.CharField(max_length=128, required=True)

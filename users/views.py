@@ -89,20 +89,3 @@ class AddressViewSet(ModelViewSet):
         if self.action in ["create", "update", "partial_update"]:
             return CreateAddressSerializer
         return AddressSerializer
-
-
-class UserViewSet(ModelViewSet):
-
-    @action(detail=True, methods=['put'], permission_classes=[IsAuthenticated])
-    def change_password(self, request, pk=None):
-        user = self.get_object()
-        serializer = ChangePasswordSerializer(data=request.data)
-        if serializer.is_valid():
-            old_password = serializer.validated_data.get('old_password')
-            new_password = serializer.validated_data.get('new_password')
-            if not user.check_password(old_password):
-                return Response({'old_password': ['Wrong password.']}, status=status.HTTP_400_BAD_REQUEST)
-            user.set_password(new_password)
-            user.save()
-            return Response({'detail': 'Password updated successfully.'}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
