@@ -4,10 +4,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema_view
 from rest_framework import filters, mixins, permissions, serializers, status, viewsets
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from rest_framework.views import APIView
 from .filters import ProductFilter
 
 from attributes.serializers import AttributeSerializer, CreateAttributeValueSerializer
