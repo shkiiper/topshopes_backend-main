@@ -1,6 +1,5 @@
 from django_filters.rest_framework import FilterSet
 import django_filters
-from django import forms
 from .models import Product, Brand
 
 
@@ -12,16 +11,8 @@ class ProductFilter(FilterSet):
     brand = django_filters.ModelMultipleChoiceFilter(
         field_name='brand__name',
         to_field_name='name',
-        queryset=Brand.objects.all(),
-        widget=forms.TextInput(attrs={'placeholder': 'Enter brands separated by semicolon (,)'}),
-        method='filter_brand',
+        queryset=Brand.objects.all()
     )
-
-    def filter_brand(self, queryset, name, value):
-        if value:
-            brands = value.split(',')
-            queryset = queryset.filter(**{'%s__name__in' % name: brands})
-        return queryset
 
     class Meta:
         model = Product
