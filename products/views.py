@@ -262,7 +262,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
             product = self.get_object()
             variants = product.variants.all()
             for variant in variants:
-                variant.attribute_values.all().delete()
+                # variant.attribute_values.all().delete()
             product.category = Category.objects.get(id=request.data["category"])
             product.save()
         return super().update(request, *args, **kwargs)
