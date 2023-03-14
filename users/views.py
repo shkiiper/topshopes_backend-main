@@ -4,13 +4,6 @@ from rest_framework import mixins, permissions
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from core.permissions import IsAnonymous
 
-from rest_framework.decorators import action
-
-from serializers import ChangePasswordSerializer
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework import status
-
 
 from .models import Address, Customer
 from .serializers import (

@@ -1,5 +1,5 @@
 from rest_framework import routers
-from .views import AddressViewSet, UserViewSet
+from .views import AddressViewSet
 from payments.views import UserPaymentViewSet
 
 router = routers.SimpleRouter()
