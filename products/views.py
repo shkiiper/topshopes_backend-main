@@ -7,7 +7,7 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 
-from shops.serializers import SingleShopSerializer
+from rest_framework.views import APIView
 from .filters import ProductFilter
 
 from attributes.serializers import AttributeSerializer, CreateAttributeValueSerializer
@@ -370,8 +370,9 @@ class BrandViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
-class LatestProductsAPIView(viewsets.ViewSet):
-    def list(self, request):
+
+class LatestProductsAPIView(APIView):
+    def get(self, request):
         latest_products = Product.objects.order_by('-created_at')[:10]
         serializer = ProductSerializer(latest_products, many=True)
         return Response(serializer.data)
