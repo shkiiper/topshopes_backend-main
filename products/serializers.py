@@ -207,10 +207,6 @@ class SingleProductSerializer(serializers.ModelSerializer):
             "attributes",
         ]
 
-    def get_thumbnail(self, object):
-        variant = object.variants.first().thumbnail
-        return self.context["request"].build_absolute_uri(variant.url)
-
 
 class ProductSerializer(serializers.ModelSerializer):
     """

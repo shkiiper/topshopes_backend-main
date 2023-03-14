@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import Field
 
+from core import settings
 from products.serializers import ProductSerializer
 from users.serializers import CustomerSerializer
 
@@ -71,3 +72,13 @@ class CreateShopSerializer(serializers.ModelSerializer):
             "cover_picture",
             "profile_picture",
         ]
+
+        def to_representation(self, instance):
+            ret = super().to_representation(instance)
+            ret['cover_picture'] = self.get_cover_picture_url(instance)
+            return ret
+
+        def get_cover_picture_url(self, obj):
+            if obj.cover_picture:
+                return "{}{}".format(settings.MEDIA_URL, obj.cover_picture.name)
+            return None
