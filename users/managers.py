@@ -21,6 +21,11 @@ class CustomManager(UserManager):
         user.save()
         return user
 
+    def change_password(self, user, new_password):
+        user.set_password(new_password)
+        user.save()
+        return user
+
     def create_superuser(
         self,
         email: Optional[str],
