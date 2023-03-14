@@ -38,7 +38,6 @@ class ShopSerializer(serializers.ModelSerializer):
 
 
 class SingleShopSerializer(serializers.ModelSerializer):
-
     """
     Only single shop serializer
     Return only one shop with all fields
@@ -46,8 +45,7 @@ class SingleShopSerializer(serializers.ModelSerializer):
 
     user = CustomerSerializer(read_only=True)
     links = LinkSerializer(many=True, read_only=True)
-    products = SingleProductSerializer(read_only=True, many=True)
-
+    products = ProductSerializer(read_only=True, many=True)
 
     class Meta:
         model = Shop
@@ -55,7 +53,6 @@ class SingleShopSerializer(serializers.ModelSerializer):
 
 
 class CreateShopSerializer(serializers.ModelSerializer):
-
     """
     Serialize used to create shop only
     Return only one shop with all fields
