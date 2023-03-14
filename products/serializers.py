@@ -245,6 +245,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "discount",
             "thumbnail",
             "price",
+            'created_at',
         ]
 
     def get_thumbnail(self, object):
