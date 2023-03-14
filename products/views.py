@@ -369,3 +369,9 @@ class BrandViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
+
+class LatestProductsAPIView(viewsets.ViewSet):
+    def list(self, request):
+        latest_products = Product.objects.order_by('-created_at')[:10]
+        serializer = ProductSerializer(latest_products, many=True)
+        return Response(serializer.data)

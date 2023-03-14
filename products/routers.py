@@ -1,5 +1,4 @@
-from uuid import UUID
-
+from .views import LatestProductsAPIView
 from rest_framework import routers
 from django.urls import path, include
 
@@ -28,3 +27,6 @@ router.register(r"products", ShopProductViewSet, basename="product")
 router.register(r"shops/categories", CategoryViewSet, basename="category")
 router.register(r"shops/brand", BrandViewSet, basename="brand")
 router.register(r"shops/products", ProductViewSet, basename="products")
+urlpatterns = [
+    path('latest-products/', LatestProductsAPIView.as_view(), name='latest-products'),
+]
