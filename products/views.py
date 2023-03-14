@@ -371,8 +371,15 @@ class BrandViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = BrandSerializer
 
 
-class LatestProductsAPIView(APIView):
+class LatestProductsAPIView (mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+):
     def get(self, request):
         latest_products = Product.objects.order_by('-created_at')[:10]
         serializer = ProductSerializer(latest_products, many=True)
         return Response(serializer.data)
+
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
