@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import Field
 
-from products.serializers import ProductSerializer, SingleProductSerializer
+from products.serializers import ProductSerializer
 from users.serializers import CustomerSerializer
 
 from .models import Link, Shop
