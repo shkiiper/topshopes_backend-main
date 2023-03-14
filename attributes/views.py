@@ -1,4 +1,3 @@
-import Response as Response
 from rest_framework import mixins, permissions, viewsets
 from rest_framework.response import Response
 from core.permissions import HasShop
