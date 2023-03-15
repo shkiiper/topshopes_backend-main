@@ -7,6 +7,9 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from rest_framework import generics
+from django.db.models import F
+
 from .filters import ProductFilter
 
 from attributes.serializers import AttributeSerializer, CreateAttributeValueSerializer
@@ -384,3 +387,12 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+
+class DiscountedProductView(generics.ListAPIView):
+    serializer_class = ProductVariantSerializer
+
+    def get_queryset(self):
+        return ProductVariant.objects.filter(discount__gt=0).annotate(
+            discounted_price=F('price') - (F('price') * F('discount') / 100)
+        )
