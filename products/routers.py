@@ -1,4 +1,3 @@
-from django.urls import path, include
 from rest_framework import routers
 
 from attributes.views import AttributeValueViewset
@@ -27,7 +26,4 @@ router.register(r"shops/brand", BrandViewSet, basename="brand")
 router.register(r"shops/products", ProductViewSet, basename="products")
 router.register('latest-products', LatestProductsAPIView, basename='latest-products')
 router.register('top-rated-products', TopratedproductsAPIView, basename='top-rated-products')
-urlpatterns = [
-    path("", include(router.urls)),
-    path("discounted-products/", DiscountedProductView.as_view()),
-]
+router.register('discounted-products', DiscountedProductView, basename='discounted-products')
