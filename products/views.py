@@ -256,6 +256,21 @@ class ShopProductViewSet(viewsets.ModelViewSet):
             )
         )
 
+    # def update(self, request, *args, **kwargs):
+    #     """
+    #     Update product
+    #     """
+    #
+    #     if "category" in request.data:
+    #         product = self.get_object()
+    #         variants = product.variants.all()
+    #         for variant in variants:
+    #             variant.attribute_values.all().delete()
+    #         product.category = Category.objects.get(id=request.data["category"])
+    #         product.save()
+    #     return super().update(request, *args, **kwargs)
+    #
+    #
     def update(self, request, *args, **kwargs):
         """
         Update product
@@ -264,9 +279,13 @@ class ShopProductViewSet(viewsets.ModelViewSet):
         if "category" in request.data:
             product = self.get_object()
             variants = product.variants.all()
-            # for variant in variants:
-            #     variant.attribute_values.all().delete()
-            product.category = Category.objects.get(id=request.data["category"])
+            category_id = request.data.get("category", None)
+            if category_id:
+                for variant in variants:
+                    variant.attribute_values.all().delete()
+                product.category = Category.objects.get(id=category_id)
+            else:
+                product.category = None
             product.save()
         return super().update(request, *args, **kwargs)
 
