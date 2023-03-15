@@ -389,7 +389,7 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class DiscountedProductView(generics.ListAPIView):
+class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductVariantSerializer
 
     def get_queryset(self):
