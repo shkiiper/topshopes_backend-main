@@ -40,11 +40,17 @@ class ShopSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         ret['cover_picture'] = self.get_cover_picture_url(instance)
+        ret['profile_picture'] = self.get_profile_picture_url(instance)
         return ret
 
     def get_cover_picture_url(self, obj):
         if obj.cover_picture:
             return "{}{}".format(settings.MEDIA_URL, obj.cover_picture.name)
+        return None
+
+    def get_profile_picture_url(self, obj):
+        if obj.profile_picture:
+            return "{}{}".format(settings.MEDIA_URL, obj.profile_picture.name)
         return None
 
 class SingleShopSerializer(serializers.ModelSerializer):
@@ -64,11 +70,17 @@ class SingleShopSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         ret['cover_picture'] = self.get_cover_picture_url(instance)
+        ret['profile_picture'] = self.get_profile_picture_url(instance)
         return ret
 
     def get_cover_picture_url(self, obj):
         if obj.cover_picture:
             return "{}{}".format(settings.MEDIA_URL, obj.cover_picture.name)
+        return None
+
+    def get_profile_picture_url(self, obj):
+        if obj.profile_picture:
+            return "{}{}".format(settings.MEDIA_URL, obj.profile_picture.name)
         return None
 
 
@@ -95,9 +107,15 @@ class CreateShopSerializer(serializers.ModelSerializer):
         def to_representation(self, instance):
             ret = super().to_representation(instance)
             ret['cover_picture'] = self.get_cover_picture_url(instance)
+            ret['profile_picture'] = self.get_profile_picture_url(instance)
             return ret
 
         def get_cover_picture_url(self, obj):
             if obj.cover_picture:
                 return "{}{}".format(settings.MEDIA_URL, obj.cover_picture.name)
+            return None
+
+        def get_profile_picture_url(self, obj):
+            if obj.profile_picture:
+                return "{}{}".format(settings.MEDIA_URL, obj.profile_picture.name)
             return None
