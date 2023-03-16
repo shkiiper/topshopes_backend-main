@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from rest_framework.serializers import Field
 
-from core import settings
 from products.serializers import ProductSerializer
 from users.serializers import CustomerSerializer
 
@@ -37,21 +36,6 @@ class ShopSerializer(serializers.ModelSerializer):
         model = Shop
         fields = "__all__"
 
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        ret['cover_picture'] = self.get_cover_picture_url(instance)
-        ret['profile_picture'] = self.get_profile_picture_url(instance)
-        return ret
-
-    def get_cover_picture_url(self, obj):
-        if obj.cover_picture:
-            return "{}{}".format(settings.MEDIA_URL, obj.cover_picture.name)
-        return None
-
-    def get_profile_picture_url(self, obj):
-        if obj.profile_picture:
-            return "{}{}".format(settings.MEDIA_URL, obj.profile_picture.name)
-        return None
 
 class SingleShopSerializer(serializers.ModelSerializer):
     """
@@ -66,22 +50,6 @@ class SingleShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = "__all__"
-
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        ret['cover_picture'] = self.get_cover_picture_url(instance)
-        ret['profile_picture'] = self.get_profile_picture_url(instance)
-        return ret
-
-    def get_cover_picture_url(self, obj):
-        if obj.cover_picture:
-            return "{}{}".format(settings.MEDIA_URL, obj.cover_picture.name)
-        return None
-
-    def get_profile_picture_url(self, obj):
-        if obj.profile_picture:
-            return "{}{}".format(settings.MEDIA_URL, obj.profile_picture.name)
-        return None
 
 
 class CreateShopSerializer(serializers.ModelSerializer):
@@ -103,19 +71,3 @@ class CreateShopSerializer(serializers.ModelSerializer):
             "cover_picture",
             "profile_picture",
         ]
-
-        def to_representation(self, instance):
-            ret = super().to_representation(instance)
-            ret['cover_picture'] = self.get_cover_picture_url(instance)
-            ret['profile_picture'] = self.get_profile_picture_url(instance)
-            return ret
-
-        def get_cover_picture_url(self, obj):
-            if obj.cover_picture:
-                return "{}{}".format(settings.MEDIA_URL, obj.cover_picture.name)
-            return None
-
-        def get_profile_picture_url(self, obj):
-            if obj.profile_picture:
-                return "{}{}".format(settings.MEDIA_URL, obj.profile_picture.name)
-            return None

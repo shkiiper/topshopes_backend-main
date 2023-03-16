@@ -13,6 +13,7 @@ from reviews.serializers import ShopReviewSerializer
 from payments.models import TransferMoney
 from payments.serializers import TransferMoneySerializer
 from django.shortcuts import get_object_or_404
+from rest_framework import generics
 
 from .models import Link, Shop
 from .serializers import (
@@ -79,6 +80,7 @@ class MyShopViewSet(
         reviews = Review.objects.filter(shop=shop)
         serializer = ShopReviewSerializer(reviews, many=True)
         return Response(data=serializer.data)
+
 
 class ShopViewSet(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
@@ -172,3 +174,23 @@ class TransferMoneyViewSet(mixins.ListModelMixin):
 
     def get_queryset(self):
         return TransferMoney.objects.filter(shop=self.request.user.shop)
+
+
+class ShopDetailView(generics.RetrieveAPIView):
+    queryset = Shop.objects.all()
+    serializer_class = ShopSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+
+        # Append full URL path to the image fields
+        shop = response.data
+        shop['cover_picture'] = request.build_absolute_uri(shop['cover_picture'])
+        shop['profile_picture'] = request.build_absolute_uri(shop['profile_picture'])
+
+        return response
