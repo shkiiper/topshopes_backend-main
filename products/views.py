@@ -423,16 +423,9 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
         )
 
 
-class BestSellersViewSet(viewsets.ViewSet):
+class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    ViewSet для отображения продуктов с большим количеством продаж
+    View set to retrieve best selling products
     """
-
-    @action(detail=False, methods=['get'])
-    def list(self, request):
-        """
-        Отображает список продуктов с большим количеством продаж.
-        """
-        top_sellers = Product.objects.annotate(total_sales=Sum('orderitem__quantity')).order_by('-total_sales')[:10]
-        serializer = ProductSerializer(top_sellers, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    queryset = Product.objects.annotate(total_sales=Sum('variants__orders__quantity')).order_by('-total_sales')
+    serializer_class = ProductSerializer
