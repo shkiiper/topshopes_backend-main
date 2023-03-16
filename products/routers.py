@@ -9,7 +9,7 @@ from .views import (
     ProductVariantViewSet,
     ProductViewSet,
     ShopProductViewSet,
-    LatestProductsAPIView, TopratedproductsAPIView,DiscountedProductView
+    LatestProductsAPIView, TopratedproductsAPIView, DiscountedProductView, BestSellersViewSet
 )
 
 router = routers.SimpleRouter()
@@ -27,3 +27,4 @@ router.register(r"shops/products", ProductViewSet, basename="products")
 router.register('latest-products', LatestProductsAPIView, basename='latest-products')
 router.register('top-rated-products', TopratedproductsAPIView, basename='top-rated-products')
 router.register('discounted-products', DiscountedProductView, basename='discounted-products')
+router.register(r'best-sellers', BestSellersViewSet, basename='best-sellers')

@@ -6,8 +6,8 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import filters, mixins, permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.db.models import Sum
 
-from rest_framework import generics
 from django.db.models import F
 
 from .filters import ProductFilter
@@ -421,3 +421,18 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return ProductVariant.objects.filter(discount__gt=0).annotate(
             discounted_price=F('price') - (F('price') * F('discount') / 100)
         )
+
+
+class BestSellersViewSet(viewsets.ViewSet):
+    """
+    ViewSet для отображения продуктов с большим количеством продаж
+    """
+
+    @action(detail=False, methods=['get'])
+    def list(self, request):
+        """
+        Отображает список продуктов с большим количеством продаж.
+        """
+        top_sellers = Product.objects.annotate(total_sales=Sum('orderitem__quantity')).order_by('-total_sales')[:10]
+        serializer = ProductSerializer(top_sellers, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
