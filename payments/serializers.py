@@ -89,29 +89,6 @@ class TransferMoneySerializer(serializers.ModelSerializer):
         fields = ["id", "payment", "amount", "shop", "tax", "confirm_photo"]
 
 
-# class ReportSerializer(serializers.ModelSerializer):
-#     total_tax = serializers.SerializerMethodField()
-#     total_amount = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         model = Shop
-#         fields = ['id', 'name', 'total_tax', 'total_amount']
-#
-#     def get_total_tax(self, obj):
-#         year = self.context['request'].data.get('year')
-#         month = self.context['request'].data.get('month')
-#         return obj.transfermoney_set.filter(
-#             created_at__year=year,
-#             created_at__month=month
-#         ).aggregate(Sum('tax'))['tax__sum']
-#
-#     def get_total_amount(self, obj):
-#         year = self.context['request'].data.get('year')
-#         month = self.context['request'].data.get('month')
-#         return obj.transfermoney_set.filter(
-#             created_at__year=year,
-#             created_at__month=month).aggregate(Sum('amount'))['amount__sum']
-
 class ReportSerializer(serializers.ModelSerializer):
     total_tax = serializers.SerializerMethodField()
     total_amount = serializers.SerializerMethodField()
@@ -121,17 +98,16 @@ class ReportSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'total_tax', 'total_amount']
 
     def get_total_tax(self, obj):
-        transfer_money_qs = obj.transfermoney_set.all()
-        years = transfer_money_qs.datetimes('created_at', 'year', order='DESC')
-        if years:
-            year = years[0].year
-            return transfer_money_qs.filter(created_at__year=year).aggregate(Sum('tax'))['tax__sum']
-        return None
+        year = self.context['request'].data.get('year')
+        month = self.context['request'].data.get('month')
+        return obj.transfermoney_set.filter(
+            created_at__year=year,
+            created_at__month=month
+        ).aggregate(Sum('tax'))['tax__sum']
 
     def get_total_amount(self, obj):
-        transfer_money_qs = obj.transfermoney_set.all()
-        years = transfer_money_qs.datetimes('created_at', 'year', order='DESC')
-        if years:
-            year = years[0].year
-            return transfer_money_qs.filter(created_at__year=year).aggregate(Sum('amount'))['amount__sum']
-        return None
+        year = self.context['request'].data.get('year')
+        month = self.context['request'].data.get('month')
+        return obj.transfermoney_set.filter(
+            created_at__year=year,
+            created_at__month=month).aggregate(Sum('amount'))['amount__sum']
