@@ -26,6 +26,7 @@ class OrderInfoSerializer(serializers.ModelSerializer):
             "quantity",
         ]
 
+
 class OrderSerializer(serializers.ModelSerializer):
     """
     Order serializers for read only
@@ -87,7 +88,7 @@ class CreateOrderSerializer(serializers.ModelSerializer):
         r = redis.Redis(
             host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB
         )
-        product_variant:ProductVariant = validated_data["product_variant"]
+        product_variant: ProductVariant = validated_data["product_variant"]
         order = super().create(validated_data)
         lock = r.lock(f"product_variant_{product_variant.id}_quantity", timeout=1)
         try:
