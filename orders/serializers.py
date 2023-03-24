@@ -108,13 +108,15 @@ class CreateOrderSerializer(serializers.ModelSerializer):
         return order
 
 
+def get_profit(obj):
+    return obj.total_price - obj.product.category.tax
+
+
 class OrderTotalPriceSerializer(serializers.ModelSerializer):
-    tax = serializers.DecimalField(max_digits=10, decimal_places=2, source='product.category.tax')
+    tax = ProductSerializer()
     profit = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = ["id", "created_at", 'total_price', 'tax', 'profit']
 
-    def get_profit(self, obj):
-        return obj.total_price - obj.product.category.tax
