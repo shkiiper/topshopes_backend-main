@@ -3,6 +3,11 @@ from decimal import Decimal
 from django.db import models
 from django.utils import timezone
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from orders.models import Order
+from report.models import Report
+
 
 class Order(models.Model):
     """
@@ -75,3 +80,8 @@ class Order(models.Model):
         if self.status == "payment_error":
             self.payment.money_transfer.delete()
         super().save(*args, **kwargs)
+
+    @receiver(post_save, sender=Order)
+    def create_report(sender, instance, created, **kwargs):
+        if instance.status == 'paid' and instance.fulfilled:
+            Report.objects.create(order=instance, status='paid_fulfilled')
