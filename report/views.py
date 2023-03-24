@@ -3,9 +3,10 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .serializers import OrderSerializer
 from orders.models import Order
+from rest_framework.views import APIView
 
 
-class PaidOrderList(generics.ListAPIView):
+class PaidOrderList(APIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
@@ -20,7 +21,7 @@ class PaidOrderList(generics.ListAPIView):
         return queryset
 
 
-class CompletedOrderList(generics.ListAPIView):
+class CompletedOrderList(APIView):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
