@@ -109,7 +109,7 @@ class CreateOrderSerializer(serializers.ModelSerializer):
 
 
 class OrderTotalPriceSerializer(serializers.ModelSerializer):
-    tax = CategorySerializer.DecimalField(max_digits=10, decimal_places=2)
+    tax = CategorySerializer()
 
     class Meta:
         model = Order
