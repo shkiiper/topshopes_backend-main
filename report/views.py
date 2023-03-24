@@ -4,9 +4,10 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import OrderSerializer
 from orders.models import Order
 from rest_framework.views import APIView
+from rest_framework import viewsets
 
 
-class PaidOrderList(APIView):
+class PaidOrderList(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
@@ -21,7 +22,7 @@ class PaidOrderList(APIView):
         return queryset
 
 
-class CompletedOrderList(APIView):
+class CompletedOrderList(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
