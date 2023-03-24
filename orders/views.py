@@ -88,7 +88,7 @@ class ShopOrderViewSet(
         return OrderSerializer
 
 
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderList(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
