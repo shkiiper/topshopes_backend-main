@@ -1,36 +1,10 @@
-from rest_framework import serializers, viewsets
+from rest_framework import serializers
 from .models import Report
 
 
 class ReportSerializer(serializers.ModelSerializer):
+    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, source='orders.total_price')
+
     class Meta:
         model = Report
-        fields = ['id', 'date_from', 'date_to', 'orders', 'payments']
-
-
-class PaidReportViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = ReportSerializer
-
-    def get_queryset(self):
-        date_from = self.request.query_params.get('date_from', None)
-        date_to = self.request.query_params.get('date_to', None)
-        queryset = Report.objects.filter(
-            date_from__lte=date_to,
-            date_to__gte=date_from,
-            payments__status='paid'
-        ).distinct()
-        return queryset
-
-
-class CompletedReportViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = ReportSerializer
-
-    def get_queryset(self):
-        date_from = self.request.query_params.get('date_from', None)
-        date_to = self.request.query_params.get('date_to', None)
-        queryset = Report.objects.filter(
-            date_from__lte=date_to,
-            date_to__gte=date_from,
-            orders__status='completed'
-        ).distinct()
-        return queryset
+        fields = ['id', 'date_from', 'date_to', 'total_price']
