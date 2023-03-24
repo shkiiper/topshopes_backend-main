@@ -10,7 +10,7 @@ from users.serializers import AddressSerializer, CustomerSerializer
 import redis
 from django.conf import settings
 from redis.exceptions import LockError
-from products.models import ProductVariant, Product
+from products.models import ProductVariant, Product, Category
 
 from .models import Order
 
@@ -110,13 +110,33 @@ class CreateOrderSerializer(serializers.ModelSerializer):
         return order
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    """
+    Category serializer
+    Return id, name, icon, image, slug, parent, description, featured fields
+    """
+
+    class Meta:
+        model = Category
+        fields = [
+            "id",
+            "slug",
+            "name",
+            "icon",
+            "image",
+            "attributes",
+            "featured",
+            "tax",
+        ]
+
+
 class OrderTotalPriceSerializer(serializers.ModelSerializer):
-    tax = CategorySerializer(read_only=True)
     profit = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ["id", "created_at", 'total_price', 'tax', 'profit']
+        fields = ["id", "created_at", 'total_price', 'profit']
 
     def get_profit(self, obj):
-        return obj.total_price - obj.tax
+        tax = Category.tax
+        return obj.total_price - tax
