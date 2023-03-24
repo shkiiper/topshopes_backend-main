@@ -2,6 +2,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, permissions
 from rest_framework.viewsets import GenericViewSet
+from django.db.models import Q
 
 from core.permissions import HasShop, IsOwner
 
@@ -92,15 +93,29 @@ class OrderList(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
-    @action(detail=False)
+    @action(detail=False, methods=['post'])
     def paid(self, request):
-        queryset = self.get_queryset().filter(status='paid')
+        status = request.data.get('status', 'paid')
+        date_from = request.data.get('date_from')
+        date_to = request.data.get('date_to')
+
+        queryset = self.get_queryset().filter(status=status)
+        if date_from and date_to:
+            queryset = queryset.filter(Q(created_at__gte=date_from) & Q(created_at__lte=date_to))
+
         serializer = OrderTotalPriceSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=False)
+    @action(detail=False, methods=['post'])
     def completed(self, request):
-        queryset = self.get_queryset().filter(status='completed')
+        status = request.data.get('status', 'completed')
+        date_from = request.data.get('date_from')
+        date_to = request.data.get('date_to')
+
+        queryset = self.get_queryset().filter(status=status)
+        if date_from and date_to:
+            queryset = queryset.filter(Q(created_at__gte=date_from) & Q(created_at__lte=date_to))
+
         serializer = OrderTotalPriceSerializer(queryset, many=True)
         return Response(serializer.data)
 
