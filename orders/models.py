@@ -77,11 +77,7 @@ class Order(models.Model):
                 amount=self.total_price,
                 tax=tax,
             )
+            Report.objects.create(order=self)
         if self.status == "payment_error":
             self.payment.money_transfer.delete()
         super().save(*args, **kwargs)
-
-    @receiver(post_save, sender=Order)
-    def create_report(sender, instance, created, **kwargs):
-        if instance.status == 'paid' and instance.fulfilled:
-            Report.objects.create(order=instance, status='paid_fulfilled')
