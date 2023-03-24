@@ -1,31 +1,36 @@
-from rest_framework import serializers
-from orders.models import Order
+from rest_framework import serializers, viewsets
 from .models import Report
 
 
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fields = ('id', 'orders', 'date_from', 'date_to')
+        fields = ['id', 'date_from', 'date_to', 'orders', 'payments']
 
 
-class OrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = ('id', 'status')
+class PaidReportViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ReportSerializer
+
+    def get_queryset(self):
+        date_from = self.request.query_params.get('date_from', None)
+        date_to = self.request.query_params.get('date_to', None)
+        queryset = Report.objects.filter(
+            date_from__lte=date_to,
+            date_to__gte=date_from,
+            payments__status='paid'
+        ).distinct()
+        return queryset
 
 
-class OrderInReportSerializer(OrderSerializer):
-    in_report = serializers.BooleanField()
+class CompletedReportViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ReportSerializer
 
-
-class ReportDetailSerializer(ReportSerializer):
-    orders = OrderInReportSerializer(many=True)
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        orders = representation.pop('orders')
-        for order in orders:
-            order['in_report'] = True
-        representation['orders'] = orders
-        return representation
+    def get_queryset(self):
+        date_from = self.request.query_params.get('date_from', None)
+        date_to = self.request.query_params.get('date_to', None)
+        queryset = Report.objects.filter(
+            date_from__lte=date_to,
+            date_to__gte=date_from,
+            orders__status='completed'
+        ).distinct()
+        return queryset
