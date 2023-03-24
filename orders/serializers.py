@@ -111,4 +111,4 @@ class CreateOrderSerializer(serializers.ModelSerializer):
 class OrderTotalPriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['total_price']
+        fields = ["id", "created_at", 'total_price']
