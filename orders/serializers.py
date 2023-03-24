@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.db.transaction import atomic
 
 from payments.models import Payment
-from products.serializers import ProductSerializer, ProductVariantSerializer
+from products.serializers import ProductSerializer, ProductVariantSerializer, CategorySerializer
 from shops.serializers import ShopSerializer
 from users.serializers import AddressSerializer, CustomerSerializer
 import redis
@@ -109,13 +109,12 @@ class CreateOrderSerializer(serializers.ModelSerializer):
 
 
 class OrderTotalPriceSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
+    tax = CategorySerializer()
     profit = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ["id", "created_at", 'total_price', 'product', 'profit']
+        fields = ["id", "created_at", 'total_price', 'profit']
 
     def get_profit(self, obj):
-        return obj.total_price - obj.product.category.tax
-
+        return obj.total_price - obj.tax
