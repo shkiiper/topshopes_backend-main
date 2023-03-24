@@ -1,34 +1,47 @@
-from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated
-from .serializers import ReportSerializer
+from datetime import datetime, timedelta
+from django.utils.timezone import make_aware
+from rest_framework import generics, filters
+from orders.models import Order
 from .models import Report
+from .serializers import ReportSerializer
+from rest_framework.response import Response
+from django.db import models
+from orders.serializers import OrderSerializer
 
 
-class PaidOrderList(ListAPIView):
+class ReportAPIView(generics.ListCreateAPIView):
     serializer_class = ReportSerializer
-    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['total_price', 'created_at']
 
     def get_queryset(self):
-        date_from = self.request.query_params.get('date_from', None)
-        date_to = self.request.query_params.get('date_to', None)
-        queryset = Report.objects.filter(payments__status=self.request.query_params.get('status', 'paid'))
-        if date_from:
-            queryset = queryset.filter(date_to__gte=date_from)
-        if date_to:
-            queryset = queryset.filter(date_from__lte=date_to)
+        queryset = Report.objects.all()
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+
+        if start_date and end_date:
+            start_date = make_aware(datetime.strptime(start_date, '%Y-%m-%d'))
+            end_date = make_aware(datetime.strptime(end_date, '%Y-%m-%d')) + timedelta(days=1)
+            delta = end_date - start_date
+            if delta.days > 30:
+                end_date = start_date + timedelta(days=30)
+
+            queryset = queryset.filter(created_at__range=[start_date, end_date])
+
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        orders = Order.objects.filter(status__in=['paid', 'completed'])
+        total_price = orders.aggregate(models.Sum('total_price'))['total_price__sum']
+        status = request.data.get('status', 'all')
+        created_at = datetime.now()
 
-class CompletedOrderList(ListAPIView):
-    serializer_class = ReportSerializer
-    permission_classes = [IsAuthenticated]
+        report = Report.objects.create(
+            total_price=total_price or 0,
+            status=status,
+            created_at=created_at
+        )
 
-    def get_queryset(self):
-        date_from = self.request.query_params.get('date_from', None)
-        date_to = self.request.query_params.get('date_to', None)
-        queryset = Report.objects.filter(orders__status=self.request.query_params.get('status', 'completed'))
-        if date_from:
-            queryset = queryset.filter(date_to__gte=date_from)
-        if date_to:
-            queryset = queryset.filter(date_from__lte=date_to)
-        return queryset
+        serializer = self.get_serializer(report)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

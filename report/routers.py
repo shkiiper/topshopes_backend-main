@@ -1,6 +1,8 @@
+from django.urls import path
 from rest_framework import routers
-from .views import PaidOrderList, CompletedOrderList
+from .views import ReportAPIView
 
 router = routers.SimpleRouter()
-router.register(r'orders/paid', PaidOrderList, basename='paid-orders')
-router.register(r'orders/completed', CompletedOrderList, basename='completed-orders')
+router.register(r'report', ReportAPIView, basename='report')
+
+urlpatterns = router.urls
