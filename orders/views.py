@@ -5,7 +5,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from core.permissions import HasShop, IsOwner
 
-from .serializers import OrderSerializer, CreateOrderSerializer
+from .serializers import OrderSerializer, CreateOrderSerializer, OrderTotalPriceSerializer
 
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -88,20 +88,20 @@ class ShopOrderViewSet(
         return OrderSerializer
 
 
-class OrderList(viewsets.ModelViewSet):
+class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
     @action(detail=False)
     def paid(self, request):
         queryset = self.get_queryset().filter(status='paid')
-        serializer = self.get_serializer(queryset, many=True)
+        serializer = OrderTotalPriceSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
     def completed(self, request):
         queryset = self.get_queryset().filter(status='completed')
-        serializer = self.get_serializer(queryset, many=True)
+        serializer = OrderTotalPriceSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def get_queryset(self):

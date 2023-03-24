@@ -106,3 +106,9 @@ class CreateOrderSerializer(serializers.ModelSerializer):
             lock.release()
 
         return order
+
+
+class OrderTotalPriceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['total_price']
