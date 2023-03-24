@@ -35,7 +35,7 @@ urlpatterns = [
     path("server/", include("shops.urls"), name="shops_base_API"),
     path("server/", include("posts.urls"), name="posts_base_API"),
     path("server/", include("payments.urls"), name="payments_base_API"),
-    path("server/", include("report.urls"), name="reports_base_API"),
+    path("server/", include("report.urls"), name='reports_base_API'),
     # path("api/", include("attributes.urls"), name="attributes_base_API"),
     # auth routes
     path("server/auth/login/", TokenObtainPairView.as_view(), name="token_create"),
