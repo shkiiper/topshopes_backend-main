@@ -11,7 +11,6 @@ from core.helpers import PathAndRename
 class Payment(models.Model):
     TYPES = (
         ("bakai", "Bakai"),
-
     )
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     payment_type = models.CharField(

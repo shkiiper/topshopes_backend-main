@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "celery",
+    "report",
     # local apps
     "users.apps.UsersConfig",
     "shops.apps.ShopsConfig",
