@@ -8,7 +8,11 @@ from users.serializers import AddressSerializer, CustomerSerializer
 import redis
 from django.conf import settings
 from redis.exceptions import LockError
-from products.models import ProductVariant
+from products.models import ProductVariant, Product
+
+from rest_framework import serializers
+from products.serializers import CategorySerializer
+from .models import Order
 
 from .models import Order
 
@@ -108,8 +112,12 @@ class CreateOrderSerializer(serializers.ModelSerializer):
         return order
 
 
-def get_profit(obj):
-    return obj.total_price - obj.product.category.tax
+class ProductSerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
+
+    class Meta:
+        model = Product
+        fields = ['tax']
 
 
 class OrderTotalPriceSerializer(serializers.ModelSerializer):
@@ -120,3 +128,5 @@ class OrderTotalPriceSerializer(serializers.ModelSerializer):
         model = Order
         fields = ["id", "created_at", 'total_price', 'tax', 'profit']
 
+    def get_profit(obj):
+        return obj.total_price - obj.tax.category.tax
