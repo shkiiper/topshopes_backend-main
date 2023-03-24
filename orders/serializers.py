@@ -138,7 +138,7 @@ class OrderTotalPriceSerializer(serializers.ModelSerializer):
         fields = ['id', 'created_at', 'total_price', 'profit']
 
     def get_profit(self, obj):
-        order_with_category = Order.objects.select_related('category').get(id=obj.id)
-        tax = order_with_category.category.tax
+        order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
+        category = order_with_product_variant.product_variant.product.category
+        tax = category.tax
         return obj.total_price - tax
-
