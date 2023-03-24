@@ -141,4 +141,4 @@ class OrderTotalPriceSerializer(serializers.ModelSerializer):
         order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
         category = order_with_product_variant.product_variant.product.category
         tax = category.tax
-        return obj.total_price-(obj.total_price - tax)
+        return (tax / obj.total_price) * 100
