@@ -109,7 +109,8 @@ class CreateOrderSerializer(serializers.ModelSerializer):
 
 
 class OrderTotalPriceSerializer(serializers.ModelSerializer):
-    tax = CategorySerializer()
+
+    tax = CategorySerializer(read_only=True)
 
     class Meta:
         model = Order
