@@ -4,7 +4,7 @@ from .serializers import ReportSerializer
 from .models import Report
 
 
-class PaidReportList(generics.ListAPIView):
+class PaidOrderList(generics.ListAPIView):
     serializer_class = ReportSerializer
     permission_classes = [IsAuthenticated]
 
@@ -19,7 +19,7 @@ class PaidReportList(generics.ListAPIView):
         return queryset
 
 
-class CompletedReportList(generics.ListAPIView):
+class CompletedOrderList(generics.ListAPIView):
     serializer_class = ReportSerializer
     permission_classes = [IsAuthenticated]
 
