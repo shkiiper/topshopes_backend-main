@@ -115,12 +115,12 @@ class ShopOrderViewSet(
 #             # filter orders by date range
 #             queryset = queryset.filter(created_at__range=(date_from, date_to))
 #         return queryset
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 class OrderList(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    filter_backends = [filters.SearchFilter]
-    filterset_class = OrderFilter
 
     @action(detail=False)
     def paid(self, request):
@@ -149,6 +149,13 @@ class OrderList(viewsets.ModelViewSet):
             queryset = queryset.filter(created_at__range=(date_from, date_to))
         serializer = OrderTotalPriceSerializer(queryset, many=True)
         return Response(serializer.data)
+
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
+    filterset_class = OrderFilter
 
     def get_queryset(self):
         queryset = super().get_queryset()
