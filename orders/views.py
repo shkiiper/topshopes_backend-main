@@ -13,6 +13,7 @@ from rest_framework.response import Response
 
 from .models import Order
 
+from django.utils.dateparse import parse_date
 
 
 @extend_schema(
@@ -88,6 +89,31 @@ class ShopOrderViewSet(
         return OrderSerializer
 
 
+# class OrderList(viewsets.ModelViewSet):
+#     queryset = Order.objects.all()
+#     serializer_class = OrderSerializer
+#
+#     @action(detail=False)
+#     def paid(self, request):
+#         queryset = self.get_queryset().filter(status='paid')
+#         serializer = OrderTotalPriceSerializer(queryset, many=True)
+#         return Response(serializer.data)
+#
+#     @action(detail=False)
+#     def completed(self, request):
+#         queryset = self.get_queryset().filter(status='completed')
+#         serializer = OrderTotalPriceSerializer(queryset, many=True)
+#         return Response(serializer.data)
+#
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         date_from = self.request.query_params.get('date_from')
+#         date_to = self.request.query_params.get('date_to')
+#         if date_from and date_to:
+#             # filter orders by date range
+#             queryset = queryset.filter(created_at__range=(date_from, date_to))
+#         return queryset
+
 class OrderList(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -95,12 +121,28 @@ class OrderList(viewsets.ModelViewSet):
     @action(detail=False)
     def paid(self, request):
         queryset = self.get_queryset().filter(status='paid')
+        date_from = self.request.query_params.get('date_from')
+        date_to = self.request.query_params.get('date_to')
+        if date_from and date_to:
+            # parse dates from query parameters
+            date_from = parse_date(date_from)
+            date_to = parse_date(date_to)
+            # filter orders by status and date range
+            queryset = queryset.filter(created_at__range=(date_from, date_to))
         serializer = OrderTotalPriceSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=False)
     def completed(self, request):
         queryset = self.get_queryset().filter(status='completed')
+        date_from = self.request.query_params.get('date_from')
+        date_to = self.request.query_params.get('date_to')
+        if date_from and date_to:
+            # parse dates from query parameters
+            date_from = parse_date(date_from)
+            date_to = parse_date(date_to)
+            # filter orders by status and date range
+            queryset = queryset.filter(created_at__range=(date_from, date_to))
         serializer = OrderTotalPriceSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -109,6 +151,9 @@ class OrderList(viewsets.ModelViewSet):
         date_from = self.request.query_params.get('date_from')
         date_to = self.request.query_params.get('date_to')
         if date_from and date_to:
+            # parse dates from query parameters
+            date_from = parse_date(date_from)
+            date_to = parse_date(date_to)
             # filter orders by date range
             queryset = queryset.filter(created_at__range=(date_from, date_to))
         return queryset
