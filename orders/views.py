@@ -15,6 +15,7 @@ from .models import Order
 
 from django.utils.dateparse import parse_date
 from rest_framework import filters
+from .filters import OrderFilter
 
 
 @extend_schema(
@@ -119,6 +120,7 @@ class OrderList(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     filter_backends = [filters.SearchFilter]
+    filterset_class = OrderFilter
 
     @action(detail=False)
     def paid(self, request):
