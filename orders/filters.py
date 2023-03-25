@@ -1,10 +1,11 @@
-from django_filters import rest_framework as filters
+from django_filters.rest_framework import FilterSet
 from .models import Order
+import django_filters
 
 
-class OrderFilter(filters.FilterSet):
-    date_from = filters.DateFilter(field_name='created_at', lookup_expr='gte')
-    date_to = filters.DateFilter(field_name='created_at', lookup_expr='lte')
+class OrderFilter(FilterSet):
+    date_from = django_filters.DateFilter(field_name='created_at', lookup_expr='gte')
+    date_to = django_filters.DateFilter(field_name='created_at', lookup_expr='lte')
 
     class Meta:
         model = Order
