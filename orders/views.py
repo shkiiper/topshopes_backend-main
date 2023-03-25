@@ -104,11 +104,11 @@ class OrderList(viewsets.ModelViewSet):
         serializer = OrderTotalPriceSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     date_from = self.request.query_params.get('date_from')
-    #     date_to = self.request.query_params.get('date_to')
-    #     if date_from and date_to:
-    #         # filter orders by date range
-    #         queryset = queryset.filter(created_at__range=(date_from, date_to))
-    #     return queryset
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        date_from = self.request.query_params.get('date_from')
+        date_to = self.request.query_params.get('date_to')
+        if date_from and date_to:
+            # filter orders by date range
+            queryset = queryset.filter(created_at__range=(date_from, date_to))
+        return queryset
