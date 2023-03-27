@@ -2,6 +2,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, permissions
 from rest_framework.viewsets import GenericViewSet
+from django_filters.rest_framework import DjangoFilterBackend
 
 from core.permissions import HasShop, IsOwner
 
@@ -89,33 +90,6 @@ class ShopOrderViewSet(
         if self.action == "create":
             return CreateOrderSerializer(context={"request": self.request})
         return OrderSerializer
-
-
-# class OrderList(viewsets.ModelViewSet):
-#     queryset = Order.objects.all()
-#     serializer_class = OrderSerializer
-#
-#     @action(detail=False)
-#     def paid(self, request):
-#         queryset = self.get_queryset().filter(status='paid')
-#         serializer = OrderTotalPriceSerializer(queryset, many=True)
-#         return Response(serializer.data)
-#
-#     @action(detail=False)
-#     def completed(self, request):
-#         queryset = self.get_queryset().filter(status='completed')
-#         serializer = OrderTotalPriceSerializer(queryset, many=True)
-#         return Response(serializer.data)
-#
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         date_from = self.request.query_params.get('date_from')
-#         date_to = self.request.query_params.get('date_to')
-#         if date_from and date_to:
-#             # filter orders by date range
-#             queryset = queryset.filter(created_at__range=(date_from, date_to))
-#         return queryset
-from django_filters.rest_framework import DjangoFilterBackend
 
 
 class OrderList(viewsets.ModelViewSet):
