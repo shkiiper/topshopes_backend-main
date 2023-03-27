@@ -164,6 +164,7 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "brand",
             "unit",
             "featured",
+            "is_published",
         ]
 
 
@@ -205,6 +206,7 @@ class SingleProductSerializer(serializers.ModelSerializer):
             "variants",
             "reviews",
             "attributes",
+            "is_published",
         ]
 
 
@@ -246,6 +248,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "thumbnail",
             "price",
             'created_at',
+            'is_published',
         ]
 
     def get_thumbnail(self, object):

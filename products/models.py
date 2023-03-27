@@ -125,6 +125,7 @@ class Product(models.Model):
     featured = models.BooleanField(default=False, verbose_name="Is featured?")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_published = models.BooleanField(default=False, verbose_name="Is_published")
 
     def __str__(self):
         return self.name
