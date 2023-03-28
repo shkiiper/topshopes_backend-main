@@ -1,9 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import Field
 
-from shops.models import Shop
-from shops.serializers import ShopSerializer
-from .models import Address, Customer, Seller
+from .models import Address, Customer
 
 
 class CreateCustomerSerializer(serializers.ModelSerializer):
@@ -40,36 +38,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             "is_superuser",
             "is_seller",
         ]
-#
-#
-# class ShopNameSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Shop
-#         fields = ('name',)
-#
-#
-# class SellerSerializer(serializers.ModelSerializer):
-#     shop = ShopNameSerializer(read_only=True)
-#
-#     class Meta:
-#         model = Customer
-#         fields = [
-#             "id",
-#             "first_name",
-#             "last_name",
-#             "email",
-#             "phone",
-#             "avatar",
-#             "is_superuser",
-#             "is_seller",
-#             "shop",
-#         ]
-#
-#     def to_representation(self, instance):
-#         data = super().to_representation(instance)
-#         if not instance.is_seller:
-#             data.pop('shop')
-#         return data
+
 
 class CreateAddressSerializer(serializers.ModelSerializer):
     """
@@ -91,4 +60,3 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
         fields = ["id", "user", "country", "city", "street", "phone"]
-#sdgrgfs

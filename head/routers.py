@@ -19,8 +19,6 @@ from head.views import (
     AdminOrderViewSet,
 )
 from payments.views import AdminPaymentViewSet
-from users.serializers import SellerSerializer
-from users.views import CustomerViewSet
 
 router = routers.SimpleRouter()
 router.register(r"users", AdminUsersViewSet)
@@ -40,5 +38,3 @@ router.register(r"payments", AdminPaymentViewSet, basename="payment")
 router.register(r"applications", AdminApplicationViewSet, basename="applications")
 router.register(r"transfer_money", AdminTransferMoneyViewSet, basename="transfer_money")
 router.register(r"orders", AdminOrderViewSet, basename="orders")
-router.register(r'customers', CustomerViewSet, basename='customers')
-router.register(r'sellers', SellerSerializer, basename='sellers')

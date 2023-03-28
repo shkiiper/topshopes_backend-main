@@ -16,7 +16,7 @@ from attributes.serializers import AttributeSerializer
 from head.serializers import (
     AdminCustomerSerializer,
     AdminProductSerializer,
-    AdminProductUpdateSerializer, AdminSellerSerializer,
+    AdminProductUpdateSerializer
 )
 from pages.models import Page, PageCategory, SiteSettings
 from pages.serializers import (
