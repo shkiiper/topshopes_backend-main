@@ -86,12 +86,12 @@ class AddressViewSet(ModelViewSet):
 
 class CustomerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CustomerSerializer
+    queryset = Customer.objects.all()
 
     def get_queryset(self):
-        queryset = Customer.objects.all()
-        if self.action == 'list':
-            if self.request.query_params.get('is_seller') == 'true':
-                queryset = queryset.filter(is_seller=True)
-            elif self.request.query_params.get('is_seller') == 'false':
-                queryset = queryset.filter(is_seller=False)
+        queryset = super().get_queryset()
+        if self.request.query_params.get('is_seller') == 'true':
+            queryset = queryset.filter(is_seller=True)
+        elif self.request.query_params.get('is_seller') == 'false':
+            queryset = queryset.filter(is_seller=False)
         return queryset
