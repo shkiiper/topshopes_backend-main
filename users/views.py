@@ -4,7 +4,6 @@ from rest_framework import mixins, permissions
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from core.permissions import IsAnonymous
 
-
 from .models import Address, Customer
 from .serializers import (
     AddressSerializer,
@@ -82,3 +81,48 @@ class AddressViewSet(ModelViewSet):
         if self.action in ["create", "update", "partial_update"]:
             return CreateAddressSerializer
         return AddressSerializer
+
+
+# Import data
+
+import json
+from django.core.management.base import BaseCommand
+from products.models import Product, Category, Brand, ProductVariant, Image
+
+
+class Command(BaseCommand):
+    help = 'Import data from JSON file to Django database'
+
+    def add_arguments(self, parser):
+        parser.add_argument('import.json', type=str, help='JSON filename')
+
+    def handle(self, *args, **options):
+        filename = options['import.json']
+
+        with open(filename) as file:
+            data = json.load(file)
+
+        for product_data in data:
+            # Create or update category
+            category_name = product_data.pop('category')
+            category, created = Category.objects.get_or_create(name=category_name,
+                                                               defaults=product_data.pop('category_data'))
+
+            # Create or update brand
+            brand_name = product_data.pop('brand')
+            brand, created = Brand.objects.get_or_create(name=brand_name, defaults=product_data.pop('brand_data'))
+
+            # Create product
+            product = Product.objects.create(category=category, brand=brand, **product_data)
+
+            # Create product variants
+            variants_data = product_data.pop('variants')
+            for variant_data in variants_data:
+                variant = ProductVariant.objects.create(product=product, **variant_data)
+
+            # Create product images
+            images_data = product_data.pop('images')
+            for image_data in images_data:
+                image = Image.objects.create(product_variant=variant, **image_data)
+
+        self.stdout.write(self.style.SUCCESS(f'Successfully imported data from {filename}'))
