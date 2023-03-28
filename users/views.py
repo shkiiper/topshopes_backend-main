@@ -3,7 +3,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, permissions
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from core.permissions import IsAnonymous
-from rest_framework import generics
+from rest_framework import viewsets
 
 from .models import Address, Customer
 from .serializers import (
@@ -84,15 +84,14 @@ class AddressViewSet(ModelViewSet):
         return AddressSerializer
 
 
-class OrdinaryCustomerListView(generics.ListAPIView):
+class CustomerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CustomerSerializer
 
     def get_queryset(self):
-        return Customer.objects.filter(is_seller=False)
-
-
-class SellerListView(generics.ListAPIView):
-    serializer_class = CustomerSerializer
-
-    def get_queryset(self):
-        return Customer.objects.filter(is_seller=True)
+        queryset = Customer.objects.all()
+        if self.action == 'list':
+            if self.request.query_params.get('is_seller') == 'true':
+                queryset = queryset.filter(is_seller=True)
+            elif self.request.query_params.get('is_seller') == 'false':
+                queryset = queryset.filter(is_seller=False)
+        return queryset
