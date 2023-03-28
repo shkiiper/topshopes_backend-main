@@ -6,12 +6,13 @@ from core.permissions import IsAnonymous
 from rest_framework import viewsets
 from rest_framework.response import Response
 
+from shops.serializers import ShopSerializer
 from .models import Address, Customer
 from .serializers import (
     AddressSerializer,
     CreateAddressSerializer,
     CreateCustomerSerializer,
-    CustomerSerializer,
+    CustomerSerializer, SellerSerializer,
 )
 
 
@@ -87,15 +88,40 @@ class AddressViewSet(ModelViewSet):
 
 class CustomerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CustomerSerializer
-    queryset = Customer.objects.all()
+    queryset = Customer.objects.filter(is_seller=False)
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        if self.request.query_params.get('is_seller') == 'true':
-            queryset = queryset.filter(is_seller=True)
-        elif self.request.query_params.get('is_seller') == 'false':
-            queryset = queryset.filter(is_seller=False)
-        return queryset
+    def create(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def partial_update(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def destroy(self, request, *args, **kwargs):
+        return Response(status=405)
+
+
+class SellerViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SellerSerializer
+    queryset = Customer.objects.filter(is_seller=True)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return SellerSerializer
+        elif self.action == 'retrieve':
+            return ShopSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        response.data = self.get_serializer(response.data, many=True).data
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         return Response(status=405)
