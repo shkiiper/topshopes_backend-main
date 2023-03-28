@@ -3,6 +3,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, mixins, permissions, viewsets
 from datetime import timedelta
+from rest_framework import viewsets
+from rest_framework.response import Response
 
 from orders.models import Order
 from orders.serializers import OrderSerializer
@@ -14,7 +16,7 @@ from attributes.serializers import AttributeSerializer
 from head.serializers import (
     AdminCustomerSerializer,
     AdminProductSerializer,
-    AdminProductUpdateSerializer,
+    AdminProductUpdateSerializer, AdminSellerSerializer,
 )
 from pages.models import Page, PageCategory, SiteSettings
 from pages.serializers import (
@@ -353,7 +355,8 @@ class AdminTransferMoneyViewSet(mixins.ListModelMixin, mixins.UpdateModelMixin, 
         return TransferMoneySerializer
 
 
-class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.UpdateModelMixin, viewsets.GenericViewSet):
+class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                        viewsets.GenericViewSet):
     """
     Viewset to manage orders
     Allowed: All methods
@@ -379,3 +382,52 @@ class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin,mixins.
             )
         return super().update(request, *args, **kwargs)
 
+
+class AdminCustomerViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = AdminCustomerSerializer
+    queryset = Customer.objects.filter(is_seller=False)
+
+    def create(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def partial_update(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def destroy(self, request, *args, **kwargs):
+        return Response(status=405)
+
+
+class AdminSellerViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = AdminSellerSerializer
+    queryset = Customer.objects.filter(is_seller=True)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return AdminSellerSerializer
+        elif self.action == 'retrieve':
+            return ShopSerializer
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        response.data = self.get_serializer(response.data, many=True).data
+        return response
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def partial_update(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def destroy(self, request, *args, **kwargs):
+        return Response(status=405)

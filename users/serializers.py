@@ -40,36 +40,36 @@ class CustomerSerializer(serializers.ModelSerializer):
             "is_superuser",
             "is_seller",
         ]
-
-
-class ShopNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Shop
-        fields = ('name',)
-
-
-class SellerSerializer(serializers.ModelSerializer):
-    shop = ShopNameSerializer(read_only=True)
-
-    class Meta:
-        model = Customer
-        fields = [
-            "id",
-            "first_name",
-            "last_name",
-            "email",
-            "phone",
-            "avatar",
-            "is_superuser",
-            "is_seller",
-            "shop",
-        ]
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        if not instance.is_seller:
-            data.pop('shop')
-        return data
+#
+#
+# class ShopNameSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Shop
+#         fields = ('name',)
+#
+#
+# class SellerSerializer(serializers.ModelSerializer):
+#     shop = ShopNameSerializer(read_only=True)
+#
+#     class Meta:
+#         model = Customer
+#         fields = [
+#             "id",
+#             "first_name",
+#             "last_name",
+#             "email",
+#             "phone",
+#             "avatar",
+#             "is_superuser",
+#             "is_seller",
+#             "shop",
+#         ]
+#
+#     def to_representation(self, instance):
+#         data = super().to_representation(instance)
+#         if not instance.is_seller:
+#             data.pop('shop')
+#         return data
 
 class CreateAddressSerializer(serializers.ModelSerializer):
     """
