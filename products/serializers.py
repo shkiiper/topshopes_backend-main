@@ -206,6 +206,7 @@ class SingleProductSerializer(serializers.ModelSerializer):
             "variants",
             "reviews",
             "attributes",
+            'created_at',
             "is_published",
         ]
 
