@@ -4,6 +4,7 @@ from rest_framework import mixins, permissions
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from core.permissions import IsAnonymous
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from .models import Address, Customer
 from .serializers import (
@@ -95,3 +96,15 @@ class CustomerViewSet(viewsets.ReadOnlyModelViewSet):
         elif self.request.query_params.get('is_seller') == 'false':
             queryset = queryset.filter(is_seller=False)
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def update(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def partial_update(self, request, *args, **kwargs):
+        return Response(status=405)
+
+    def destroy(self, request, *args, **kwargs):
+        return Response(status=405)
