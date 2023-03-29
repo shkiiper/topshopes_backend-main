@@ -38,7 +38,7 @@ router.register(r"payments", AdminPaymentViewSet, basename="payment")
 router.register(r"applications", AdminApplicationViewSet, basename="applications")
 router.register(r"transfer_money", AdminTransferMoneyViewSet, basename="transfer_money")
 router.register(r"orders", AdminOrderViewSet, basename="orders")
-# router.register(r'customers', CustomerViewSet, basename="customers")
-router.register(r"users/customers", CustomerViewSet)
-# router.register(r'sellers', SellerViewSet, basename="sellers")
-router.register(r"users/sellers", SellerViewSet)
+router.register(r'customers', CustomerViewSet, basename="customers")
+
+router.register(r'sellers', SellerViewSet, basename="sellers")
+
