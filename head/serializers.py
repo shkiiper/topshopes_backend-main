@@ -121,4 +121,14 @@ class SellerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ['id', 'email', 'avatar', 'phone', 'shop']
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "phone",
+            "avatar",
+            "is_superuser",
+            "is_seller",
+            "shop",
+        ]

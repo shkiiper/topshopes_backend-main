@@ -66,6 +66,7 @@ class AdminUsersViewSet(
     permission_classes = [permissions.IsAdminUser]
     filter_backends = [filters.SearchFilter]
     search_fields = ["first_name"]
+    ordering_fields = ["name"]
 
 
 class AdminShopViewSet(
@@ -82,6 +83,7 @@ class AdminShopViewSet(
     queryset = Shop.objects.all()
     serializer_class = ShopSerializer
     permission_classes = [permissions.IsAdminUser]
+    ordering_fields = ["name"]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -185,9 +187,8 @@ class AdminProductViewSet(
                 )[:1]
             ),
             price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values("price")[
-                :1
-                ]
+                ProductVariant.objects.filter(product=OuterRef("pk")).values("price")
+                [:1]
             ),
             thumbnail=Subquery(
                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
@@ -329,6 +330,7 @@ class AdminAttributesViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser]
     filter_backends = [filters.SearchFilter]
     search_fields = ["name"]
+    ordering_fields = ["name"]
 
 
 class AdminApplicationViewSet(
@@ -368,6 +370,18 @@ class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ["status"]
     search_fields = ["name"]
+    ordering_fields = ["id",
+                       "user",
+                       "shop",
+                       "created_at",
+                       "total_price",
+                       "status",
+                       "delivered_at",
+                       "product_variant",
+                       "product",
+                       "quantity",
+                       "address",
+                       "payment"]
 
     def get_serializer_class(self):
         return OrderSerializer
