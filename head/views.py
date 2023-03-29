@@ -397,21 +397,17 @@ class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins
                      "total_price",
                      "status",
                      "delivered_at",
-
                      "quantity",
-                     "address",
                      ]
     ordering_fields = [
-                       "user",
-                       "shop",
+                       "id",
                        "created_at",
                        "total_price",
                        "status",
                        "delivered_at",
-
                        "product",
                        "quantity",
-                       "address",
+
                        "payment"]
 
     def get_serializer_class(self):
