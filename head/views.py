@@ -173,11 +173,8 @@ class AdminProductViewSet(
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     search_fields = [
                      "slug",
-
                      "description",
                      "name",
-                     "brand",
-                     "category",
 
                      "discount",
                      "discount_price",
