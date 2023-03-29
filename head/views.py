@@ -431,7 +431,7 @@ class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins
         return super().update(request, *args, **kwargs)
 
 
-class CustomerViewSet(viewsets.ModelViewSet):
+class CustomerViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     """
     API endpoint for customers
     """
@@ -445,7 +445,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
                      "phone", ]
 
 
-class SellerViewSet(viewsets.ModelViewSet):
+class SellerViewSet(viewsets.ModelViewSet, viewsets.GenericViewSet):
     """
     API endpoint for sellers
     """
