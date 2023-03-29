@@ -101,15 +101,6 @@ class CustomerSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Customer
-        fields = '__all__'
-
-
-class ShopSerializer(serializers.ModelSerializer):
-    """
-    Serializer for shop model
-    """
-    class Meta:
-        model = Shop
         fields = [
             "id",
             "first_name",
@@ -120,6 +111,15 @@ class ShopSerializer(serializers.ModelSerializer):
             "is_superuser",
             "is_seller",
         ]
+
+
+class ShopSerializer(serializers.ModelSerializer):
+    """
+    Serializer for shop model
+    """
+    class Meta:
+        model = Shop
+        fields = '__all__'
 
 
 class SellerSerializer(serializers.ModelSerializer):
