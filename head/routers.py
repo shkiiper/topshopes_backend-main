@@ -39,13 +39,11 @@ router.register(r"payments", AdminPaymentViewSet, basename="payment")
 router.register(r"applications", AdminApplicationViewSet, basename="applications")
 router.register(r"transfer_money", AdminTransferMoneyViewSet, basename="transfer_money")
 router.register(r"orders", AdminOrderViewSet, basename="orders")
-router.register(r'customers', CustomerViewSet, basename="customers")
-urlpatterns = [
-    path('users/', include((router.urls, 'users'), namespace='users')),
-    path('users/customers/', include((router.urls, 'customers'), namespace='customers')),
-]
-router.register(r'sellers', SellerViewSet, basename="sellers")
-urlpatterns = [
-    path('users/', include((router.urls, 'users'), namespace='users')),
-    path('users/sellers/', include((router.urls, 'sellers'), namespace='sellers')),
-]
+# router.register(r'customers', CustomerViewSet, basename="customers")
+router.register(
+    r"users/customers", CustomerViewSet, basename="customers"
+)
+# router.register(r'sellers', SellerViewSet, basename="sellers")
+router.register(
+    r"users/sellers", SellerViewSet, basename="sellers"
+)
