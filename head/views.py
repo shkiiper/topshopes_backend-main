@@ -65,8 +65,16 @@ class AdminUsersViewSet(
     serializer_class = AdminCustomerSerializer
     permission_classes = [permissions.IsAdminUser]
     filter_backends = [filters.SearchFilter]
-    search_fields = ["first_name"]
-    ordering_fields = ["name"]
+    search_fields = ["id",
+                     "first_name",
+                     "last_name",
+                     "email",
+                     "phone", ]
+    ordering_fields = ["id",
+                       "first_name",
+                       "last_name",
+                       "email",
+                       "phone", ]
 
 
 class AdminShopViewSet(
@@ -163,7 +171,19 @@ class AdminProductViewSet(
 
     permission_classes = [permissions.IsAdminUser]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
-    search_fields = ["name"]
+    search_fields = ["id",
+                     "slug",
+                     "shop",
+                     "description",
+                     "name",
+                     "brand",
+                     "category",
+                     "variants",
+                     "discount",
+                     "discount_price",
+                     "overall_price",
+                     "price",
+                     "created_at", ]
     ordering_fields = ["name", "rating", "created_at"]
 
     def get_queryset(self):
@@ -341,6 +361,8 @@ class AdminApplicationViewSet(
 ):
     queryset = Application.objects.all()
     permission_classes = [permissions.IsAdminUser]
+    search_fields = ["name"]
+    ordering_fields = ["name"]
 
     def get_serializer_class(self):
         if self.action in ["update", "retrieve"]:
@@ -369,7 +391,18 @@ class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins
     permission_classes = [permissions.IsAdminUser]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ["status"]
-    search_fields = ["name"]
+    search_fields = ["id",
+                     "user",
+                     "shop",
+                     "created_at",
+                     "total_price",
+                     "status",
+                     "delivered_at",
+                     "product_variant",
+                     "product",
+                     "quantity",
+                     "address",
+                     "payment"]
     ordering_fields = ["id",
                        "user",
                        "shop",
@@ -405,6 +438,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.filter(is_seller=False)
     serializer_class = CustomerSerializer
     permission_classes = [IsAuthenticated]
+    search_fields = ["id",
+                     "first_name",
+                     "last_name",
+                     "email",
+                     "phone", ]
 
 
 class SellerViewSet(viewsets.ModelViewSet):
@@ -414,3 +452,8 @@ class SellerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.filter(is_seller=True).select_related('shop')
     serializer_class = SellerSerializer
     permission_classes = [IsAuthenticated]
+    search_fields = ["id",
+                     "first_name",
+                     "last_name",
+                     "email",
+                     "phone", ]

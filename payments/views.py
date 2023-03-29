@@ -30,6 +30,22 @@ class UserPaymentViewSet(
     """
 
     permission_classes = [permissions.IsAuthenticated]
+    search_fields = [
+        "id",
+        "payment_type",
+        "phone_number",
+        "bank_account",
+        "is_verified",
+        "create_at",
+    ]
+    ordering_fields = [
+        "id",
+        "payment_type",
+        "phone_number",
+        "bank_account",
+        "is_verified",
+        "create_at",
+    ]
 
     def get_queryset(self):
         return Payment.objects.filter(user=self.request.user)
@@ -53,6 +69,22 @@ class AdminPaymentViewSet(viewsets.ModelViewSet):
 
     permission_classses = [permissions.IsAdminUser]
     queryset = Payment.objects.all()
+    search_fields = [
+            "id",
+            "payment_type",
+            "phone_number",
+            "bank_account",
+            "is_verified",
+            "create_at",
+        ]
+    ordering_fields = [
+            "id",
+            "payment_type",
+            "phone_number",
+            "bank_account",
+            "is_verified",
+            "create_at",
+        ]
 
     def update(self, request, *args, **kwargs):
         if request.data.get("is_verified"):
@@ -76,6 +108,8 @@ class AdminMoneyTransferViewSet(viewsets.ModelViewSet):
 
     permission_classses = [permissions.IsAdminUser]
     queryset = TransferMoney.objects.all()
+    search_fields = ["id", "amount", "shop", "tax"]
+    ordering_fields = ["id", "amount", "shop", "tax"]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -86,6 +120,7 @@ class AdminMoneyTransferViewSet(viewsets.ModelViewSet):
 
 
 class ReportAdmin(APIView):
+
     def post(self, request):
         if self.request.user.is_superuser or self.request.user.is_staff:
             month = request.data.get('month', '')

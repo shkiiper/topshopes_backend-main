@@ -44,6 +44,30 @@ class OrderViewSet(
     permission_classes = [
         permissions.IsAuthenticated,
     ]
+    search_fields = ["id",
+                     "user",
+                     "shop",
+                     "created_at",
+                     "total_price",
+                     "status",
+                     "delivered_at",
+                     "product_variant",
+                     "product",
+                     "quantity",
+                     "address",
+                     "payment"]
+    ordering_fields = ["id",
+                       "user",
+                       "shop",
+                       "created_at",
+                       "total_price",
+                       "status",
+                       "delivered_at",
+                       "product_variant",
+                       "product",
+                       "quantity",
+                       "address",
+                       "payment"]
 
     def get_queryset(self):
         """
