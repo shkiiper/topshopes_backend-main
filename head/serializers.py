@@ -67,6 +67,7 @@ class AdminProductSerializer(serializers.ModelSerializer):
             "overall_price",
             "price",
             "created_at",
+            "is_published",
         ]
 
 

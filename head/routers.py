@@ -1,5 +1,4 @@
 from rest_framework import routers
-from django.urls import include, path
 
 from head.views import (
     AdminApplicationViewSet,
@@ -40,6 +39,6 @@ router.register(r"applications", AdminApplicationViewSet, basename="applications
 router.register(r"transfer_money", AdminTransferMoneyViewSet, basename="transfer_money")
 router.register(r"orders", AdminOrderViewSet, basename="orders")
 # router.register(r'customers', CustomerViewSet, basename="customers")
-router.register(r"users/customers", CustomerViewSet, basename="users/customers")
+router.register(r"users/customers", CustomerViewSet)
 # router.register(r'sellers', SellerViewSet, basename="sellers")
-router.register(r"users/sellers", SellerViewSet, basename="users/sellers")
+router.register(r"users/sellers", SellerViewSet)
