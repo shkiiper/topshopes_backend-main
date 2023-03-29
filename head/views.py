@@ -397,6 +397,6 @@ class SellerViewSet(viewsets.ModelViewSet):
     """
     API endpoint for sellers
     """
-    queryset = Customer.objects.filter(is_seller=True)
+    queryset = Customer.objects.filter(is_seller=True).select_related('shop')
     serializer_class = SellerSerializer
     permission_classes = [IsAuthenticated]
