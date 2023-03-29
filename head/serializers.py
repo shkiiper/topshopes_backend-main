@@ -93,3 +93,21 @@ class AdminCustomerSerializer(serializers.ModelSerializer):
             "is_superuser",
             "is_seller",
         ]
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    """
+    Serializer for customer model
+    """
+    class Meta:
+        model = Customer
+        fields = '__all__'
+
+
+class SellerSerializer(serializers.ModelSerializer):
+    """
+    Serializer for seller model
+    """
+    class Meta:
+        model = Customer
+        fields = '__all__'

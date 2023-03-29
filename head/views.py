@@ -5,6 +5,7 @@ from rest_framework import filters, mixins, permissions, viewsets
 from datetime import timedelta
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from orders.models import Order
 from orders.serializers import OrderSerializer
@@ -16,7 +17,7 @@ from attributes.serializers import AttributeSerializer
 from head.serializers import (
     AdminCustomerSerializer,
     AdminProductSerializer,
-    AdminProductUpdateSerializer
+    AdminProductUpdateSerializer, CustomerSerializer, SellerSerializer
 )
 from pages.models import Page, PageCategory, SiteSettings
 from pages.serializers import (
@@ -381,3 +382,21 @@ class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins
                 args=[order.id], countdown=60 * 60 * 24 * 3
             )
         return super().update(request, *args, **kwargs)
+
+
+class CustomerViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for customers
+    """
+    queryset = Customer.objects.filter(is_seller=False)
+    serializer_class = CustomerSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class SellerViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for sellers
+    """
+    queryset = Customer.objects.filter(is_seller=True)
+    serializer_class = SellerSerializer
+    permission_classes = [IsAuthenticated]
