@@ -42,8 +42,10 @@ router.register(r"orders", AdminOrderViewSet, basename="orders")
 router.register(r'customers', CustomerViewSet, basename="customers")
 urlpatterns = [
     path('users/', include((router.urls, 'users'), namespace='users')),
+    path('users/customers/', include((router.urls, 'customers'), namespace='customers')),
 ]
 router.register(r'sellers', SellerViewSet, basename="sellers")
 urlpatterns = [
     path('users/', include((router.urls, 'users'), namespace='users')),
+    path('users/sellers/', include((router.urls, 'sellers'), namespace='sellers')),
 ]
