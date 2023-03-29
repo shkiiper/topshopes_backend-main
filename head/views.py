@@ -171,14 +171,14 @@ class AdminProductViewSet(
 
     permission_classes = [permissions.IsAdminUser]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
-    search_fields = ["id",
+    search_fields = [
                      "slug",
                      "shop",
                      "description",
                      "name",
                      "brand",
                      "category",
-                     "variants",
+
                      "discount",
                      "discount_price",
                      "overall_price",
@@ -391,26 +391,25 @@ class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins
     permission_classes = [permissions.IsAdminUser]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ["status"]
-    search_fields = ["id",
+    search_fields = [
                      "user",
                      "shop",
                      "created_at",
                      "total_price",
                      "status",
                      "delivered_at",
-                     "product_variant",
                      "product",
                      "quantity",
                      "address",
                      "payment"]
-    ordering_fields = ["id",
+    ordering_fields = [
                        "user",
                        "shop",
                        "created_at",
                        "total_price",
                        "status",
                        "delivered_at",
-                       "product_variant",
+
                        "product",
                        "quantity",
                        "address",
