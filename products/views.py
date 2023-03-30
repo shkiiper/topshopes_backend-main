@@ -223,7 +223,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
     ]
     search_fields = ["name"]
 
-
     def get_queryset(self):
         """
         Returns only current user's shop products
@@ -402,6 +401,35 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+    def get_queryset(self):
+        if self.action == "list":
+            return (
+                Product.objects.prefetch_related("variants")
+                .filter(is_published=True)  # filter only published products
+                .annotate(
+                    overall_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "overall_price"
+                        )[:1]
+                    ),
+                    discount_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount_price"
+                        )[:1]
+                    ),
+                    price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "price"
+                        )[:1]
+                    ),
+                    discount=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount"
+                        )[:1]
+                    ),
+                )
+            )
+        return Product.objects.all().prefetch_related("variants", "reviews")
 
 
 class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -411,6 +439,36 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return ProductVariant.objects.filter(discount__gt=0, product__is_published=True).annotate(
             discounted_price=F('price') - (F('price') * F('discount') / 100)
         )
+
+    def get_queryset(self):
+        if self.action == "list":
+            return (
+                Product.objects.prefetch_related("variants")
+                .filter(is_published=True)  # filter only published products
+                .annotate(
+                    overall_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "overall_price"
+                        )[:1]
+                    ),
+                    discount_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount_price"
+                        )[:1]
+                    ),
+                    price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "price"
+                        )[:1]
+                    ),
+                    discount=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount"
+                        )[:1]
+                    ),
+                )
+            )
+        return Product.objects.all().prefetch_related("variants", "reviews")
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
