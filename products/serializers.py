@@ -228,7 +228,7 @@ class ProductSerializer(serializers.ModelSerializer):
     )
     discount = serializers.IntegerField(read_only=True)
     # price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
-    price = ProductVariantSerializer(many=True)
+    price = ProductVariantSerializer(read_only=True)
     thumbnail = serializers.SerializerMethodField()
     brand = serializers.SlugRelatedField(
         slug_field="name", queryset=Brand.objects.all()
