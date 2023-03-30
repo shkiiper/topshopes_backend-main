@@ -404,7 +404,6 @@ class AdminOrderViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins
                        "delivered_at",
                        "product",
                        "quantity",
-
                        "payment"]
 
     def get_serializer_class(self):
