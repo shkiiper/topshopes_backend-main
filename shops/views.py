@@ -16,6 +16,9 @@ from payments.serializers import TransferMoneySerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+
 from .models import Link, Shop
 from .serializers import (
     CreateShopSerializer,
@@ -94,6 +97,11 @@ class ShopViewSet(
     queryset = Shop.objects.all()
     permission_classes = [permissions.AllowAny]
     filterset_class = ProductFilter
+    filter_backends = [
+        filters.SearchFilter,
+        filters.OrderingFilter,
+        DjangoFilterBackend,
+    ]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
