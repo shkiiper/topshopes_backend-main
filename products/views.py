@@ -215,12 +215,14 @@ class ShopProductViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = [permissions.IsAuthenticated, IsOwner, HasShop]
+    filterset_class = ProductFilter
     filter_backends = [
         filters.SearchFilter,
         filters.OrderingFilter,
         DjangoFilterBackend,
     ]
     search_fields = ["name"]
+
 
     def get_queryset(self):
         """
