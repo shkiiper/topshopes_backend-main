@@ -1,6 +1,7 @@
 from django_filters.rest_framework import FilterSet
 import django_filters
-from products.models import Product, Brand
+import shops
+from products.models import Brand
 
 
 class ShopProductFilter(FilterSet):
@@ -14,5 +15,5 @@ class ShopProductFilter(FilterSet):
     )
 
     class Meta:
-        model = Product
+        model = shops
         fields = ["max_price", "min_price", "brand", "category"]
