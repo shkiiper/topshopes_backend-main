@@ -386,7 +386,7 @@ class BrandViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
-    queryset = Product.objects.order_by('-created_at')[:12]
+    queryset = Product.objects.filter(is_published=True).order_by('-created_at')
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -394,7 +394,7 @@ class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
-    queryset = Product.objects.order_by('-rating')[:12]
+    queryset = Product.objects.filter(is_published=True).order_by('-rating')
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -404,7 +404,7 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductVariantSerializer
 
     def get_queryset(self):
-        return ProductVariant.objects.filter(discount__gt=0).annotate(
+        return ProductVariant.objects.filter(discount__gt=0, product__is_published=True).annotate(
             discounted_price=F('price') - (F('price') * F('discount') / 100)
         )
 
@@ -413,5 +413,6 @@ class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
     View set to retrieve best selling products
     """
-    queryset = Product.objects.annotate(total_sales=Sum('variants__orders__quantity')).order_by('-total_sales')
+    queryset = Product.objects.filter(is_published=True).annotate(
+        total_sales=Sum('variants__orders__quantity')).order_by('-total_sales')
     serializer_class = ProductSerializer
