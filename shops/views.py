@@ -13,11 +13,14 @@ from reviews.models import Review
 from reviews.serializers import ShopReviewSerializer
 from payments.models import TransferMoney
 from payments.serializers import TransferMoneySerializer
-from django.shortcuts import get_object_or_404
+
 from rest_framework import generics
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
+from rest_framework import status
+
+
 
 from .models import Link, Shop
 from .serializers import (
@@ -164,10 +167,14 @@ class ShopViewSet(
     search_fields = ["name", "id"]
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
 
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return SingleShopSerializer
-        return ShopSerializer
+    def get(self, request, shop_id=None):
+        shops = Shop.objects.filter(pk=shop_id)
+        if not shops.exists():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        shop = shops.first()
+        products = Product.objects.filter(shop=shop)
+        product_serializer = ProductSerializer(products, many=True)
+        return Response(product_serializer.data)
 
     @extend_schema(
         description="Get shop products",
