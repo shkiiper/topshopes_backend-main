@@ -195,6 +195,11 @@ class ShopViewSet(
                     "thumbnail"
                 )[:1]
             ),
+            price=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "price"
+                )[:1]
+            ),
         )
         filtered_products = self.filter_queryset(products)
         serializer = ProductSerializer(filtered_products, many=True)

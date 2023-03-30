@@ -394,6 +394,36 @@ class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    def get_queryset(self):
+        if self.action == "list":
+            return (
+                Product.objects.prefetch_related("variants")
+                .filter(is_published=True)  # filter only published products
+                .annotate(
+                    overall_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "overall_price"
+                        )[:1]
+                    ),
+                    discount_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount_price"
+                        )[:1]
+                    ),
+                    price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "price"
+                        )[:1]
+                    ),
+                    discount=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount"
+                        )[:1]
+                    ),
+                )
+            )
+        return Product.objects.all().prefetch_related("variants", "reviews")
+
 
 class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
@@ -401,6 +431,7 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
     def get_queryset(self):
         if self.action == "list":
             return (
@@ -478,3 +509,33 @@ class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.filter(is_published=True).annotate(
         total_sales=Sum('variants__orders__quantity')).order_by('-total_sales')
     serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        if self.action == "list":
+            return (
+                Product.objects.prefetch_related("variants")
+                .filter(is_published=True)  # filter only published products
+                .annotate(
+                    overall_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "overall_price"
+                        )[:1]
+                    ),
+                    discount_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount_price"
+                        )[:1]
+                    ),
+                    price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "price"
+                        )[:1]
+                    ),
+                    discount=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount"
+                        )[:1]
+                    ),
+                )
+            )
+        return Product.objects.all().prefetch_related("variants", "reviews")
