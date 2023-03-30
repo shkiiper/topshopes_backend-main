@@ -492,8 +492,8 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
                     )[:1]
                 ),
             ).prefetch_related("variants", "reviews")
-        else:
-            return ProductVariant.objects.filter(
+
+            ProductVariant.objects.filter(
                 discount__gt=0, product__is_published=True
             ).annotate(
                 discounted_price=F("price") - (F("price") * F("discount") / 100)
