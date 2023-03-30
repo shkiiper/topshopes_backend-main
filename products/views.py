@@ -66,7 +66,7 @@ class ProductViewSet(
         if self.action == "list":
             return (
                 Product.objects.prefetch_related("variants")
-                .filter(is_published=True)  # filter only published products
+                .all()
                 .annotate(
                     overall_price=Subquery(
                         ProductVariant.objects.filter(product=OuterRef("pk")).values(
