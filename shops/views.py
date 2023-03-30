@@ -142,6 +142,8 @@ class MyShopViewSet(
 #         serializer = ProductSerializer(products, many=True)
 #         print(serializer.data)
 #         return Response(data=serializer.data)
+from django.shortcuts import get_object_or_404
+
 class ShopViewSet(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
@@ -162,37 +164,45 @@ class ShopViewSet(
     search_fields = ["name", "id"]
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
 
-    def get(self, request):
-        shops = self.queryset.all()
-        serializer = ShopSerializer(shops, many=True)
-        return Response(serializer.data)
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return SingleShopSerializer
+        return ShopSerializer
+
     @extend_schema(
         description="Get shop products",
         parameters=[OpenApiParameter("pk", OpenApiTypes.INT, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer},
+        responses={200: ProductSerializer(many=True)},
         tags=["All"],
     )
     @action(detail=True, methods=["get"])
     def products(self, request, pk=None):
-        products = Product.objects.filter(shop=pk).annotate(
-            overall_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "overall_price"
-                )[:1]
-            ),
-            discount_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "discount_price"
-                )[:1]
-            ),
-            thumbnail=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "thumbnail"
-                )[:1]
-            ),
-        )
+        shop = get_object_or_404(Shop, pk=pk)
+        products = Product.objects.filter(shop=shop)
         serializer = ProductSerializer(products, many=True)
-        return Response(data=serializer.data)
+        return Response(serializer.data)
+
+    # @action(detail=True, methods=["get"])
+    # def products(self, request, pk=None):
+    #     products = Product.objects.filter(shop=pk).annotate(
+    #         overall_price=Subquery(
+    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                 "overall_price"
+    #             )[:1]
+    #         ),
+    #         discount_price=Subquery(
+    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                 "discount_price"
+    #             )[:1]
+    #         ),
+    #         thumbnail=Subquery(
+    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                 "thumbnail"
+    #             )[:1]
+    #         ),
+    #     )
+    #     serializer = ProductSerializer(products, many=True)
+    #     return Response(data=serializer.data)
 
 
 
