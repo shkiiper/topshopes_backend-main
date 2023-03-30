@@ -208,6 +208,7 @@ class SingleProductSerializer(serializers.ModelSerializer):
             "attributes",
             'created_at',
             "is_published",
+            "price",
         ]
 
 
