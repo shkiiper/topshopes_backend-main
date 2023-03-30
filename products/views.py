@@ -224,37 +224,38 @@ class ShopProductViewSet(viewsets.ModelViewSet):
         """
         Returns only current user's shop products
         """
-        return (
-            Product.objects.prefetch_related("variants")
-            .filter(shop=self.request.user.shop)  # type: ignore
-            .annotate(
-                overall_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "overall_price"
-                    )[:1]
-                ),
-                discount_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "discount_price"
-                    )[:1]
-                ),
+        if Product.objects.filter(is_published=True).prefetch_related('variants'):
+            return (
+                Product.objects.prefetch_related("variants")
+                .filter(shop=self.request.user.shop)  # type: ignore
+                .annotate(
+                    overall_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "overall_price"
+                        )[:1]
+                    ),
+                    discount_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount_price"
+                        )[:1]
+                    ),
 
-                price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "price"
-                    )[:1]
-                ),
-                discount=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "discount"
-                    )[:1]
-                ),
-                thumbnail=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "thumbnail"
-                    )[:1]
-                ),
-            )
+                    price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "price"
+                        )[:1]
+                    ),
+                    discount=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount"
+                        )[:1]
+                    ),
+                    thumbnail=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "thumbnail"
+                        )[:1]
+                    ),
+                )
         )
 
     def update(self, request, *args, **kwargs):
