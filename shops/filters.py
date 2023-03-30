@@ -7,9 +7,9 @@ from shops.models import Shop
 class ShopProductFilter(FilterSet):
     max_price = django_filters.CharFilter(field_name="price", lookup_expr="lte")
     min_price = django_filters.CharFilter(field_name="price", lookup_expr="gte")
-    category = django_filters.CharFilter(field_name="category__name", lookup_expr="icontains")
+    category = django_filters.CharFilter(field_name="products__category__name", lookup_expr="icontains")
     brand = django_filters.ModelMultipleChoiceFilter(
-        field_name='brand__name',
+        field_name='products__brand__name',
         to_field_name='name',
         queryset=Brand.objects.all()
     )
