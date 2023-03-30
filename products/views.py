@@ -64,7 +64,7 @@ class ProductViewSet(
 
     def get_queryset(self):
         if self.action == "list":
-            queryset = super().get_queryset().filter(is_published=True)
+            Product.objects.filter(is_published=True).prefetch_related('variants')
             return (
                 Product.objects.prefetch_related("variants")
                 .all()
@@ -257,21 +257,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
             )
         )
 
-    # def update(self, request, *args, **kwargs):
-    #     """
-    #     Update product
-    #     """
-    #
-    #     if "category" in request.data:
-    #         product = self.get_object()
-    #         variants = product.variants.all()
-    #         for variant in variants:
-    #             variant.attribute_values.all().delete()
-    #         product.category = Category.objects.get(id=request.data["category"])
-    #         product.save()
-    #     return super().update(request, *args, **kwargs)
-    #
-    #
     def update(self, request, *args, **kwargs):
         """
         Update product
