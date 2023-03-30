@@ -86,6 +86,62 @@ class MyShopViewSet(
         return Response(data=serializer.data)
 
 
+# class ShopViewSet(
+#     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+# ):
+#     """
+#     Viewset to get all Shops
+#     Only to get
+#     """
+#
+#     queryset = Shop.objects.all()
+#     permission_classes = [permissions.AllowAny]
+#     filterset_class = ShopProductFilter
+#     filter_backends = [
+#         filters.SearchFilter,
+#         filters.OrderingFilter,
+#         DjangoFilterBackend,
+#     ]
+#
+#     def get_serializer_class(self):
+#         if self.action == "retrieve":
+#             return SingleShopSerializer
+#         return ShopSerializer
+#
+#     def get(self, request, shop_id=None):
+#         shop = get_object_or_404(Shop, pk=shop_id)
+#         products = Product.objects.filter(shop=shop)
+#         product_serializer = ProductSerializer(products, many=True)
+#         return Response(product_serializer.data)
+#
+#     @extend_schema(
+#         description="Get shop products",
+#         parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+#         responses={200: ProductSerializer},
+#         tags=["All"],
+#     )
+#     @action(detail=True, methods=["get"])
+#     def products(self, request, pk=None):
+#         products = Product.objects.filter(shop=pk).annotate(
+#             overall_price=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "overall_price"
+#                 )[:1]
+#             ),
+#             discount_price=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "discount_price"
+#                 )[:1]
+#             ),
+#             thumbnail=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "thumbnail"
+#                 )[:1]
+#             ),
+#         )
+#         serializer = ProductSerializer(products, many=True)
+#         print(serializer.data)
+#         return Response(data=serializer.data)
 class ShopViewSet(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
@@ -102,21 +158,17 @@ class ShopViewSet(
         filters.OrderingFilter,
         DjangoFilterBackend,
     ]
+    filterset_fields = ["id", "category"]
+    search_fields = ["name", "id"]
+    ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
 
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return SingleShopSerializer
-        return ShopSerializer
-
-    def get(self, request, shop_id=None):
-        shop = get_object_or_404(Shop, pk=shop_id)
-        products = Product.objects.filter(shop=shop)
-        product_serializer = ProductSerializer(products, many=True)
-        return Response(product_serializer.data)
-
+    def get(self, request):
+        shops = self.queryset.all()
+        serializer = ShopSerializer(shops, many=True)
+        return Response(serializer.data)
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("pk", OpenApiTypes.INT, OpenApiParameter.PATH)],
         responses={200: ProductSerializer},
         tags=["All"],
     )
@@ -140,8 +192,8 @@ class ShopViewSet(
             ),
         )
         serializer = ProductSerializer(products, many=True)
-        print(serializer.data)
         return Response(data=serializer.data)
+
 
 
 @extend_schema(
