@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core.permissions import HasShop, IsOwner
-from products.filters import ProductFilter
+from shops.filters import ShopProductFilter
 from products.models import Product, ProductVariant
 from products.serializers import ProductSerializer
 from reviews.models import Review
@@ -96,7 +96,7 @@ class ShopViewSet(
 
     queryset = Shop.objects.all()
     permission_classes = [permissions.AllowAny]
-    filterset_class = ProductFilter
+    filterset_class = ShopProductFilter
     filter_backends = [
         filters.SearchFilter,
         filters.OrderingFilter,
