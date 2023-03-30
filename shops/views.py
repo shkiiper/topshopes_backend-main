@@ -190,14 +190,14 @@ class ShopViewSet(
                     "discount_price"
                 )[:1]
             ),
-            thumbnail=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "thumbnail"
-                )[:1]
-            ),
             price=Subquery(
                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
                     "price"
+                )[:1]
+            ),
+            thumbnail=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "thumbnail"
                 )[:1]
             ),
         )
