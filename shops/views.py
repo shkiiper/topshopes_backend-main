@@ -168,6 +168,15 @@ class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request)
 
 
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import viewsets, permissions, filters
+from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
+from .filters import ShopProductFilter
+from .serializers import SingleShopSerializer, ShopSerializer, ProductSerializer
+from .models import Shop, Product
+
 class ShopProductsViewSet(viewsets.GenericViewSet):
     """
     Viewset to get products of a shop.
@@ -188,13 +197,13 @@ class ShopProductsViewSet(viewsets.GenericViewSet):
 
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("shop_id", OpenApiTypes.INT, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)],
         responses={200: ProductSerializer(many=True)},
         tags=["All"],
     )
-    @action(detail=True, methods=["get"])
-    def products(self, request, shop_id=None):
-        shop = get_object_or_404(Shop, pk=shop_id)
+    @action(detail=True, methods=["get"], url_path="shops/{id}")
+    def products(self, request, id=None):
+        shop = get_object_or_404(Shop, pk=id)
         products = Product.objects.filter(shop=shop)
         product_serializer = ProductSerializer(products, many=True)
         return Response(product_serializer.data)

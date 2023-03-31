@@ -1,6 +1,5 @@
 from rest_framework import routers
 from orders.views import ShopOrderViewSet
-from products.views import ProductViewSet
 from .views import (
     ShopListViewSet,
     LinkViewSet,
