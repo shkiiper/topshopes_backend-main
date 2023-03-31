@@ -181,6 +181,15 @@ class ShopProductsViewSet(RetrieveAPIView):
     serializer_class = SingleShopSerializer
     queryset = Shop.objects.all()
 
+    @extend_schema(
+            description="Get shop products",
+            parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+            responses={200: ProductSerializer},
+            tags=["All"],
+        )
+    def list(self, request):
+        return super().list(request)
+
 
 class LinkViewSet(
     mixins.ListModelMixin,
