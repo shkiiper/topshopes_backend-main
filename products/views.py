@@ -403,39 +403,42 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = ProductVariantSerializer
-
-    def get_queryset(self):
-        return ProductVariant.objects.filter(discount__gt=0, product__is_published=True).annotate(
-            discounted_price=F('price') - (F('price') * F('discount') / 100)
-        )
-
-
-# class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
-#     """
-#     View set to retrieve best selling products
-#     """
-#     queryset = Product.objects.filter(is_published=True).annotate(
-#         total_sales=Sum('variants__orders__quantity')).order_by('-total_sales')
-#     serializer_class = ProductSerializer
+# class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     serializer_class = ProductVariantSerializer
 #
 #     def get_queryset(self):
-#         """
-#         Returns only current user's shop products
-#         """
-#         return (
-#             Product.objects.prefetch_related("variants")
-#             .filter(shop=self.request.user.shop)  # type: ignore
-#             .annotate(
-#                 price=Subquery(
-#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                         "price"
-#                     )[:1]
-#                 ),
-#             )
+#         return ProductVariant.objects.filter(discount__gt=0, product__is_published=True).annotate(
+#             discounted_price=F('price') - (F('price') * F('discount') / 100)
 #         )
-from django.db.models import Subquery, OuterRef, Sum
+    class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
+        serializer_class = ProductVariantSerializer
+
+        def get_queryset(self):
+            queryset = (
+                ProductVariant.objects.filter(discount__gt=0, product__is_published=True)
+                .annotate(
+                    discounted_price=F("price") - (F("price") * F("discount") / 100),
+                    price=F("price"),
+                )
+                .order_by("-discounted_price")
+            )
+            return queryset
+
+    # def get_queryset(self):
+    #     """
+    #     Returns only current user's shop products
+    #     """
+    #     return (
+    #         Product.objects.prefetch_related("variants")
+    #         .filter(shop=self.request.user.shop)  # type: ignore
+    #         .annotate(
+    #             price=Subquery(
+    #                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                     "price"
+    #                 )[:1]
+    #             ),
+    #         )
+    #     )
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -454,4 +457,3 @@ class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
         .order_by("-total_sales")
     )
     serializer_class = ProductSerializer
-
