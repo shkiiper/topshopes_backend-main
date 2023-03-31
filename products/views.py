@@ -412,13 +412,33 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
         )
 
 
+# class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
+#     """
+#     View set to retrieve best selling products
+#     """
+#     queryset = Product.objects.filter(is_published=True).annotate(
+#         total_sales=Sum('variants__orders__quantity')).order_by('-total_sales')
+#     serializer_class = ProductSerializer
+#
+#     def get_queryset(self):
+#         """
+#         Returns only current user's shop products
+#         """
+#         return (
+#             Product.objects.prefetch_related("variants")
+#             .filter(shop=self.request.user.shop)  # type: ignore
+#             .annotate(
+#                 price=Subquery(
+#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                         "price"
+#                     )[:1]
+#                 ),
+#             )
+#         )
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
     View set to retrieve best selling products
     """
-    queryset = Product.objects.filter(is_published=True).annotate(
-        total_sales=Sum('variants__orders__quantity')).order_by('-total_sales')
-    serializer_class = ProductSerializer
 
     def get_queryset(self):
         """
@@ -434,4 +454,8 @@ class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
                     )[:1]
                 ),
             )
-        )
+        ).annotate(
+            total_sales=Sum('variants__orders__quantity')
+        ).order_by('-total_sales')
+
+    serializer_class = ProductSerializer
