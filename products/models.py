@@ -201,3 +201,5 @@ class ProductVariant(models.Model):
         ordering = ["product"]
         verbose_name = "Product variant"
         verbose_name_plural = "Product variants"
+
+#test
