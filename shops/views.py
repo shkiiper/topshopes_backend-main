@@ -178,7 +178,7 @@ class ShopProductsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @extend_schema(
         description="Get all products for a specific shop",
-        parameters=[OpenApiParameter("pk", OpenApiTypes.PATH, description="The primary key of the shop", in_="path")],
+        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
         responses={200: ProductSerializer(many=True)},
         tags=["Products"],
     )
