@@ -395,20 +395,35 @@ class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
+# class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     serializer_class = ProductSerializer
+#     queryset = Product.objects.filter(is_published=True).order_by('-rating')
+#
+#     def list(self, request, *args, **kwargs):
+#         return super().list(request, *args, **kwargs)
+
 class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.filter(is_published=True).order_by('-rating')
 
+    def get_queryset(self):
+        queryset = (
+            self.queryset
+            .prefetch_related("variants")
+            .annotate(
+                price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "price"
+                    )[:1]
+                ),
+            )
+        )
+        return queryset
+
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-    # class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    #     serializer_class = ProductVariantSerializer
-    #
-    #     def get_queryset(self):
-    #         return ProductVariant.objects.filter(discount__gt=0, product__is_published=True).annotate(
-    #             discounted_price=F('price') - (F('price') * F('discount') / 100)
-    #         )
+
 
 
 class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
