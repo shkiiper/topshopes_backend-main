@@ -173,7 +173,7 @@ class ShopProductsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        shop_id = self.kwargs.get('id')
+        shop_id = self.kwargs.get('shop_id')
         return Product.objects.filter(shop=shop_id).annotate(
             overall_price=Subquery(
                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
@@ -193,6 +193,12 @@ class ShopProductsViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
 
+@extend_schema(
+    description="Viewset to control only user's shop links",
+    parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
+    responses={200: LinkSerializer},
+    tags=["Owner"],
+)
 class LinkViewSet(
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
