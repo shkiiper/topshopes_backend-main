@@ -89,10 +89,12 @@ class MyShopViewSet(
 
 
 class ShopProductsViewSet(
-    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
 ):
     """
-    Viewset to get all Shops
+    Viewset to get all Shop products and Shop product detail
     Only to get
     """
 
@@ -112,32 +114,40 @@ class ShopProductsViewSet(
 
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
         responses={200: ProductSerializer},
         tags=["All"],
     )
-    @action(detail=True, methods=["get"], url_path="products")
-    def list_products(self, request, id=None):
-        shop = get_object_or_404(Shop, pk=id)
-        products = Product.objects.filter(shop=shop).annotate(
-            overall_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "overall_price"
-                )[:1]
-            ),
-            discount_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "discount_price"
-                )[:1]
-            ),
-            thumbnail=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "price"
-                )[:1]
-            ),
-        )
+    @action(detail=True, methods=["get"])
+    def products(self, request, slug=None):
+        shop = self.get_object()
+        products = Product.objects.filter(shop=shop)
         serializer = ProductSerializer(products, many=True)
-        return Response(data=serializer.data)
+
+        data = []
+        for product in serializer.data:
+            variants = ProductVariant.objects.filter(product=product["id"]).annotate(
+                overall_price=Subquery(
+                    ProductVariant.objects.filter(product=product["id"]).values(
+                        "overall_price"
+                    )[:1]
+                ),
+                discount_price=Subquery(
+                    ProductVariant.objects.filter(product=product["id"]).values(
+                        "discount_price"
+                    )[:1]
+                ),
+                thumbnail=Subquery(
+                    ProductVariant.objects.filter(product=product["id"]).values(
+                        "thumbnail"
+                    )[:1]
+                ),
+            )
+            variant_serializer = ProductVariantSerializer(variants, many=True)
+            product["variants"] = variant_serializer.data
+            data.append(product)
+
+        return Response(data)
 
     @extend_schema(
         description="Viewset to control only user's shop links",
