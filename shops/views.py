@@ -5,6 +5,7 @@ from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+import products
 from core.permissions import HasShop, IsOwner
 from shops.filters import ShopProductFilter
 from products.models import Product, ProductVariant
@@ -158,54 +159,22 @@ class ShopViewSet(
         filters.OrderingFilter,
         DjangoFilterBackend,
     ]
+    serializer = ProductSerializer(products, many=True)
 
     def get_serializer_class(self):
         if self.action == "retrieve":
             return SingleShopSerializer
         return ShopSerializer
 
-    # @extend_schema(
-    #     description="Get shop products",
-    #     parameters=[OpenApiParameter("pk", OpenApiTypes.INT, OpenApiParameter.PATH)],
-    #     responses={200: ProductSerializer(many=True)},
-    #     tags=["All"],
-    # )
-    # @action(detail=True, methods=["get"])
-    # def products(self, request, pk=None):
-    #     products = Product.objects.filter(shop=pk).annotate(
-    #         overall_price=Subquery(
-    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                 "overall_price"
-    #             )[:1]
-    #         ),
-    #         discount_price=Subquery(
-    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                 "discount_price"
-    #             )[:1]
-    #         ),
-    #         thumbnail=Subquery(
-    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                 "thumbnail"
-    #             )[:1]
-    #         ),
-    #         price=Subquery(
-    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                 "price"
-    #             )[:1]
-    #         ),
-    #     )
-    #     serializer = ProductSerializer(products, many=True)
-    #     return Response(serializer.data)
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer},
+        parameters=[OpenApiParameter("pk", OpenApiTypes.INT, OpenApiParameter.PATH)],
+        responses={200: ProductSerializer(many=True)},
         tags=["All"],
     )
-    @action(detail=True, methods=["get"])
-    def products(self, request, pk=None):
-        products = (
-            Product.objects.filter(shop=pk)
+    def get_queryset(self):
+        queryset = (
+            self.queryset
             .prefetch_related("variants")
             .annotate(
                 price=Subquery(
@@ -213,22 +182,9 @@ class ShopViewSet(
                         "price"
                     )[:1]
                 ),
-                discount_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "discount_price"
-                    )[:1]
-                ),
-                overall_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "overall_price"
-                    )[:1]
-                ),
             )
         )
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
-
-
+        return queryset
 
 
 @extend_schema(
