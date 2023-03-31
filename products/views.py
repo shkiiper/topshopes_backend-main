@@ -402,27 +402,28 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
+    # class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    #     serializer_class = ProductVariantSerializer
+    #
+    #     def get_queryset(self):
+    #         return ProductVariant.objects.filter(discount__gt=0, product__is_published=True).annotate(
+    #             discounted_price=F('price') - (F('price') * F('discount') / 100)
+    #         )
 
-# class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
-#     serializer_class = ProductVariantSerializer
-#
-#     def get_queryset(self):
-#         return ProductVariant.objects.filter(discount__gt=0, product__is_published=True).annotate(
-#             discounted_price=F('price') - (F('price') * F('discount') / 100)
-#         )
-    class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
-        serializer_class = ProductVariantSerializer
 
-        def get_queryset(self):
-            queryset = (
-                ProductVariant.objects.filter(discount__gt=0, product__is_published=True)
-                .annotate(
-                    discounted_price=F("price") - (F("price") * F("discount") / 100),
-                    price=F("price"),
-                )
-                .order_by("-discounted_price")
+class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = ProductVariantSerializer
+
+    def get_queryset(self):
+        queryset = (
+            ProductVariant.objects.filter(discount__gt=0, product__is_published=True)
+            .annotate(
+                discounted_price=F("price") - (F("price") * F("discount") / 100),
+                price=F("price"),
             )
-            return queryset
+            .order_by("-discounted_price")
+        )
+        return queryset
 
     # def get_queryset(self):
     #     """
@@ -439,6 +440,7 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     #             ),
     #         )
     #     )
+
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
