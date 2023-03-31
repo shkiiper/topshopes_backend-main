@@ -4,6 +4,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.generics import RetrieveAPIView
 
 import products
 from core.permissions import HasShop, IsOwner
@@ -168,44 +169,17 @@ class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request)
 
 
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import viewsets, permissions, filters
-from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
-from .filters import ShopProductFilter
-from .serializers import SingleShopSerializer, ShopSerializer, ProductSerializer
-from .models import Shop
-
-class ShopProductsViewSet(viewsets.GenericViewSet):
+class ShopProductsViewSet(RetrieveAPIView):
     """
     Viewset to get products of a shop.
     """
 
-    permission_classes = [permissions.AllowAny]
-    filter_backends = [
-        filters.SearchFilter,
-        filters.OrderingFilter,
-        DjangoFilterBackend,
-    ]
-    filterset_class = ShopProductFilter
-
-    def get_serializer_class(self):
-        return SingleShopSerializer
-
-    @extend_schema(
-        description="Get shop products",
-        parameters=[OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer(many=True)},
-        tags=["All"],
-    )
-    @action(detail=True, methods=["get"], url_path="shops/{id}")
-    def products(self, request, id=None):
-        shop = get_object_or_404(Shop, pk=id)
-        products = Product.objects.filter(shop=shop)
-        product_serializer = ProductSerializer(products, many=True)
-        return Response(product_serializer.data)
-
+    """
+    Only single shop view
+    Return only one shop with all fields
+    """
+    serializer_class = SingleShopSerializer
+    queryset = Shop.objects.all()
 
 
 class LinkViewSet(
