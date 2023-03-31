@@ -110,21 +110,16 @@ class ShopProductsViewSet(
             return SingleShopSerializer
         return ShopSerializer
 
-    def get(self, request, shop_id=None):
-        shop = get_object_or_404(Shop, pk=shop_id)
-        products = Product.objects.filter(shop=shop)
-        product_serializer = ProductSerializer(products, many=True)
-        return Response(product_serializer.data)
-
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
         responses={200: ProductSerializer},
         tags=["All"],
     )
-    @action(detail=True, methods=["get"])
-    def products(self, request, pk=None):
-        products = Product.objects.filter(shop=pk).annotate(
+    @action(detail=True, methods=["get"], url_path="products")
+    def list_products(self, request, id=None):
+        shop = get_object_or_404(Shop, pk=id)
+        products = Product.objects.filter(shop=shop).annotate(
             overall_price=Subquery(
                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
                     "overall_price"
@@ -142,15 +137,21 @@ class ShopProductsViewSet(
             ),
         )
         serializer = ProductSerializer(products, many=True)
-        print(serializer.data)
         return Response(data=serializer.data)
 
-@extend_schema(
-    description="Viewset to control only user's shop links",
-    parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
-    responses={200: LinkSerializer},
-    tags=["Owner"],
-)
+    @extend_schema(
+        description="Viewset to control only user's shop links",
+        parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
+        responses={200: LinkSerializer},
+        tags=["Owner"],
+    )
+    @action(detail=True, methods=["get"], url_path="links")
+    def list_links(self, request, id=None):
+        shop = get_object_or_404(Shop, pk=id)
+        links = shop.links.all()
+        serializer = LinkSerializer(links, many=True)
+        return Response(serializer.data)
+
 
 class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
@@ -167,7 +168,6 @@ class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     )
     def list(self, request):
         return super().list(request)
-
 
 
 class LinkViewSet(
