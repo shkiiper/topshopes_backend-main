@@ -164,38 +164,70 @@ class ShopViewSet(
             return SingleShopSerializer
         return ShopSerializer
 
+    # @extend_schema(
+    #     description="Get shop products",
+    #     parameters=[OpenApiParameter("pk", OpenApiTypes.INT, OpenApiParameter.PATH)],
+    #     responses={200: ProductSerializer(many=True)},
+    #     tags=["All"],
+    # )
+    # @action(detail=True, methods=["get"])
+    # def products(self, request, pk=None):
+    #     products = Product.objects.filter(shop=pk).annotate(
+    #         overall_price=Subquery(
+    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                 "overall_price"
+    #             )[:1]
+    #         ),
+    #         discount_price=Subquery(
+    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                 "discount_price"
+    #             )[:1]
+    #         ),
+    #         thumbnail=Subquery(
+    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                 "thumbnail"
+    #             )[:1]
+    #         ),
+    #         price=Subquery(
+    #             ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                 "price"
+    #             )[:1]
+    #         ),
+    #     )
+    #     serializer = ProductSerializer(products, many=True)
+    #     return Response(serializer.data)
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("pk", OpenApiTypes.INT, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer(many=True)},
+        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        responses={200: ProductSerializer},
         tags=["All"],
     )
     @action(detail=True, methods=["get"])
     def products(self, request, pk=None):
-        products = Product.objects.filter(shop=pk).annotate(
-            overall_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "overall_price"
-                )[:1]
-            ),
-            discount_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "discount_price"
-                )[:1]
-            ),
-            thumbnail=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "thumbnail"
-                )[:1]
-            ),
-            price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "price"
-                )[:1]
-            ),
+        products = (
+            Product.objects.filter(shop=pk)
+            .prefetch_related("variants")
+            .annotate(
+                price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "price"
+                    )[:1]
+                ),
+                discount_price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "discount_price"
+                    )[:1]
+                ),
+                overall_price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "overall_price"
+                    )[:1]
+                ),
+            )
         )
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
+
 
 
 
