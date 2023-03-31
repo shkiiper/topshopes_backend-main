@@ -9,7 +9,7 @@ import products
 from core.permissions import HasShop, IsOwner
 from shops.filters import ShopProductFilter
 from products.models import Product, ProductVariant
-from products.serializers import ProductSerializer
+from products.serializers import ProductSerializer, ProductVariantSerializer
 from reviews.models import Review
 from reviews.serializers import ShopReviewSerializer
 from payments.models import TransferMoney
@@ -186,6 +186,12 @@ class ShopProductsViewSet(viewsets.GenericViewSet):
             return SingleShopSerializer
         return ShopSerializer
 
+    def get_queryset(self):
+        shop_id = self.kwargs.get("shop_id")
+        shop = get_object_or_404(Shop, pk=shop_id)
+        queryset = Product.objects.filter(shop=shop)
+        return queryset
+
     @extend_schema(
         description="Get shop products",
         parameters=[OpenApiParameter("shop_id", OpenApiTypes.INT, OpenApiParameter.PATH)],
@@ -194,10 +200,27 @@ class ShopProductsViewSet(viewsets.GenericViewSet):
     )
     @action(detail=True, methods=["get"])
     def products(self, request, shop_id=None):
-        shop = get_object_or_404(Shop, pk=shop_id)
-        products = Product.objects.filter(shop=shop)
-        product_serializer = ProductSerializer(products, many=True)
-        return Response(product_serializer.data)
+        queryset = self.get_queryset()
+        product_variants = ProductVariant.objects.filter(product__in=queryset)
+        product_variants_dict = {}
+        for variant in product_variants:
+            product_variants_dict.setdefault(variant.product_id, []).append(variant)
+        serialized_data = []
+        for product in queryset:
+            variants = product_variants_dict.get(product.id, [])
+            variant_serializer = ProductVariantSerializer(variants, many=True)
+            serialized_data.append(
+                {
+                    "id": product.id,
+                    "name": product.name,
+                    "description": product.description,
+                    "variants": variant_serializer.data,
+                    "thumbnail": product.thumbnail.url if product.thumbnail else None,
+                    "price": product.get_min_price(),
+                }
+            )
+        return Response(serialized_data)
+
 
 class LinkViewSet(
     mixins.ListModelMixin,
