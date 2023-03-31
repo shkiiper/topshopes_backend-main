@@ -173,7 +173,7 @@ class ShopProductsViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        shop_id = self.kwargs.get('pk')
+        shop_id = self.kwargs.get('id')
         return Product.objects.filter(shop=shop_id).annotate(
             overall_price=Subquery(
                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
