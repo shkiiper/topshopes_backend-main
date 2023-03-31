@@ -387,20 +387,36 @@ class BrandViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = BrandSerializer
 
 
+# class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     serializer_class = ProductSerializer
+#     queryset = Product.objects.filter(is_published=True).order_by('-created_at')
+#
+#     def list(self, request, *args, **kwargs):
+#         return super().list(request, *args, **kwargs)
+
+
 class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.filter(is_published=True).order_by('-created_at')
+
+    def get_queryset(self):
+        queryset = (
+            self.queryset
+            .prefetch_related("variants")
+            .annotate(
+                price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "price"
+                    )[:1]
+                )
+            )
+        )
+        return queryset
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
 
-# class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
-#     serializer_class = ProductSerializer
-#     queryset = Product.objects.filter(is_published=True).order_by('-rating')
-#
-#     def list(self, request, *args, **kwargs):
-#         return super().list(request, *args, **kwargs)
 
 class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
@@ -424,8 +440,6 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
-
-
 class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductVariantSerializer
 
@@ -439,23 +453,6 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
             .order_by("-discounted_price")
         )
         return queryset
-
-
-    # def get_queryset(self):
-    #     """
-    #     Returns only current user's shop products
-    #     """
-    #     return (
-    #         Product.objects.prefetch_related("variants")
-    #         .filter(shop=self.request.user.shop)  # type: ignore
-    #         .annotate(
-    #             price=Subquery(
-    #                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                     "price"
-    #                 )[:1]
-    #             ),
-    #         )
-    #     )
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
