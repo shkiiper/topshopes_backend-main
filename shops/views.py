@@ -175,7 +175,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 from .filters import ShopProductFilter
 from .serializers import SingleShopSerializer, ShopSerializer, ProductSerializer
-from .models import Shop, Product
+from .models import Shop
 
 class ShopProductsViewSet(viewsets.GenericViewSet):
     """
@@ -191,9 +191,7 @@ class ShopProductsViewSet(viewsets.GenericViewSet):
     filterset_class = ShopProductFilter
 
     def get_serializer_class(self):
-        if self.action == "retrieve":
-            return SingleShopSerializer
-        return ShopSerializer
+        return SingleShopSerializer
 
     @extend_schema(
         description="Get shop products",
