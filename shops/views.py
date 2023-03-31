@@ -135,7 +135,7 @@ class MyShopViewSet(
 #             ),
 #             thumbnail=Subquery(
 #                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                     "thumbnail"
+#                     "price"
 #                 )[:1]
 #             ),
 #         )
@@ -164,17 +164,10 @@ class ShopViewSet(
             return SingleShopSerializer
         return ShopSerializer
 
-    def get(self, request, shop_id=None):
-        shop = get_object_or_404(Shop, pk=shop_id)
-        products = Product.objects.filter(shop=shop)
-        filtered_products = self.filter_queryset(products)
-        product_serializer = ProductSerializer(filtered_products, many=True)
-        return Response(product_serializer.data)
-
     @extend_schema(
         description="Get shop products",
-        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer},
+        parameters=[OpenApiParameter("pk", OpenApiTypes.INT, OpenApiParameter.PATH)],
+        responses={200: ProductSerializer(many=True)},
         tags=["All"],
     )
     @action(detail=True, methods=["get"])
@@ -190,24 +183,20 @@ class ShopViewSet(
                     "discount_price"
                 )[:1]
             ),
-            price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "price"
-                )[:1]
-            ),
             thumbnail=Subquery(
                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
                     "thumbnail"
                 )[:1]
             ),
+            price=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "price"
+                )[:1]
+            ),
         )
-        filtered_products = self.filter_queryset(products)
-        serializer = ProductSerializer(
-            filtered_products,
-            many=True,
-            fields=("id", "name", "description", "thumbnail", "price", "discount", "discount_price", "overall_price"),
-        )
-        return Response(data=serializer.data)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
+
 
 
 @extend_schema(

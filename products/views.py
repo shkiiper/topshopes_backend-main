@@ -387,14 +387,6 @@ class BrandViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = BrandSerializer
 
 
-# class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
-#     serializer_class = ProductSerializer
-#     queryset = Product.objects.filter(is_published=True).order_by('-created_at')
-#
-#     def list(self, request, *args, **kwargs):
-#         return super().list(request, *args, **kwargs)
-
-
 class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
     queryset = Product.objects.filter(is_published=True).order_by('-created_at')
@@ -415,7 +407,6 @@ class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
-
 
 
 class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
