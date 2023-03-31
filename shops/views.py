@@ -167,14 +167,16 @@ class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def list(self, request):
         return super().list(request)
 
-
+from uuid import UUID
 class ShopProductsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        shop_id = self.kwargs.get('shop_id')
-        return Product.objects.filter(shop=shop_id).annotate(
+        shop_id = self.kwargs.get('pk')
+        shop_uuid = UUID(shop_id)
+        shop = get_object_or_404(Shop, id=shop_uuid)
+        return Product.objects.filter(shop=shop).annotate(
             overall_price=Subquery(
                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
                     "overall_price"
