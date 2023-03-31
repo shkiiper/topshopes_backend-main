@@ -87,70 +87,107 @@ class MyShopViewSet(
         return Response(data=serializer.data)
 
 
-class ShopViewSet(
-    mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
-):
-    """
-    Viewset to get all Shops
-    Only to get
-    """
+# class ShopViewSet(
+#     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
+# ):
+#     """
+#     Viewset to get all Shops
+#     Only to get
+#     """
+#
+#     queryset = Shop.objects.all()
+#     permission_classes = [permissions.AllowAny]
+#     filterset_class = ShopProductFilter
+#     filter_backends = [
+#         filters.SearchFilter,
+#         filters.OrderingFilter,
+#         DjangoFilterBackend,
+#     ]
+#
+#     def get_serializer_class(self):
+#         if self.action == "retrieve":
+#             return SingleShopSerializer
+#         return ShopSerializer
+#
+#     def get(self, request, shop_id=None):
+#         shop = get_object_or_404(Shop, pk=shop_id)
+#         products = Product.objects.filter(shop=shop)
+#         product_serializer = ProductSerializer(products, many=True)
+#         return Response(product_serializer.data)
+#
+#     @extend_schema(
+#         description="Get shop products",
+#         parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+#         responses={200: ProductSerializer},
+#         tags=["All"],
+#     )
+#     @action(detail=True, methods=["get"])
+#     def products(self, request, pk=None):
+#         products = Product.objects.filter(shop=pk).annotate(
+#             overall_price=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "overall_price"
+#                 )[:1]
+#             ),
+#             discount_price=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "discount_price"
+#                 )[:1]
+#             ),
+#             thumbnail=Subquery(
+#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                     "price"
+#                 )[:1]
+#             ),
+#         )
+#         serializer = ProductSerializer(products, many=True)
+#         print(serializer.data)
+#         return Response(data=serializer.data)
 
+# @extend_schema(
+#     description="Viewset to control only user's shop links",
+#     parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
+#     responses={200: LinkSerializer},
+#     tags=["Owner"],
+# )
+
+class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    A viewset for listing all shops
+    """
     queryset = Shop.objects.all()
-    permission_classes = [permissions.AllowAny]
-    filterset_class = ShopProductFilter
-    filter_backends = [
-        filters.SearchFilter,
-        filters.OrderingFilter,
-        DjangoFilterBackend,
-    ]
-
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return SingleShopSerializer
-        return ShopSerializer
-
-    def get(self, request, shop_id=None):
-        shop = get_object_or_404(Shop, pk=shop_id)
-        products = Product.objects.filter(shop=shop)
-        product_serializer = ProductSerializer(products, many=True)
-        return Response(product_serializer.data)
+    serializer_class = ShopSerializer
+    permission_classes = []  # Allow any permission
 
     @extend_schema(
-        description="Get shop products",
-        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer},
-        tags=["All"],
+        description="Get a list of all shops",
+        responses={200: ShopSerializer(many=True)},
+        tags=["Shops"],
+    )
+    def list(self, request):
+        return super().list(request)
+
+
+class ShopProductsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    A viewset for getting all products for a specific shop
+    """
+    queryset = Shop.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = []  # Allow any permission
+
+    @extend_schema(
+        description="Get all products for a specific shop",
+        parameters=[OpenApiParameter("pk", OpenApiTypes.PATH, description="The primary key of the shop")],
+        responses={200: ProductSerializer(many=True)},
+        tags=["Products"],
     )
     @action(detail=True, methods=["get"])
     def products(self, request, pk=None):
-        products = Product.objects.filter(shop=pk).annotate(
-            overall_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "overall_price"
-                )[:1]
-            ),
-            discount_price=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "discount_price"
-                )[:1]
-            ),
-            thumbnail=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "price"
-                )[:1]
-            ),
-        )
-        serializer = ProductSerializer(products, many=True)
-        print(serializer.data)
-        return Response(data=serializer.data)
-
-@extend_schema(
-    description="Viewset to control only user's shop links",
-    parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
-    responses={200: LinkSerializer},
-    tags=["Owner"],
-)
-
+        shop = self.get_object()
+        products = Product.objects.filter(shop=shop)
+        serializer = self.get_serializer(products, many=True)
+        return Response(serializer.data)
 class LinkViewSet(
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
