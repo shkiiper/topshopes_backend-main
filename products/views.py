@@ -435,11 +435,23 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
 #                 ),
 #             )
 #         )
+from django.db.models import Subquery, OuterRef, Sum
+
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
     View set to retrieve best selling products
     """
-    queryset = Product.objects.filter(is_published=True).annotate(
-        total_sales=Sum('variants__orders__quantity')).order_by('-total_sales')
+    queryset = (
+        Product.objects.filter(is_published=True)
+        .annotate(
+            price=Subquery(
+                ProductVariant.objects.filter(
+                    product=OuterRef("pk")
+                ).values("price")[:1]
+            ),
+            total_sales=Sum("variants__orders__quantity"),
+        )
+        .order_by("-total_sales")
+    )
     serializer_class = ProductSerializer
 
