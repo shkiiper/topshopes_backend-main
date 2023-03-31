@@ -178,7 +178,7 @@ class ShopProductsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
     @extend_schema(
         description="Get all products for a specific shop",
-        parameters=[OpenApiParameter("pk", OpenApiTypes.PATH, description="The primary key of the shop")],
+        parameters=[OpenApiParameter("pk", OpenApiTypes.PATH, description="The primary key of the shop", in_="path")],
         responses={200: ProductSerializer(many=True)},
         tags=["Products"],
     )
@@ -188,6 +188,8 @@ class ShopProductsViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         products = Product.objects.filter(shop=shop)
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
+
+
 class LinkViewSet(
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
