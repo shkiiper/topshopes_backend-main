@@ -13,4 +13,4 @@ router.register(r"shop/link", LinkViewSet, basename="shop-link")
 router.register(r"shop/orders", ShopOrderViewSet, basename="shop-order")
 # routes for all users
 router.register(r"shops", ShopListViewSet, basename="shops")
-router.register(r"shops/id", ShopProductsViewSet, basename="shops-products")
+router.register(r"shops", ShopProductsViewSet, basename="shops-products")
