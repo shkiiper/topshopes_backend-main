@@ -169,16 +169,12 @@ class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class ShopProductsViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
 
-    @extend_schema(
-        description="Get shop products",
-        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
-        responses={200: ProductSerializer},
-        tags=["All"],
-    )
-    @action(detail=True, methods=["get"])
-    def products(self, request, pk=None):
-        products = Product.objects.filter(shop=pk, category__isnull=False).annotate(
+    def get_queryset(self):
+        shop_id = self.kwargs.get('pk')
+        return Product.objects.filter(shop=shop_id).annotate(
             overall_price=Subquery(
                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
                     "overall_price"
@@ -195,9 +191,6 @@ class ShopProductsViewSet(viewsets.ReadOnlyModelViewSet):
                 )[:1]
             ),
         )
-        serializer = ProductSerializer(products, many=True)
-        return Response(data=serializer.data)
-
 
 
 class LinkViewSet(
