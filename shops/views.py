@@ -125,12 +125,7 @@ class ShopProductsViewSet(
             variants = ProductVariant.objects.filter(product=product["id"]).annotate(
                 overall_price=Subquery(
                     ProductVariant.objects.filter(product=product["id"]).values(
-                        "overall_price"
-                    )[:1]
-                ),
-                discount_price=Subquery(
-                    ProductVariant.objects.filter(product=product["id"]).values(
-                        "discount_price"
+                        "price"
                     )[:1]
                 ),
                 thumbnail=Subquery(
