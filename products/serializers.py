@@ -211,26 +211,16 @@ class SingleProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_similar_products(self, obj):
-        # Получаем все продукты с той же категорией, что и текущий продукт
         similar_products = Product.objects.filter(category=obj.category)
-
-        # Сериализуем продукты, используя ProductSerializer
         serializer = ProductSerializer(similar_products, many=True)
-
-        # Возвращаем сериализованные продукты
         return serializer.data
 
     def to_representation(self, instance):
-        # Запускаем стандартный метод to_representation для базового класса
         representation = super().to_representation(instance)
-
-        # Если есть поле "similar_products" в representation, то запускаем ProductSerializer для всех продуктов той же категории
         if 'similar_products' in representation:
             similar_products = Product.objects.filter(category=instance.category)
             serializer = ProductSerializer(similar_products, many=True)
             representation['similar_products'] = serializer.data
-
-        # Возвращаем representation
         return representation
 
 
