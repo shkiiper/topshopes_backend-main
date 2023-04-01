@@ -4,11 +4,9 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.generics import RetrieveAPIView
 
-import products
 from core.permissions import HasShop, IsOwner
-from shops.filters import ShopProductFilter
+from .filters import ShopProductFilter
 from products.models import Product, ProductVariant
 from products.serializers import ProductSerializer, ProductVariantSerializer
 from reviews.models import Review
