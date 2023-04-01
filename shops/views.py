@@ -101,13 +101,9 @@ class ShopProductsViewSet(
     queryset = Shop.objects.all()
     permission_classes = [permissions.AllowAny]
     filterset_class = ShopProductFilter
-    filter_backends = [
-        filters.SearchFilter,
-        filters.OrderingFilter,
-        DjangoFilterBackend,
-    ]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter(fields=('name', 'created_at', 'price')),
+                       DjangoFilterBackend, ]
     search_fields = ["name", "id"]
-    ordering_fields = ["name", "created_at", "price"]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
