@@ -1,5 +1,5 @@
 from django.urls import include, path
-from .views import ReportAdmin, ReportClient,PaymentFilter
+from .views import ReportAdmin, ReportClient, PaymentFilter
 
 urlpatterns = [
     path("report-admin/", ReportAdmin.as_view()),
