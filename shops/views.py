@@ -106,6 +106,8 @@ class ShopProductsViewSet(
         filters.OrderingFilter,
         DjangoFilterBackend,
     ]
+    search_fields = ["name", "id"]
+    ordering_fields = ["name", "created_at", "price"]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
