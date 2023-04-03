@@ -165,23 +165,3 @@ class ReportClient(APIView):
             }
             data.append(dict_data)
         return Response(data=data, status=status.HTTP_200_OK)
-
-
-class PaymentFilter(APIView):
-    model = Payment
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        payment_type = self.request.GET.get('payment_type')
-        is_verified = self.request.GET.get('is_verified')
-        query = self.request.GET.get('q')
-        if payment_type:
-            queryset = queryset.filter(payment_type=payment_type)
-        if is_verified is not None:
-            queryset = queryset.filter(is_verified=is_verified)
-        if query:
-            queryset = queryset.filter(
-                Q(phone_number__icontains=query) |
-                Q(bank_account__icontains=query)
-            )
-        return queryset
