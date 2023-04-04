@@ -189,7 +189,6 @@ class SingleProductSerializer(serializers.ModelSerializer):
     shop = ShopProductSerializer(read_only=True)
     brand = BrandReadSerializer(read_only=True)
     category = CategoryReadOnlySerializer(read_only=True)
-    similar_products = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -207,26 +206,9 @@ class SingleProductSerializer(serializers.ModelSerializer):
             "variants",
             "reviews",
             "attributes",
-            "created_at",
+            'created_at',
             "is_published",
-            "similar_products",
         ]
-
-    def get_similar_products(self, obj):
-        """
-        Returns queryset of similar products
-        """
-        similar_products = (
-            Product.objects.filter(
-                category=obj.category, is_published=True
-            )
-            .exclude(id=obj.id)
-            .order_by("-rating", "-created_at")
-            .distinct()[:4]
-        )
-        serializer = ProductSerializer(similar_products, many=True)
-        return serializer.data
-
 
     # def get_similar_products(self, obj):
     #     similar_products = Product.objects.filter(category=obj.category).exclude(id=obj.id)[
