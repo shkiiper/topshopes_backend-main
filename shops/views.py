@@ -154,6 +154,9 @@ class MyShopViewSet(
 #         links = shop.links.all()
 #         serializer = LinkSerializer(links, many=True)
 #         return Response(serializer.data)
+from rest_framework.decorators import action
+
+
 class ShopProductAPIView(APIView):
     def get(self, request, shop_id):
         shop = Shop.objects.filter(id=shop_id).first()
