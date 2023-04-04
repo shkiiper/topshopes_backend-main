@@ -98,7 +98,7 @@ class ShopProductsViewSet(
 
     queryset = Shop.objects.all()
     permission_classes = [permissions.AllowAny]
-    filterset_class = ShopProductFilter
+
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
     search_fields = ["name", "id"]
     ordering_fields = ["products__name", "products__created_at", "products__variants__price"]
