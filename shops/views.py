@@ -168,6 +168,7 @@ class ShopProductAPIView(APIView):
             return Response(data)
         return Response({'error': 'Shop not found'}, status=404)
 
+
 class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     A viewset for listing all shops
