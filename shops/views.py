@@ -96,7 +96,7 @@ class ShopProductsViewSet(
     Only to get
     """
 
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     search_fields = [
         "slug",
