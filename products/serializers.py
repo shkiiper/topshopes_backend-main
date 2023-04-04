@@ -212,16 +212,16 @@ class SingleProductSerializer(serializers.ModelSerializer):
             "similar_products",
         ]
 
-    def get_similar_products(self, obj):
-        similar_products = Product.objects.filter(category=obj.category).exclude(id=obj.id)[
-                           :4]  # exclude the current product and limit to 4
-        serializer = ProductSerializer(similar_products, many=True)
-        return serializer.data
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['similar_products'] = self.get_similar_products(instance)  # add similar_products field
-        return representation
+    # def get_similar_products(self, obj):
+    #     similar_products = Product.objects.filter(category=obj.category).exclude(id=obj.id)[
+    #                        :4]  # exclude the current product and limit to 4
+    #     serializer = ProductSerializer(similar_products, many=True)
+    #     return serializer.data
+    #
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #     representation['similar_products'] = self.get_similar_products(instance)  # add similar_products field
+    #     return representation
 
 
 class ProductSerializer(serializers.ModelSerializer):
