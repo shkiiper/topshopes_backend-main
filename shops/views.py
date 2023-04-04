@@ -96,50 +96,20 @@ class ShopProductsViewSet(
     Only to get
     """
 
-    queryset = Shop.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAdminUser]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    search_fields = [
+        "slug",
+        "description",
+        "name",
 
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
-    search_fields = ["name", "id"]
-    ordering_fields = ["products__name", "products__created_at", "products__variants__price"]
+        "discount",
+        "discount_price",
+        "overall_price",
+        "price",
+        "created_at", ]
+    ordering_fields = ["name", "rating", "created_at"]
 
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return SingleShopSerializer
-        return ShopSerializer
-    #
-    # @extend_schema(
-    #     description="Get shop products",
-    #     parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
-    #     responses={200: ProductSerializer},
-    #     tags=["All"],
-    # )
-    # @action(detail=True, methods=["get"])
-    # def products(self, request, slug=None):
-    #     shop = self.get_object()
-    #     products = Product.objects.filter(shop=shop)
-    #     serializer = ProductSerializer(products, many=True)
-    #     serializer = ProductVariantSerializer
-    #
-    #     data = []
-    #     for product in serializer.data:
-    #         variants = ProductVariant.objects.filter(product=product["id"]).annotate(
-    #             overall_price=Subquery(
-    #                 ProductVariant.objects.filter(product=product["id"]).values(
-    #                     "price"
-    #                 )[:1]
-    #             ),
-    #             thumbnail=Subquery(
-    #                 ProductVariant.objects.filter(product=product["id"]).values(
-    #                     "thumbnail"
-    #                 )[:1]
-    #             ),
-    #         )
-    #         variant_serializer = ProductVariantSerializer(variants, many=True)
-    #         product["variants"] = variant_serializer.data
-    #         data.append(product)
-    #
-    #     return Response(data)
     def get_queryset(self):
         """
         Returns all products
