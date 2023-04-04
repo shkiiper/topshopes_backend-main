@@ -86,8 +86,6 @@ class MyShopViewSet(
         serializer = ShopReviewSerializer(reviews, many=True)
         return Response(data=serializer.data)
 
-
-
     # @action(detail=True, methods=["get"])
     # def products(self, request, slug=None):
     #     shop = self.get_object()
@@ -113,65 +111,64 @@ class MyShopViewSet(
     #         data.append(product)
     #
     #     return Response(data)
-    class ShopProductsViewSet(
-        mixins.RetrieveModelMixin,
-        mixins.ListModelMixin,
-        viewsets.GenericViewSet
-    ):
-        """
-        Viewset to get all Shop products and Shop product detail
-        Only to get
-        """
+class ShopProductsViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    """
+    Viewset to get all Shop products and Shop product detail
+    Only to get
+    """
 
-        queryset = Product.objects.all()
-        permission_classes = [permissions.AllowAny]
-        filterset_class = ProductFilter
-        filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
-        search_fields = ["name", "id"]
-        ordering_fields = ["name", "created_at", "price"]
+    queryset = Product.objects.all()
+    permission_classes = [permissions.AllowAny]
+    filterset_class = ProductFilter
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
+    search_fields = ["name", "id"]
+    ordering_fields = ["name", "created_at", "price"]
 
-        def get_serializer_class(self):
-            if self.action == "retrieve":
-                return SingleShopSerializer
-            return ShopSerializer
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return SingleShopSerializer
+        return ShopSerializer
 
-        @extend_schema(
-            description="Get shop products",
-            parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
-            responses={200: ProductSerializer},
-            tags=["All"],
-        )
-        def get_queryset(self):
-            if self.action == "list":
-                shop_id = self.kwargs.get("slug")
-                return (
-                    Product.objects.prefetch_related("variants")
-                    .filter(is_published=True,
-                            products__shop=shop_id)  # filter only published products for the given shop
-                    .annotate(
-                        overall_price=Subquery(
-                            ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                                "overall_price"
-                            )[:1]
-                        ),
-                        discount_price=Subquery(
-                            ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                                "discount_price"
-                            )[:1]
-                        ),
-                        price=Subquery(
-                            ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                                "price"
-                            )[:1]
-                        ),
-                        discount=Subquery(
-                            ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                                "discount"
-                            )[:1]
-                        ),
-                    )
+    @extend_schema(
+        description="Get shop products",
+        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        responses={200: ProductSerializer},
+        tags=["All"],
+    )
+    def get_queryset(self):
+        if self.action == "list":
+            shop_id = self.kwargs.get("slug")
+            return (
+                Product.objects.prefetch_related("variants")
+                .filter(is_published=True, products__shop=shop_id)  # filter only published products for the given shop
+                .annotate(
+                    overall_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "overall_price"
+                        )[:1]
+                    ),
+                    discount_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount_price"
+                        )[:1]
+                    ),
+                    price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "price"
+                        )[:1]
+                    ),
+                    discount=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount"
+                        )[:1]
+                    ),
                 )
-            return Product.objects.all().prefetch_related("variants", "reviews")
+            )
+        return Product.objects.all().prefetch_related("variants", "reviews")
 
     @extend_schema(
         description="Viewset to control only user's shop links",
