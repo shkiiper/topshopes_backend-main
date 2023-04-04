@@ -217,10 +217,8 @@ class SingleProductSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        if 'similar_products' in representation:
-            similar_products = Product.objects.filter(category=instance.category)
-            serializer = ProductSerializer(similar_products, many=True)
-            representation['similar_products'] = serializer.data
+        similar_products = self.get_similar_products(instance)
+        representation['similar_products'] = similar_products
         return representation
 
 
