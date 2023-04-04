@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core.permissions import HasShop, IsOwner
+from products.filters import ProductFilter
 from .filters import ShopProductFilter
 from products.models import Product, ProductVariant
 from products.serializers import ProductSerializer, ProductVariantSerializer
@@ -98,7 +99,7 @@ class ShopProductsViewSet(
 
     queryset = Product.objects.all()
     permission_classes = [permissions.AllowAny]
-    filterset_class = ShopProductFilter
+    filterset_class = ProductFilter
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
     search_fields = ["name", "id"]
     ordering_fields = ["products__name", "products__created_at", "products__price"]
