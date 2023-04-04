@@ -6,7 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from core.permissions import HasShop, IsOwner
-from products.filters import ProductFilter
 from .filters import ShopProductFilter
 from products.models import Product, ProductVariant
 from products.serializers import ProductSerializer, ProductVariantSerializer
@@ -86,31 +85,7 @@ class MyShopViewSet(
         serializer = ShopReviewSerializer(reviews, many=True)
         return Response(data=serializer.data)
 
-    # @action(detail=True, methods=["get"])
-    # def products(self, request, slug=None):
-    #     shop = self.get_object()
-    #     products = Product.objects.filter(shop=shop)
-    #     serializer = ProductSerializer(products, many=True)
-    #
-    #     data = []
-    #     for product in serializer.data:
-    #         variants = ProductVariant.objects.filter(product=product["id"]).annotate(
-    #             overall_price=Subquery(
-    #                 ProductVariant.objects.filter(product=product["id"]).values(
-    #                     "price"
-    #                 )[:1]
-    #             ),
-    #             thumbnail=Subquery(
-    #                 ProductVariant.objects.filter(product=product["id"]).values(
-    #                     "thumbnail"
-    #                 )[:1]
-    #             ),
-    #         )
-    #         variant_serializer = ProductVariantSerializer(variants, many=True)
-    #         product["variants"] = variant_serializer.data
-    #         data.append(product)
-    #
-    #     return Response(data)
+
 class ShopProductsViewSet(
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
@@ -121,12 +96,12 @@ class ShopProductsViewSet(
     Only to get
     """
 
-    queryset = Product.objects.all()
+    queryset = Shop.objects.all()
     permission_classes = [permissions.AllowAny]
-    filterset_class = ProductFilter
+    filterset_class = ShopProductFilter
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
-    search_fields = ["name"]
-    ordering_fields = ["name", "created_at", "price"]
+    search_fields = ["name", "id"]
+    ordering_fields = ["products__name", "products__created_at", "products__price"]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -139,41 +114,31 @@ class ShopProductsViewSet(
         responses={200: ProductSerializer},
         tags=["All"],
     )
-    def get_queryset(self):
-        if self.action == "list":
-            shop_id = self.kwargs.get("slug")
-            return (
-                Product.objects.prefetch_related("variants")
-                .filter(is_published=True, products__shop=shop_id)  # filter only published products for the given shop
-                .annotate(
-                    overall_price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "overall_price"
-                        )[:1]
-                    ),
-                    discount_price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "discount_price"
-                        )[:1]
-                    ),
-                    price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "price"
-                        )[:1]
-                    ),
-                    discount=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "discount"
-                        )[:1]
-                    ),
-                )
-            )
-        return Product.objects.all().prefetch_related("variants", "reviews")
+    @action(detail=True, methods=["get"])
+    def products(self, request, slug=None):
+        shop = self.get_object()
+        products = Product.objects.filter(shop=shop)
+        serializer = ProductSerializer(products, many=True)
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = SingleShopSerializer(instance)
-        return Response(serializer.data)
+        data = []
+        for product in serializer.data:
+            variants = ProductVariant.objects.filter(product=product["id"]).annotate(
+                overall_price=Subquery(
+                    ProductVariant.objects.filter(product=product["id"]).values(
+                        "price"
+                    )[:1]
+                ),
+                thumbnail=Subquery(
+                    ProductVariant.objects.filter(product=product["id"]).values(
+                        "thumbnail"
+                    )[:1]
+                ),
+            )
+            variant_serializer = ProductVariantSerializer(variants, many=True)
+            product["variants"] = variant_serializer.data
+            data.append(product)
+
+        return Response(data)
 
     @extend_schema(
         description="Viewset to control only user's shop links",
