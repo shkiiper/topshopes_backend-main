@@ -168,6 +168,18 @@ class ShopProductAPIView(APIView):
             return Response(data)
         return Response({'error': 'Shop not found'}, status=404)
 
+    @action(detail=True, methods=['get'])
+    def list_products(self, request, pk=None):
+        shop = self.get_object()
+        products = Product.objects.filter(shop=shop)
+        serializer = SingleShopSerializer(products, many=True)
+        data = serializer.data
+        for product in data:
+            variants = product['variants']
+            prices = [variant['price'] for variant in variants]
+            product['price'] = min(prices)
+        return Response(data)
+
 
 class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
