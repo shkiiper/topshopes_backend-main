@@ -87,101 +87,73 @@ class MyShopViewSet(
         return Response(data=serializer.data)
 
 
-# class ShopProductsViewSet(
-#     mixins.RetrieveModelMixin,
-#     mixins.ListModelMixin,
-#     viewsets.GenericViewSet
-# ):
-#     """
-#     Viewset to get all Shop products and Shop product detail
-#     Only to get
-#     """
-#
-#     queryset = Shop.objects.all()
-#     permission_classes = [permissions.AllowAny]
-#     filterset_class = ShopProductFilter
-#     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
-#     search_fields = ["name", "id"]
-#     ordering_fields = ["products__name", "products__created_at", "products__variants__price"]
-#
-#     def get_serializer_class(self):
-#         if self.action == "retrieve":
-#             return SingleShopSerializer
-#         return ShopSerializer
-#
-#     @extend_schema(
-#         description="Get shop products",
-#         parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
-#         responses={200: ProductSerializer},
-#         tags=["All"],
-#     )
-#     @action(detail=True, methods=["get"])
-#     def products(self, request, slug=None):
-#         shop = self.get_object()
-#         products = Product.objects.filter(shop=shop)
-#         serializer = ProductSerializer(products, many=True)
-#
-#         data = []
-#         for product in serializer.data:
-#             variants = ProductVariant.objects.filter(product=product["id"]).annotate(
-#                 overall_price=Subquery(
-#                     ProductVariant.objects.filter(product=product["id"]).values(
-#                         "price"
-#                     )[:1]
-#                 ),
-#                 thumbnail=Subquery(
-#                     ProductVariant.objects.filter(product=product["id"]).values(
-#                         "thumbnail"
-#                     )[:1]
-#                 ),
-#             )
-#             variant_serializer = ProductVariantSerializer(variants, many=True)
-#             product["variants"] = variant_serializer.data
-#             data.append(product)
-#
-#         return Response(data)
-#
-#
-#     @extend_schema(
-#         description="Viewset to control only user's shop links",
-#         parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
-#         responses={200: LinkSerializer},
-#         tags=["Owner"],
-#     )
-#     @action(detail=True, methods=["get"], url_path="links")
-#     def list_links(self, request, id=None):
-#         shop = get_object_or_404(Shop, pk=id)
-#         links = shop.links.all()
-#         serializer = LinkSerializer(links, many=True)
-#         return Response(serializer.data)
-from rest_framework.decorators import action
+class ShopProductsViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet
+):
+    """
+    Viewset to get all Shop products and Shop product detail
+    Only to get
+    """
 
+    queryset = Shop.objects.all()
+    permission_classes = [permissions.AllowAny]
+    filterset_class = ShopProductFilter
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
+    search_fields = ["name", "id"]
+    ordering_fields = ["products__name", "products__created_at", "products__variants__price"]
 
-class ShopProductAPIView(APIView):
-    def get(self, request, shop_id):
-        shop = Shop.objects.filter(id=shop_id).first()
-        if shop:
-            products = Product.objects.filter(shop=shop)
-            serializer = SingleShopSerializer(products, many=True)
-            data = serializer.data
-            for product in data:
-                variants = product['variants']
-                prices = [variant['price'] for variant in variants]
-                product['price'] = min(prices)
-            return Response(data)
-        return Response({'error': 'Shop not found'}, status=404)
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return SingleShopSerializer
+        return ShopSerializer
 
-    @action(detail=True, methods=['get'])
-    def list_products(self, request, pk=None):
+    @extend_schema(
+        description="Get shop products",
+        parameters=[OpenApiParameter("slug", OpenApiTypes.STR, OpenApiParameter.PATH)],
+        responses={200: ProductSerializer},
+        tags=["All"],
+    )
+    @action(detail=True, methods=["get"])
+    def products(self, request, slug=None):
         shop = self.get_object()
         products = Product.objects.filter(shop=shop)
-        serializer = SingleShopSerializer(products, many=True)
-        data = serializer.data
-        for product in data:
-            variants = product['variants']
-            prices = [variant['price'] for variant in variants]
-            product['price'] = min(prices)
+        serializer = ProductSerializer(products, many=True)
+
+        data = []
+        for product in serializer.data:
+            variants = ProductVariant.objects.filter(product=product["id"]).annotate(
+                overall_price=Subquery(
+                    ProductVariant.objects.filter(product=product["id"]).values(
+                        "price"
+                    )[:1]
+                ),
+                thumbnail=Subquery(
+                    ProductVariant.objects.filter(product=product["id"]).values(
+                        "thumbnail"
+                    )[:1]
+                ),
+            )
+            variant_serializer = ProductVariantSerializer(variants, many=True)
+            product["variants"] = variant_serializer.data
+            data.append(product)
+
         return Response(data)
+
+
+    @extend_schema(
+        description="Viewset to control only user's shop links",
+        parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
+        responses={200: LinkSerializer},
+        tags=["Owner"],
+    )
+    @action(detail=True, methods=["get"], url_path="links")
+    def list_links(self, request, id=None):
+        shop = get_object_or_404(Shop, pk=id)
+        links = shop.links.all()
+        serializer = LinkSerializer(links, many=True)
+        return Response(serializer.data)
 
 
 class ShopListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
