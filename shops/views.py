@@ -114,31 +114,60 @@ class ShopProductsViewSet(
         responses={200: ProductSerializer},
         tags=["All"],
     )
-    @action(detail=True, methods=["get"])
-    def products(self, request, slug=None):
-        shop = self.get_object()
-        products = Product.objects.filter(shop=shop)
-        serializer = ProductSerializer(products, many=True)
-
-        data = []
-        for product in serializer.data:
-            variants = ProductVariant.objects.filter(product=product["id"]).annotate(
-                overall_price=Subquery(
-                    ProductVariant.objects.filter(product=product["id"]).values(
-                        "price"
-                    )[:1]
-                ),
-                thumbnail=Subquery(
-                    ProductVariant.objects.filter(product=product["id"]).values(
-                        "thumbnail"
-                    )[:1]
-                ),
+    # @action(detail=True, methods=["get"])
+    # def products(self, request, slug=None):
+    #     shop = self.get_object()
+    #     products = Product.objects.filter(shop=shop)
+    #     serializer = ProductSerializer(products, many=True)
+    #
+    #     data = []
+    #     for product in serializer.data:
+    #         variants = ProductVariant.objects.filter(product=product["id"]).annotate(
+    #             overall_price=Subquery(
+    #                 ProductVariant.objects.filter(product=product["id"]).values(
+    #                     "price"
+    #                 )[:1]
+    #             ),
+    #             thumbnail=Subquery(
+    #                 ProductVariant.objects.filter(product=product["id"]).values(
+    #                     "thumbnail"
+    #                 )[:1]
+    #             ),
+    #         )
+    #         variant_serializer = ProductVariantSerializer(variants, many=True)
+    #         product["variants"] = variant_serializer.data
+    #         data.append(product)
+    #
+    #     return Response(data)
+    def get_queryset(self):
+        if self.action == "list":
+            return (
+                Product.objects.prefetch_related("variants")
+                .filter(is_published=True)  # filter only published products
+                .annotate(
+                    overall_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "overall_price"
+                        )[:1]
+                    ),
+                    discount_price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount_price"
+                        )[:1]
+                    ),
+                    price=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "price"
+                        )[:1]
+                    ),
+                    discount=Subquery(
+                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                            "discount"
+                        )[:1]
+                    ),
+                )
             )
-            variant_serializer = ProductVariantSerializer(variants, many=True)
-            product["variants"] = variant_serializer.data
-            data.append(product)
-
-        return Response(data)
+        return Product.objects.all().prefetch_related("variants", "reviews")
 
     @extend_schema(
         description="Viewset to control only user's shop links",
