@@ -170,6 +170,10 @@ class ShopProductsViewSet(
             )
         return Product.objects.all().prefetch_related("variants", "reviews")
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = SingleShopSerializer(instance)
+        return Response(serializer.data)
     @extend_schema(
         description="Viewset to control only user's shop links",
         parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
