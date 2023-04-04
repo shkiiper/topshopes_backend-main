@@ -125,7 +125,7 @@ class ShopProductsViewSet(
     permission_classes = [permissions.AllowAny]
     filterset_class = ProductFilter
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
-    search_fields = ["name", "id"]
+    search_fields = ["name"]
     ordering_fields = ["name", "created_at", "price"]
 
     def get_serializer_class(self):
@@ -174,6 +174,7 @@ class ShopProductsViewSet(
         instance = self.get_object()
         serializer = SingleShopSerializer(instance)
         return Response(serializer.data)
+
     @extend_schema(
         description="Viewset to control only user's shop links",
         parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
