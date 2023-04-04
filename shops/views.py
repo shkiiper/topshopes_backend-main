@@ -101,7 +101,7 @@ class ShopProductsViewSet(
     filterset_class = ShopProductFilter
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
     search_fields = ["name", "id"]
-    ordering_fields = ["products__name", "products__created_at", "products__price"]
+    ordering_fields = ["products__name", "products__created_at", "products__variants__price"]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -139,6 +139,7 @@ class ShopProductsViewSet(
             data.append(product)
 
         return Response(data)
+
 
     @extend_schema(
         description="Viewset to control only user's shop links",
