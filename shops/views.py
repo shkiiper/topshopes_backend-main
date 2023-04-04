@@ -96,7 +96,7 @@ class ShopProductsViewSet(
     Only to get
     """
 
-    queryset = Shop.objects.all()
+    queryset = Product.objects.all()
     permission_classes = [permissions.AllowAny]
     filterset_class = ShopProductFilter
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
