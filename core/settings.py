@@ -78,6 +78,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    'path.to.custom_exception_handler.custom_exception_handler',
 ]
 
 ROOT_URLCONF = "core.urls"

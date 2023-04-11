@@ -4,6 +4,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import filters, mixins, permissions, viewsets
 from datetime import timedelta
 from rest_framework import viewsets
+from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
@@ -148,7 +149,8 @@ class AdminBrandViewSet(viewsets.ModelViewSet):
         try:
             return super().list(request, *args, **kwargs)
         except ObjectDoesNotExist:
-            raise NotFound("Brands not found")
+            response_data = {'error': 'Brands not found'}
+            return JsonResponse(response_data, status=404)
 
 
 class AdminBrandTypeViewSet(viewsets.ModelViewSet):
