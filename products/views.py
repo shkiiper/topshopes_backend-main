@@ -10,7 +10,7 @@ from django.db.models import Sum
 
 from django.db.models import F
 
-from .filters import ProductFilter
+from .filters import ProductFilter, filter_best_selling_products
 
 from attributes.serializers import AttributeSerializer, CreateAttributeValueSerializer
 from core.permissions import HasShop, IsOwner
@@ -57,7 +57,7 @@ class ProductViewSet(
         filters.OrderingFilter,
         DjangoFilterBackend,
     ]
-    filterset_class = ProductFilter
+    filterset_class = ProductFilter, filter_best_selling_products
     filterset_fields = ["id", "category"]
     search_fields = ["name", "id"]
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
