@@ -1,14 +1,14 @@
 from django.db.models import OuterRef, Subquery
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
-from rest_framework import filters, mixins, permissions, viewsets
-from datetime import timedelta
-from rest_framework import viewsets
+from rest_framework import filters, mixins
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import viewsets, permissions, status, filters
+from django.http import Http404
 
 from orders.models import Order
 from orders.serializers import OrderSerializer
@@ -100,6 +100,36 @@ class AdminShopViewSet(
         if self.action == "retrieve":
             return SingleShopSerializer
         return ShopSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+        except ObjectDoesNotExist:
+            return Response(
+                {"detail": "Shop not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(request, *args, **kwargs)
+        except ObjectDoesNotExist:
+            return Response(
+                {"detail": "Shop not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 
 class AdminCategoryViewSet(viewsets.ModelViewSet):
