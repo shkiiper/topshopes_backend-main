@@ -63,6 +63,10 @@ class ProductViewSet(
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
 
     def get_queryset(self):
+        queryset = filter_best_selling_products(self.request)
+        return queryset
+
+    def get_queryset(self):
         if self.action == "list":
             return (
                 Product.objects.prefetch_related("variants")
