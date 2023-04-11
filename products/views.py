@@ -93,6 +93,7 @@ class ProductViewSet(
             # Apply best_selling_products filter if it exists in the request
             if "best_selling_products" in self.request.query_params:
                 queryset = filter_best_selling_products(queryset)
+        return queryset
 
     def get_serializer_class(self):
         if self.action == "retrieve":
