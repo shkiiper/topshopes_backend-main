@@ -10,7 +10,7 @@ from django.db.models import Sum
 
 from django.db.models import F
 
-from .filters import ProductFilter, filter_best_selling_products
+from .filters import ProductFilter
 
 from attributes.serializers import AttributeSerializer, CreateAttributeValueSerializer
 from core.permissions import HasShop, IsOwner
@@ -43,6 +43,106 @@ from reviews.serializers import CreateReviewSerializer, ReviewSerializer
         tags=["All"],
     ),
 )
+# class ProductViewSet(
+#     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+# ):
+#     """
+#     Product view set to get all products
+#     Only get method allowed
+#     """
+#
+#     permission_classes = [permissions.AllowAny]
+#     filter_backends = [
+#         filters.SearchFilter,
+#         filters.OrderingFilter,
+#         DjangoFilterBackend,
+#     ]
+#     filterset_class = ProductFilter
+#     filterset_fields = ["id", "category"]
+#     search_fields = ["name", "id"]
+#     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
+#
+#     def get_queryset(self):
+#         if self.action == "list":
+#             return (
+#                 Product.objects.prefetch_related("variants")
+#                 .filter(is_published=True)
+#                 .annotate(
+#                     overall_price=Subquery(
+#                         ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                             "overall_price"
+#                         )[:1]
+#                     ),
+#                     discount_price=Subquery(
+#                         ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                             "discount_price"
+#                         )[:1]
+#                     ),
+#                     price=Subquery(
+#                         ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                             "price"
+#                         )[:1]
+#                     ),
+#                     discount=Subquery(
+#                         ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                             "discount"
+#                         )[:1]
+#                     ),
+#                 )
+#             )
+#         return Product.objects.all().prefetch_related("variants", "reviews")
+#
+#     def get_serializer_class(self):
+#         if self.action == "retrieve":
+#             return SingleProductSerializer
+#         return ProductSerializer
+#
+#     @extend_schema(
+#         description="Create review for product",
+#         request=CreateReviewSerializer,
+#         responses={201: ReviewSerializer},
+#         tags=["Product webhooks"],
+#     )
+#     @action(detail=True, methods=["post"])
+#     def review(self, request, pk=None):
+#         """
+#         Review product
+#         """
+#         product = self.get_object()
+#         serializer = CreateReviewSerializer(
+#             data=request.data, context={"product": product, "request": request}
+#         )
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#
+#     @extend_schema(
+#         description="Buy product variant",
+#         parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
+#         request=CreateOrderSerializer,
+#         responses={201: OrderSerializer},
+#         tags=["Product webhooks"],
+#     )
+#     @action(
+#         detail=True,
+#         methods=["post"],
+#     )
+#     @atomic
+#     def buy(self, request, pk=None):
+#         """
+#         Buy product variant
+#         """
+#         product_variant = ProductVariant.objects.select_for_update().get(
+#             pk=request.data.get("product_variant")
+#         )
+#         request.data["user"] = request.user.id
+#         request.data["shop"] = product_variant.product.shop.id
+#         serializer = CreateOrderSerializer(
+#             data=request.data, context={"request": request}
+#         )
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
 class ProductViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
@@ -63,90 +163,45 @@ class ProductViewSet(
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
 
     def get_queryset(self):
-        queryset = filter_best_selling_products(self.request)
+        if self.action == "list":
+            queryset = self.get_best_selling_products_queryset()
+        else:
+            queryset = Product.objects.all().prefetch_related("variants", "reviews")
+        queryset = queryset.filter(is_published=True).annotate(
+            overall_price=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "overall_price"
+                )[:1]
+            ),
+            discount_price=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "discount_price"
+                )[:1]
+            ),
+            price=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values("price")[:1]
+            ),
+            discount=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "discount"
+                )[:1]
+            ),
+        )
         return queryset
 
-    def get_queryset(self):
-        if self.action == "list":
-            return (
-                Product.objects.prefetch_related("variants")
-                .filter(is_published=True)
-                .annotate(
-                    overall_price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "overall_price"
-                        )[:1]
-                    ),
-                    discount_price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "discount_price"
-                        )[:1]
-                    ),
-                    price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "price"
-                        )[:1]
-                    ),
-                    discount=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "discount"
-                        )[:1]
-                    ),
-                )
+    def get_best_selling_products_queryset(self):
+        return (
+            Product.objects.filter(is_published=True)
+            .annotate(
+                price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "price"
+                    )[:1]
+                ),
+                total_sales=Sum("variants__orders__quantity"),
             )
-        return Product.objects.all().prefetch_related("variants", "reviews")
-
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return SingleProductSerializer
-        return ProductSerializer
-
-    @extend_schema(
-        description="Create review for product",
-        request=CreateReviewSerializer,
-        responses={201: ReviewSerializer},
-        tags=["Product webhooks"],
-    )
-    @action(detail=True, methods=["post"])
-    def review(self, request, pk=None):
-        """
-        Review product
-        """
-        product = self.get_object()
-        serializer = CreateReviewSerializer(
-            data=request.data, context={"product": product, "request": request}
+            .order_by("-total_sales")
         )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    @extend_schema(
-        description="Buy product variant",
-        parameters=[OpenApiParameter("id", OpenApiTypes.UUID, OpenApiParameter.PATH)],
-        request=CreateOrderSerializer,
-        responses={201: OrderSerializer},
-        tags=["Product webhooks"],
-    )
-    @action(
-        detail=True,
-        methods=["post"],
-    )
-    @atomic
-    def buy(self, request, pk=None):
-        """
-        Buy product variant
-        """
-        product_variant = ProductVariant.objects.select_for_update().get(
-            pk=request.data.get("product_variant")
-        )
-        request.data["user"] = request.user.id
-        request.data["shop"] = product_variant.product.shop.id
-        serializer = CreateOrderSerializer(
-            data=request.data, context={"request": request}
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 @extend_schema(
