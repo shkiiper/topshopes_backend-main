@@ -27,7 +27,7 @@ def filter_best_selling_products(request):
 
     filtered_products = ProductFilter(
         data=request.GET,
-        queryset=Product.objects.filter(id__in=[p['id'] for p in best_selling_products], price__lte=1000)
+        queryset=Product.objects.filter(id__in=[p['id'] for p in best_selling_products])
     ).qs
 
     return filtered_products
