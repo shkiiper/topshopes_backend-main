@@ -155,7 +155,7 @@ class ProductVariantViewSet(
     Product variant viewset to create product variants
     Allowed create update and destroy
     """
-
+#dsfdsf
     permission_classes = [permissions.IsAuthenticated, HasShop]
 
     def get_object(self):
