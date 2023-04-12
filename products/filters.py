@@ -12,37 +12,16 @@ class ProductFilter(FilterSet):
         to_field_name='name',
         queryset=Brand.objects.all()
     )
-
-    class Meta:
-        model = Product
-        fields = ["max_price", "min_price", "brand", "category"]
-
-
-class ProductFilter(django_filters.FilterSet):
     is_discounted = django_filters.BooleanFilter(
         field_name='variants__discount_price',
         lookup_expr='isnull',
         exclude=True
     )
-
-    class Meta:
-        model = Product
-        fields = ['category', 'brand', 'is_discounted']
-
-
-class ProductFilter(django_filters.FilterSet):
     is_new = django_filters.BooleanFilter(
         field_name='created_at',
         lookup_expr='gte',
         label='New Products'
     )
-
-    class Meta:
-        model = Product
-        fields = ['category', 'brand', 'is_new']
-
-
-class ProductFilter(django_filters.FilterSet):
     rating = django_filters.NumberFilter(
         field_name='rating',
         lookup_expr='gte',
@@ -51,4 +30,40 @@ class ProductFilter(django_filters.FilterSet):
 
     class Meta:
         model = Product
-        fields = ['category', 'brand', 'rating']
+        fields = ["max_price", "min_price", "brand", "category", "is_discounted", "is_new", "rating"]
+
+
+# class ProductFilter(django_filters.FilterSet):
+#     is_discounted = django_filters.BooleanFilter(
+#         field_name='variants__discount_price',
+#         lookup_expr='isnull',
+#         exclude=True
+#     )
+#
+#     class Meta:
+#         model = Product
+#         fields = ['category', 'brand', 'is_discounted']
+
+
+# class ProductFilter(django_filters.FilterSet):
+#     is_new = django_filters.BooleanFilter(
+#         field_name='created_at',
+#         lookup_expr='gte',
+#         label='New Products'
+#     )
+#
+#     class Meta:
+#         model = Product
+#         fields = ['category', 'brand', 'is_new']
+
+
+# class ProductFilter(django_filters.FilterSet):
+#     rating = django_filters.NumberFilter(
+#         field_name='rating',
+#         lookup_expr='gte',
+#         label='Minimum Rating'
+#     )
+#
+#     class Meta:
+#         model = Product
+#         fields = ['category', 'brand', 'rating']
