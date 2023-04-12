@@ -1,6 +1,7 @@
-from django_filters.rest_framework import FilterSet
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, filters
 import django_filters
 from .models import Product, Brand, ProductVariant
+from datetime import datetime, timedelta
 
 
 class ProductFilter(FilterSet):
@@ -12,58 +13,43 @@ class ProductFilter(FilterSet):
         to_field_name='name',
         queryset=Brand.objects.all()
     )
-    is_discounted = django_filters.BooleanFilter(
-        field_name='variants__discount_price',
-        lookup_expr='isnull',
-        exclude=True
-    )
-    is_new = django_filters.BooleanFilter(
-        field_name='created_at',
-        lookup_expr='gte',
-        label='New Products'
-    )
-    rating = django_filters.NumberFilter(
-        field_name='rating',
-        lookup_expr='gte',
-        label='Minimum Rating'
-    )
 
     class Meta:
         model = Product
-        fields = ["max_price", "min_price", "brand", "category", "is_discounted", "is_new", "rating"]
+        fields = ["max_price", "min_price", "brand", "category", ]
 
 
-# class ProductFilter(django_filters.FilterSet):
-#     is_discounted = django_filters.BooleanFilter(
-#         field_name='variants__discount_price',
-#         lookup_expr='isnull',
-#         exclude=True
-#     )
-#
-#     class Meta:
-#         model = Product
-#         fields = ['category', 'brand', 'is_discounted']
+class DisroductFilter(django_filters.FilterSet):
+    has_discount = filters.BooleanFilter(method='filter_has_discount')
+
+    class Meta:
+        model = Product
+        fields = ['category', 'brand', 'has_discount']
+
+    def filter_has_discount(self, queryset, name, value):
+        if value:
+            return queryset.filter(variants__discount_price__isnull=False)
+        return queryset
 
 
-# class ProductFilter(django_filters.FilterSet):
-#     is_new = django_filters.BooleanFilter(
-#         field_name='created_at',
-#         lookup_expr='gte',
-#         label='New Products'
-#     )
-#
-#     class Meta:
-#         model = Product
-#         fields = ['category', 'brand', 'is_new']
+class NewProductFilter(django_filters.FilterSet):
+    new_arrival = filters.BooleanFilter(method='filter_new_arrival')
+
+    def filter_new_arrival(self, queryset, name, value):
+        if value:
+            yesterday = datetime.now() - timedelta(days=2)
+            queryset = queryset.filter(created_at__gte=yesterday)
+        return queryset
+
+    class Meta:
+        model = Product
+        fields = ['category', 'brand', 'new_arrival']
 
 
-# class ProductFilter(django_filters.FilterSet):
-#     rating = django_filters.NumberFilter(
-#         field_name='rating',
-#         lookup_expr='gte',
-#         label='Minimum Rating'
-#     )
-#
-#     class Meta:
-#         model = Product
-#         fields = ['category', 'brand', 'rating']
+class RatProductFilter(django_filters.FilterSet):
+    min_rating = filters.NumberFilter(field_name="rating", lookup_expr='gte')
+    max_rating = filters.NumberFilter(field_name="rating", lookup_expr='lte')
+
+    class Meta:
+        model = Product
+        fields = ['category', 'brand', 'min_rating', 'max_rating']
