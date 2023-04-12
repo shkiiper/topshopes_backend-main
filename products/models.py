@@ -136,7 +136,7 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["name", "created_at", "rating"]
         verbose_name = "Product"
         verbose_name_plural = "Products"
 
@@ -198,6 +198,6 @@ class ProductVariant(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ["product"]
+        ordering = ["product", "discount_price", ]
         verbose_name = "Product variant"
         verbose_name_plural = "Product variants"
