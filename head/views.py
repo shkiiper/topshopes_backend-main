@@ -101,36 +101,6 @@ class AdminShopViewSet(
             return SingleShopSerializer
         return ShopSerializer
 
-    def retrieve(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-        except ObjectDoesNotExist:
-            return Response(
-                {"detail": "Shop not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def update(self, request, *args, **kwargs):
-        try:
-            return super().update(request, *args, **kwargs)
-        except ObjectDoesNotExist:
-            return Response(
-                {"detail": "Shop not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
 
 class AdminCategoryViewSet(viewsets.ModelViewSet):
     """

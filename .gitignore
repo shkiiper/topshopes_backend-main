@@ -1,8 +1,5 @@
 venv/
-<<<<<<< HEAD
-=======
 migrations/
->>>>>>> e927db6 (fixes)
 __pycache__/
 .mypy_chache/
 media/
@@ -16,4 +13,3 @@ db.sqlite3
 test.py
 .env
 staticfiles
-.env

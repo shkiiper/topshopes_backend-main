@@ -60,7 +60,7 @@ class ProductViewSet(
         DjangoFilterBackend,
     ]
     filterset_class = ProductFilter
-    filterset_fields = ["id", "category"]
+    filterset_fields = ["id", "category", "is_new", "has_discount", "is_top_rated"]
     search_fields = ["name", "id"]
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
 
