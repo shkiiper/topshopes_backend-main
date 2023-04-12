@@ -10,7 +10,7 @@ from django.db.models import Sum
 
 from django.db.models import F
 
-from .filters import ProductFilter, DisroductFilter, RatProductFilter, NewProductFilter
+from .filters import ProductFilter
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -59,7 +59,7 @@ class ProductViewSet(
         filters.OrderingFilter,
         DjangoFilterBackend,
     ]
-    filterset_class = ProductFilter, DisroductFilter, RatProductFilter, NewProductFilter
+    filterset_class = ProductFilter
     filterset_fields = ["id", "category", "new_arrival", "has_discount", "is_top_rated", 'min_rating', 'max_rating']
     search_fields = ["name", "id"]
     ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price", ]
