@@ -70,6 +70,7 @@ class ProductViewSet(
         "variants__price",
         "variants__overall_price",
     ]
+
     def get_queryset(self):
         if self.action == "list":
             return (
@@ -99,7 +100,6 @@ class ProductViewSet(
                 )
             )
         return Product.objects.all().prefetch_related("variants", "reviews")
-
 
     # def get_queryset(self):
     #     queryset = Product.objects.filter(is_published=True)  # filter only published products
