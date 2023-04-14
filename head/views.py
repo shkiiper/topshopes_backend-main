@@ -3,16 +3,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters, mixins
 from django.http import JsonResponse
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import NotFound
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import viewsets, permissions, status, filters
-from django.http import Http404
-
+from rest_framework import viewsets, permissions, filters
 from orders.models import Order
 from orders.serializers import OrderSerializer
-
 from applications.models import Application
 from applications.serializers import ApplicationSerializer, SingleApplicationSerializer
 from attributes.models import Attribute
@@ -167,80 +162,6 @@ class AdminBrandTypeViewSet(viewsets.ModelViewSet):
     ordering_fields = ["name"]
 
 
-# class AdminProductViewSet(
-#     mixins.ListModelMixin,
-#     mixins.DestroyModelMixin,
-#     mixins.UpdateModelMixin,
-#     mixins.RetrieveModelMixin,
-#     viewsets.GenericViewSet,
-# ):
-#     """
-#     Viewset to manage products
-#     Allowed: All methods without create
-#     """
-#
-#     permission_classes = [permissions.IsAdminUser]
-#     filter_backends = [filters.OrderingFilter, filters.SearchFilter]
-#     search_fields = [
-#         "slug",
-#         "description",
-#         "name",
-#
-#         "discount",
-#         "discount_price",
-#         "overall_price",
-#         "price",
-#         "created_at", ]
-#     ordering_fields = ["name", "rating", "created_at"]
-#
-#     def get_queryset(self):
-#         """
-#         Returns all products
-#         """
-#         return Product.objects.prefetch_related("variants").annotate(
-#             overall_price=Subquery(
-#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                     "overall_price"
-#                 )[:1]
-#             ),
-#             discount_price=Subquery(
-#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                     "discount_price"
-#                 )[:1]
-#             ),
-#             discount=Subquery(
-#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                     "discount"
-#                 )[:1]
-#             ),
-#             price=Subquery(
-#                 ProductVariant.objects.filter(product=OuterRef("pk")).values("price")
-#                 [:1]
-#             ),
-#             thumbnail=Subquery(
-#                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-#                     "thumbnail"
-#                 )[:1]
-#             ),
-#         )
-#
-#     def get_serializer_class(self):
-#         if self.action in ["create", "update"]:
-#             return AdminProductUpdateSerializer
-#         return AdminProductSerializer
-#
-#     def update(self, request, *args, **kwargs):
-#         """
-#         Update product
-#         """
-#         if "category" in request.data:
-#             product = self.get_object()
-#             variants = product.variants.all()
-#             for variant in variants:
-#                 variant.attribute_values.all().delete()
-#             product.category = Category.objects.get(id=request.data["category"])
-#             product.save()
-#         return super().update(request, *args, **kwargs)
 class AdminProductViewSet(
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
@@ -271,35 +192,32 @@ class AdminProductViewSet(
         """
         Returns all products
         """
-        try:
-            return Product.objects.prefetch_related("variants").annotate(
-                overall_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "overall_price"
-                    )[:1]
-                ),
-                discount_price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "discount_price"
-                    )[:1]
-                ),
-                discount=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "discount"
-                    )[:1]
-                ),
-                price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values("price")
-                    [:1]
-                ),
-                thumbnail=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "thumbnail"
-                    )[:1]
-                ),
-            )
-        except ObjectDoesNotExist as e:
-            raise NotFound("Product not found")
+        return Product.objects.prefetch_related("variants").annotate(
+            overall_price=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "overall_price"
+                )[:1]
+            ),
+            discount_price=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "discount_price"
+                )[:1]
+            ),
+            discount=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "discount"
+                )[:1]
+            ),
+            price=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values("price")
+                [:1]
+            ),
+            thumbnail=Subquery(
+                ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                    "thumbnail"
+                )[:1]
+            ),
+        )
 
     def get_serializer_class(self):
         if self.action in ["create", "update"]:
@@ -310,17 +228,15 @@ class AdminProductViewSet(
         """
         Update product
         """
-        try:
-            if "category" in request.data:
-                product = self.get_object()
-                variants = product.variants.all()
-                for variant in variants:
-                    variant.attribute_values.all().delete()
-                product.category = Category.objects.get(id=request.data["category"])
-                product.save()
-        except ObjectDoesNotExist as e:
-            raise NotFound("Category not found")
+        if "category" in request.data:
+            product = self.get_object()
+            variants = product.variants.all()
+            for variant in variants:
+                variant.attribute_values.all().delete()
+            product.category = Category.objects.get(id=request.data["category"])
+            product.save()
         return super().update(request, *args, **kwargs)
+
 
 class AdminPostViewSet(viewsets.ModelViewSet):
     """

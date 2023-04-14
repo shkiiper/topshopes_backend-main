@@ -5,7 +5,7 @@ from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.db.models import Q
 from core.permissions import HasShop, IsOwner
 from .filters import ShopProductFilter
 from products.models import Product, ProductVariant
@@ -118,7 +118,9 @@ class ShopProductsViewSet(
     @action(detail=True, methods=["get"])
     def products(self, request, slug=None):
         shop = self.get_object()
-        products = Product.objects.filter(shop=shop)
+        products = Product.objects.filter(
+            Q(shop=shop) & Q(is_published=True)
+        )
         serializer = ProductSerializer(products, many=True)
 
         data = []
