@@ -491,12 +491,12 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         queryset = (
             Product.objects.filter(
-                product_variants__discount__gt=0, is_published=True
+                productvariant__discount__gt=0, is_published=True
             )
             .annotate(
-                discounted_price=F("product_variants__price")
-                - (F("product_variants__price") * F("product_variants__discount") / 100),
-                price_annotation=F("product_variants__price"),
+                discounted_price=F("productvariant__price")
+                - (F("productvariant__price") * F("productvariant__discount") / 100),
+                price_annotation=F("productvariant__price"),
             )
             .distinct()
             .order_by("-discounted_price")
