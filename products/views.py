@@ -472,16 +472,33 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
+# class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     serializer_class = ProductVariantSerializer
+#
+#     def get_queryset(self):
+#         queryset = (
+#             ProductVariant.objects.filter(discount__gt=0, product__is_published=True)
+#             .annotate(
+#                 discounted_price=F("price") - (F("price") * F("discount") / 100),
+#                 price_annotation=F("price"),
+#             )
+#             .order_by("-discounted_price")
+#         )
+#         return queryset
 class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
         queryset = (
-            ProductVariant.objects.filter(discount__gt=0, product__is_published=True)
-            .annotate(
-                discounted_price=F("price") - (F("price") * F("discount") / 100),
-                price_annotation=F("price"),
+            Product.objects.filter(
+                product_variants__discount__gt=0, is_published=True
             )
+            .annotate(
+                discounted_price=F("product_variants__price")
+                - (F("product_variants__price") * F("product_variants__discount") / 100),
+                price_annotation=F("product_variants__price"),
+            )
+            .distinct()
             .order_by("-discounted_price")
         )
         return queryset
