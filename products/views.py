@@ -473,7 +473,7 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = ProductVariantSerializer
+    serializer_class = ProductSerializer
 
     def get_queryset(self):
         queryset = (
