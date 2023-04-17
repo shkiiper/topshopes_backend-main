@@ -188,7 +188,7 @@ class ProductVariant(models.Model):
         if self.discount:
             self.discount_price = self.price - (self.price * Decimal(self.discount) / Decimal(100))
         else:
-            self.discount_price = self.price
+            self.discount_price = 0
 
         self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
         self.tax_price = self.discount_price * self.product.category.tax / 100
