@@ -180,12 +180,12 @@ class AdminProductViewSet(
         "slug",
         "description",
         "name",
-
         "discount",
         "discount_price",
         "overall_price",
         "price",
         "created_at", ]
+
     ordering_fields = ["name", "rating", "created_at"]
 
     def get_queryset(self):

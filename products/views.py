@@ -93,12 +93,13 @@ class ProductViewSet(
     #             )
     #         )
     #     return Product.objects.all().prefetch_related("variants", "reviews")
-    ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price", "discount_price", "total_sales"]
+    ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price", "discount_price",
+                       "total_sales"]
 
     def get_queryset(self):
         if self.action == "list":
             qs = Product.objects.prefetch_related("variants")
-            qs = qs.filter(is_published=True)
+            qs
             qs = qs.annotate(
                 overall_price=Subquery(
                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
@@ -126,7 +127,6 @@ class ProductViewSet(
             )
             return qs
         return Product.objects.all().prefetch_related("variants", "reviews")
-
 
     def get_serializer_class(self):
         if self.action == "retrieve":
