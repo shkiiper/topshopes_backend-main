@@ -265,7 +265,6 @@ class ShopProductViewSet(viewsets.ModelViewSet):
         return (
             Product.objects.prefetch_related("variants")
             .filter(shop=self.request.user.shop)
-            .filter(is_published=True)  # type: ignore
             .annotate(
                 overall_price=Subquery(
                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
