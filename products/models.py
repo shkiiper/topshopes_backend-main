@@ -184,11 +184,11 @@ class ProductVariant(models.Model):
     def __str__(self):
         return self.product.name
 
-    def save(self, *args, **kwargs):
+    def save(self, null=None, *args, **kwargs):
         if self.discount:
             self.discount_price = self.price - (self.price * Decimal(self.discount) / Decimal(100))
         else:
-            self.discount_price = 0
+            self.discount_price = null
 
         self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
         self.tax_price = self.discount_price * self.product.category.tax / 100
