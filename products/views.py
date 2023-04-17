@@ -6,8 +6,8 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema, extend_schema
 from rest_framework import filters, mixins, permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Sum
-
+from django.db.models.functions import Coalesce
+from django.db.models import Subquery, OuterRef, Sum, Value
 from django.db.models import F
 
 from .filters import ProductFilter
@@ -62,37 +62,71 @@ class ProductViewSet(
     filterset_class = ProductFilter
     filterset_fields = ["id", "category", ]
     search_fields = ["name", "id"]
-    ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price", "discount_price"]
+    # ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price", "discount_price"]
+    #
+    # def get_queryset(self):
+    #     if self.action == "list":
+    #         return (
+    #             Product.objects.prefetch_related("variants")
+    #             .filter(is_published=True)
+    #             .annotate(
+    #                 overall_price=Subquery(
+    #                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                         "overall_price"
+    #                     )[:1]
+    #                 ),
+    #                 discount_price=Subquery(
+    #                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                         "discount_price"
+    #                     )[:1]
+    #                 ),
+    #                 price=Subquery(
+    #                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                         "price"
+    #                     )[:1]
+    #                 ),
+    #                 discount=Subquery(
+    #                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+    #                         "discount"
+    #                     )[:1]
+    #                 ),
+    #             )
+    #         )
+    #     return Product.objects.all().prefetch_related("variants", "reviews")
+    ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price", "discount_price", "total_sales"]
 
     def get_queryset(self):
         if self.action == "list":
-            return (
-                Product.objects.prefetch_related("variants")
-                .filter(is_published=True)
-                .annotate(
-                    overall_price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "overall_price"
-                        )[:1]
-                    ),
-                    discount_price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "discount_price"
-                        )[:1]
-                    ),
-                    price=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "price"
-                        )[:1]
-                    ),
-                    discount=Subquery(
-                        ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                            "discount"
-                        )[:1]
-                    ),
-                )
+            qs = Product.objects.prefetch_related("variants")
+            qs = qs.filter(is_published=True)
+            qs = qs.annotate(
+                overall_price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "overall_price"
+                    )[:1]
+                ),
+                discount_price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "discount_price"
+                    )[:1]
+                ),
+                price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "price"
+                    )[:1]
+                ),
+                discount=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "discount"
+                    )[:1]
+                ),
+                total_sales=Coalesce(
+                    Sum("variants__orders__quantity"), Value(0)
+                ),
             )
+            return qs
         return Product.objects.all().prefetch_related("variants", "reviews")
+
 
     def get_serializer_class(self):
         if self.action == "retrieve":
