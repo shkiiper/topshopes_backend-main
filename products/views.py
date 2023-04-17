@@ -62,37 +62,7 @@ class ProductViewSet(
     filterset_class = ProductFilter
     filterset_fields = ["id", "category", ]
     search_fields = ["name", "id"]
-    ordering_fields = ["name", "rating", "create_at", "price"]
-
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     if self.action == "list":
-    #         queryset = queryset.filter(is_published=True)
-    #         queryset = queryset.annotate(
-    #             overall_price=Subquery(
-    #                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                     "overall_price"
-    #                 )[:1]
-    #             ),
-    #             discount_price=Subquery(
-    #                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                     "discount_price"
-    #                 )[:1]
-    #             ),
-    #             price=Subquery(
-    #                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                     "price"
-    #                 )[:1]
-    #             ),
-    #             discount=Subquery(
-    #                 ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                     "discount"
-    #                 )[:1]
-    #             ),
-    #         )
-    #     queryset = queryset.prefetch_related("variants", "reviews")
-    #     queryset = self.filter_queryset(queryset)
-    #     return queryset
+    ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price"]
 
     def get_queryset(self):
         if self.action == "list":
@@ -123,7 +93,6 @@ class ProductViewSet(
                 )
             )
         return Product.objects.all().prefetch_related("variants", "reviews")
-
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -262,7 +231,7 @@ class ShopProductViewSet(viewsets.ModelViewSet):
         return (
             Product.objects.prefetch_related("variants")
             .filter(shop=self.request.user.shop)
-            .filter(is_published=True)            # type: ignore
+            .filter(is_published=True)  # type: ignore
             .annotate(
                 overall_price=Subquery(
                     ProductVariant.objects.filter(product=OuterRef("pk")).values(

@@ -1,10 +1,9 @@
-from django.db.models import OuterRef, Subquery
+from django.db.models import Subquery
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from django.db.models import Q
 from core.permissions import HasShop, IsOwner
 from .filters import ShopProductFilter
@@ -102,7 +101,7 @@ class ShopProductsViewSet(
     filterset_class = ShopProductFilter
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend, ]
     search_fields = ["name", "id"]
-    ordering_fields = ["products__name", "products__created_at", "products__variants__price"]
+    # ordering_fields = ["products__name", "products__created_at", "products__variants__price"]
 
     def get_serializer_class(self):
         if self.action == "retrieve":
