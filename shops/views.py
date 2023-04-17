@@ -117,7 +117,10 @@ class ShopProductsViewSet(
     @action(detail=True, methods=["get"])
     def products(self, request, slug=None):
         shop = self.get_object()
-        products = Product.objects.filter(Q(shop=shop) & Q(is_published=True))
+        products = Product.objects.filter(
+            Q(shop=shop)
+        )
+        Product.objects.filter(is_published=True)
         serializer = ProductSerializer(products, many=True)
 
         data = []
