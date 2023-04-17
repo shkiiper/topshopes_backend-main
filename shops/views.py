@@ -120,7 +120,7 @@ class ShopProductsViewSet(
         products = Product.objects.filter(
             Q(shop=shop)
         )
-        # Product.objects.filter(is_published=True)
+        Product.objects.filter(is_published=True)
         serializer = ProductSerializer(products, many=True)
 
         data = []
