@@ -440,7 +440,7 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = ProductVariantSerializer
+    serializer_class = ProductSerializer
 
     def get_queryset(self):
         queryset = (
@@ -450,15 +450,9 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
                 price_annotation=F("price"),
             )
             .order_by("-discounted_price")
+            .values("product")  # Group by Product ID
         )
         return queryset
-
-    def retrieve(self, request, pk=None):
-        # Retrieve the ProductVariant instance by variant ID
-        variant = get_object_or_404(ProductVariant, id=pk)
-
-        # Redirect to the associated product's ID
-        return redirect('product-detail', pk=variant.product_id)
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
