@@ -48,10 +48,18 @@ class SingleShopSerializer(serializers.ModelSerializer):
     products = ProductSerializer(read_only=True, many=True)
     variants = ProductVariantSerializer(read_only=True, many=True)
     price = ProductVariantSerializer(read_only=True, many=True)
+    name = ProductSerializer(read_only=True)
+    category = ProductSerializer(read_only=True)
+    rating = ProductSerializer(read_only=True)
+    discount_price = ProductVariantSerializer(read_only=True)
+    brand = ProductSerializer(read_only=True)
+    thumbnail = ProductSerializer(read_only=True)
+    created_at = ProductSerializer(read_only=True)
+    is_published = ProductSerializer(read_only=True)
 
     class Meta:
         model = Shop
-        fields = "__all__"
+        fields = ["id", "user", "price", "name", "category", "rating", "discount_price", "brand", "thumbnail", "created_at", "is_published",]
 
 
 class CreateShopSerializer(serializers.ModelSerializer):
