@@ -455,9 +455,12 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 #         )
 #         return queryset
 class DiscountedProductView(generics.ListAPIView):
-    queryset = Product.objects.filter(is_published=True, variants__discount_price__gt=0).order_by(
-        '-variants__discount_price')
     serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        queryset = Product.objects.filter(is_published=True, variants__discount_price__gt=0).order_by(
+            '-variants__discount_price')
+        return queryset
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
