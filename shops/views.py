@@ -8,7 +8,7 @@ from django.db.models import Q
 from core.permissions import HasShop, IsOwner
 from .filters import ShopProductFilter
 from products.models import Product, ProductVariant
-from products.serializers import ProductSerializer, ProductVariantSerializer
+from products.serializers import ProductSerializer, ProductVariantSerializer, SingleProductSerializer
 from reviews.models import Review
 from reviews.serializers import ShopReviewSerializer
 from payments.models import TransferMoney
@@ -134,10 +134,14 @@ class ShopProductsViewSet(
         serializer = ProductSerializer(qs, many=True)
         return Response(serializer.data)
 
+    # def get_serializer_class(self):
+    #     if self.action == "retrieve":
+    #         return SingleShopSerializer
+    #     return ShopSerializer
     def get_serializer_class(self):
         if self.action == "retrieve":
-            return SingleShopSerializer
-        return ShopSerializer
+            return SingleProductSerializer
+        return ProductSerializer
 
     @extend_schema(
         description="Viewset to control only user's shop links",
