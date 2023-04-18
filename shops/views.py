@@ -134,14 +134,10 @@ class ShopProductsViewSet(
         serializer = ProductSerializer(qs, many=True)
         return Response(serializer.data)
 
-    # def get_serializer_class(self):
-    #     if self.action == "retrieve":
-    #         return SingleShopSerializer
-    #     return ShopSerializer
     def get_serializer_class(self):
         if self.action == "retrieve":
-            return SingleProductSerializer
-        return ProductSerializer
+            return SingleShopSerializer
+        return ShopSerializer
 
     @extend_schema(
         description="Viewset to control only user's shop links",
