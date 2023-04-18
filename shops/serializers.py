@@ -59,7 +59,7 @@ class SingleShopSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Shop
-        fields = ["id", "user", "price", "name", "category", "rating", "discount_price", "brand", "thumbnail", "created_at", "is_published",]
+        fields = ["id", "user", "links", "products", "variants", "price", "name", "category", "rating", "discount_price", "brand", "thumbnail", "created_at", "is_published",]
 
 
 class CreateShopSerializer(serializers.ModelSerializer):
