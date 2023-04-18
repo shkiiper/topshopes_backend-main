@@ -236,6 +236,7 @@ class ProductSerializer(serializers.ModelSerializer):
     brand = serializers.SlugRelatedField(
         slug_field="name", queryset=Brand.objects.all()
     )
+    slug = serializers.SlugField()
 
     class Meta:
         model = Product
@@ -254,6 +255,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "price",
             'created_at',
             'is_published',
+            'slug',
         ]
 
     def get_thumbnail(self, object):
