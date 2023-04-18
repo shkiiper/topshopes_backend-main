@@ -1,4 +1,4 @@
-from django.db.models import OuterRef, Subquery
+from django.shortcuts import get_object_or_404, redirect
 from django.db.transaction import atomic
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
@@ -452,6 +452,14 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
             .order_by("-discounted_price")
         )
         return queryset
+
+    def retrieve(self, request, pk=None):
+        # Retrieve the ProductVariant instance by variant ID
+        variant = get_object_or_404(ProductVariant, id=pk)
+
+        # Redirect to the associated product's ID
+        return redirect('product-detail', pk=variant.product_id)
+
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
