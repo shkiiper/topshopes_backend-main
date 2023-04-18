@@ -146,6 +146,8 @@ class ShopProductsViewSet(
     def get_queryset(self):
         if self.action == "list":
             shop = self.get_object()
+            if shop is None:
+                return Product.objects.none()  # условие выхода из рекурсии
             qs = Product.objects.filter(shop=shop, is_published=True).prefetch_related("variants")
             qs = qs.annotate(
                 overall_price=Subquery(
@@ -174,6 +176,8 @@ class ShopProductsViewSet(
             )
             return qs
         shop = self.get_object()
+        if shop is None:
+            return Product.objects.none()  # условие выхода из рекурсии
         return Product.objects.filter(shop=shop, is_published=True).prefetch_related("variants", "reviews")
 
     @extend_schema(
