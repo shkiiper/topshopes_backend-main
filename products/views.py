@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from django.db.models.functions import Coalesce
 from django.db.models import Subquery, OuterRef, Sum, Value
 from django.db.models import F
+from rest_framework import generics
 
 from .filters import ProductFilter
 from rest_framework.exceptions import NotFound
@@ -453,27 +454,10 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 #             .values("product")
 #         )
 #         return queryset
-class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
+class DiscountedProductView(generics.ListAPIView):
+    # queryset = Product.objects.filter(is_published=True)
+    queryset = Product.objects.filter(is_published=True, discount_price__gt=0).order_by('-discount_price')
     serializer_class = ProductSerializer
-    queryset = Product.objects.filter(is_published=True)
-
-    def get_queryset(self):
-        queryset = (
-            self.queryset
-            .filter(variants__discounted_price__isnull=False)
-            .prefetch_related("variants")
-            .annotate(
-                price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk"), discounted_price__isnull=False).values(
-                        "discounted_price"
-                    )[:1]
-                ),
-            )
-        )
-        return queryset
-
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
