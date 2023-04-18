@@ -145,7 +145,8 @@ class ShopProductsViewSet(
     #     return Response(data)
     def get_queryset(self):
         if self.action == "list":
-            qs = Product.objects.filter(is_published=True).prefetch_related("variants")
+            shop = self.get_object()
+            qs = Product.objects.filter(shop=shop, is_published=True).prefetch_related("variants")
             qs = qs.annotate(
                 overall_price=Subquery(
                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
@@ -172,7 +173,8 @@ class ShopProductsViewSet(
                 ),
             )
             return qs
-        return Product.objects.all().prefetch_related("variants", "reviews")
+        shop = self.get_object()
+        return Product.objects.filter(shop=shop, is_published=True).prefetch_related("variants", "reviews")
 
     @extend_schema(
         description="Viewset to control only user's shop links",
