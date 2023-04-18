@@ -454,26 +454,27 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 #         )
 #         return queryset
 class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = ProductSerializer  # Используем ProductSerializer
+    serializer_class = ProductSerializer
+
+    serializer_class = ProductSerializer
+    queryset = Product.objects.filter(is_published=True).order_by('-rating')
 
     def get_queryset(self):
         queryset = (
-            ProductVariant.objects.filter(discount__gt=0, product__is_published=True)
+            self.queryset
+            .prefetch_related("variants")
             .annotate(
-                discounted_price=F("price") - (F("price") * F("discount") / 100),
-                price_annotation=F("price"),
+                price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "discounted_price"
+                    )[:1]
+                ),
             )
-            .order_by("-discounted_price")
-            .values("product")
         )
         return queryset
 
     def list(self, request, *args, **kwargs):
-        # Получаем queryset, используя get_queryset()
-        queryset = self.get_queryset()
-        # Возвращаем только id продуктов
-        product_ids = [item["product"] for item in queryset]
-        return self.get_paginated_response(product_ids)
+        return super().list(request, *args, **kwargs)
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
