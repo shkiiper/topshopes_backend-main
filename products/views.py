@@ -99,7 +99,7 @@ class ProductViewSet(
     def get_queryset(self):
         if self.action == "list":
             qs = Product.objects.prefetch_related("variants")
-            qs
+            qs.filter(is_published=True)
             qs = qs.annotate(
                 overall_price=Subquery(
                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
