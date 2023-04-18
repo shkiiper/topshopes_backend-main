@@ -130,14 +130,6 @@ class ShopProductsViewSet(
                     "price"
                 )[:1]
             ),
-            discount=Subquery(
-                ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                    "discount"
-                )[:1]
-            ),
-            total_sales=Coalesce(
-                Sum("variants__orders__quantity"), Value(0)
-            ),
         )
         serializer = ProductSerializer(qs, many=True)
         return Response(serializer.data)

@@ -47,7 +47,7 @@ class SingleShopSerializer(serializers.ModelSerializer):
     links = LinkSerializer(many=True, read_only=True)
     products = ProductSerializer(read_only=True, many=True)
     variants = ProductVariantSerializer(read_only=True, many=True)
-    price = ProductVariantSerializer(read_only=True, many=True)
+    price = serializers.DecimalField(read_only=True, many=True)
 
     class Meta:
         model = Shop
