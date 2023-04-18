@@ -454,6 +454,9 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
         )
         return queryset
 
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
