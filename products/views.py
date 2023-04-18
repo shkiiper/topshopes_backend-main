@@ -62,39 +62,7 @@ class ProductViewSet(
     filterset_class = ProductFilter
     filterset_fields = ["id", "category", ]
     search_fields = ["name", "id"]
-    # ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price", "discount_price"]
-    #
-    # def get_queryset(self):
-    #     if self.action == "list":
-    #         return (
-    #             Product.objects.prefetch_related("variants")
-    #             .filter(is_published=True)
-    #             .annotate(
-    #                 overall_price=Subquery(
-    #                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                         "overall_price"
-    #                     )[:1]
-    #                 ),
-    #                 discount_price=Subquery(
-    #                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                         "discount_price"
-    #                     )[:1]
-    #                 ),
-    #                 price=Subquery(
-    #                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                         "price"
-    #                     )[:1]
-    #                 ),
-    #                 discount=Subquery(
-    #                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
-    #                         "discount"
-    #                     )[:1]
-    #                 ),
-    #             )
-    #         )
-    #     return Product.objects.all().prefetch_related("variants", "reviews")
-    ordering_fields = ["name", "rating", "overall_price", "created_at", "discount", "price", "discount_price",
-                       "total_sales"]
+    ordering_fields = ["name", "rating", "created_at", "price", "discount_price", "total_sales"]
 
     def get_queryset(self):
         if self.action == "list":

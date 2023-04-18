@@ -27,6 +27,8 @@ from .serializers import (
     SingleShopSerializer,
 )
 
+from django.db.models.functions import Coalesce
+from django.db.models import Subquery, OuterRef, Sum, Value
 
 @extend_schema(
     description="Viewset to edit user's shop",
@@ -114,34 +116,63 @@ class ShopProductsViewSet(
         responses={200: ProductSerializer},
         tags=["All"],
     )
-    @action(detail=True, methods=["get"])
-    def products(self, request, slug=None):
-        shop = self.get_object()
-        products = Product.objects.filter(
-            Q(shop=shop), is_published=True
-        )
-        serializer = ProductSerializer(products, many=True)
-
-        data = []
-        for product in serializer.data:
-            variants = ProductVariant.objects.filter(product=product["id"]).annotate(
+    # @action(detail=True, methods=["get"])
+    # def products(self, request, slug=None):
+    #     shop = self.get_object()
+    #     products = Product.objects.filter(
+    #         Q(shop=shop), is_published=True
+    #     )
+    #     serializer = ProductSerializer(products, many=True)
+    #
+    #     data = []
+    #     for product in serializer.data:
+    #         variants = ProductVariant.objects.filter(product=product["id"]).annotate(
+    #             overall_price=Subquery(
+    #                 ProductVariant.objects.filter(product=product["id"]).values(
+    #                     "price"
+    #                 )[:1]
+    #             ),
+    #             thumbnail=Subquery(
+    #                 ProductVariant.objects.filter(product=product["id"]).values(
+    #                     "thumbnail"
+    #                 )[:1]
+    #             ),
+    #         )
+    #         variant_serializer = ProductVariantSerializer(variants, many=True)
+    #         product["variants"] = variant_serializer.data
+    #         data.append(product)
+    #
+    #     return Response(data)
+    def get_queryset(self):
+        if self.action == "list":
+            qs = Product.objects.filter(is_published=True).prefetch_related("variants")
+            qs = qs.annotate(
                 overall_price=Subquery(
-                    ProductVariant.objects.filter(product=product["id"]).values(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "overall_price"
+                    )[:1]
+                ),
+                discount_price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "discount_price"
+                    )[:1]
+                ),
+                price=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
                         "price"
                     )[:1]
                 ),
-                thumbnail=Subquery(
-                    ProductVariant.objects.filter(product=product["id"]).values(
-                        "thumbnail"
+                discount=Subquery(
+                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
+                        "discount"
                     )[:1]
                 ),
+                total_sales=Coalesce(
+                    Sum("variants__orders__quantity"), Value(0)
+                ),
             )
-            variant_serializer = ProductVariantSerializer(variants, many=True)
-            product["variants"] = variant_serializer.data
-            data.append(product)
-
-        return Response(data)
-
+            return qs
+        return Product.objects.all().prefetch_related("variants", "reviews")
 
     @extend_schema(
         description="Viewset to control only user's shop links",
