@@ -62,7 +62,7 @@ class ProductViewSet(
     ]
     filterset_class = ProductFilter
     filterset_fields = ["id", "category", ]
-    search_fields = ["name", "id", "shop", "category", "price"]
+    search_fields = ["name", "id", "shop__name", "category__name", ]
     ordering_fields = ["name", "rating", "created_at", "price", "discount_price", "total_sales"]
 
     def get_queryset(self):
