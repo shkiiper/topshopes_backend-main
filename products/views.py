@@ -451,7 +451,7 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
                 price_annotation=F("price"),
             )
             .order_by("-discounted_price")
-            .values("product")
+            # .values("product")
         )
         return queryset
 
