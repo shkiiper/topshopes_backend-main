@@ -456,13 +456,17 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 #         return queryset
 
 class DiscountedProductView(generics.ListAPIView):
-    def get(self, request):
-        products = Product.objects.filter(is_published=True)  # Фильтруем только опубликованные продукты
-        sorted_products = products.order_by(
-            'variants__discount_price')  # Сортируем по discount_price в ProductVariant модели
-        serializer = ProductSerializer(sorted_products,
-                                       many=True)  # Преобразуем queryset в сериализованный список продуктов
-        return Response(serializer.data)
+    def get_queryset(self):
+        # Используем queryset для получения продуктов, отсортированных по discount_price
+        queryset = Product.objects.filter(variants__discount_price__isnull=False).order_by('variants__discount_price')
+        return queryset
+
+    def get(self, request, format=None):
+        # Получаем queryset с помощью метода get_queryset()
+        queryset = self.get_queryset()
+
+        # Возвращаем queryset
+        return queryset
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
