@@ -491,3 +491,20 @@ class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
         .order_by("-total_sales")
     )
     serializer_class = ProductSerializer
+
+
+from django.shortcuts import get_object_or_404
+
+
+class ProductVariantThumbnailView(APIView):
+    """
+    Эндпоинт для получения thumbnail'а продуктового варианта.
+    """
+
+    def get(self, request, variant_id):
+        """
+        Метод GET для получения thumbnail'а продуктового варианта.
+        """
+        variant = get_object_or_404(ProductVariant, id=variant_id)
+        thumbnail_url = variant.thumbnail.url
+        return Response({'thumbnail_url': thumbnail_url})

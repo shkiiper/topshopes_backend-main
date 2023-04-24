@@ -9,7 +9,8 @@ from .views import (
     ProductVariantViewSet,
     ProductViewSet,
     ShopProductViewSet,
-    LatestProductsAPIView, TopratedproductsAPIView, DiscountedProductView, BestSellingProductViewSet
+    LatestProductsAPIView, TopratedproductsAPIView, DiscountedProductView, BestSellingProductViewSet,
+    ProductVariantThumbnailView
 )
 
 router = routers.SimpleRouter()
@@ -18,6 +19,9 @@ router.register(r"products/variants/images", ImageViewSet, basename="image")
 router.register(
     r"products/variants/attributes", AttributeValueViewset, basename="attributes"
 )
+
+router.register(r'product-variants/(?P<variant_id>\d+)/thumbnail', ProductVariantThumbnailView, basename='productvariant-thumbnail')
+
 router.register(r"products/variants", ProductVariantViewSet, basename="variant")
 router.register(r"products", ShopProductViewSet, basename="product")
 # routes for all users
