@@ -454,6 +454,7 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Product.objects.all()
+    serializer_class = ProductSerializer  # Replace with your actual serializer
 
     def get_queryset(self):
         # Create an empty list to store filtered products
@@ -471,7 +472,6 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
             discount_price__isnull=False).first().discount_price)
 
         return discounted_products
-
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
