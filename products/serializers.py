@@ -127,7 +127,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     Return all fields
     """
 
-    images = ImageSerializer(many=True, read_only=True)
+    images = ImageSerializer(many=True, read_only=False)
     attribute_values = AttributeValueSerializer(many=True, read_only=True)
 
     class Meta:
