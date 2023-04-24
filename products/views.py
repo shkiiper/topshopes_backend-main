@@ -473,6 +473,12 @@ class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
         return discounted_products
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     """
     View set to retrieve best selling products
