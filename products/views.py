@@ -455,7 +455,7 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 #         )
 #         return queryset
 
-class DiscountedProductView(generics.ListAPIView):
+class DiscountedProductView(APIView):
     def get(self, request, format=None):
         # Получаем все продукты
         products = Product.objects.all()
