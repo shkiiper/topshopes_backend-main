@@ -452,8 +452,9 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 #         )
 #         return queryset
 
-class DiscountedProductView(APIView):
-    def get(self, request, format=None):
+class DiscountedProductView(viewsets.ViewSet):
+    @action(detail=False, methods=['get'])
+    def get(self, request):
         # Retrieve all products
         products = Product.objects.all()
 
