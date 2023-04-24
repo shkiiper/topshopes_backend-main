@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404, redirect
 from django.db.transaction import atomic
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
@@ -7,10 +6,8 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Coalesce
+from rest_framework.views import APIView
 from django.db.models import Subquery, OuterRef, Sum, Value
-from django.db.models import F
-from rest_framework import generics
-
 from .filters import ProductFilter
 from rest_framework.exceptions import NotFound
 from django.core.exceptions import ObjectDoesNotExist
