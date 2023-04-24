@@ -128,6 +128,8 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     """
 
     images = ImageSerializer(many=True, read_only=False)
+    # Устанавливаем поле 'thumbnail' в режим не только для чтения
+    thumbnail = serializers.ImageField(read_only=False)
     attribute_values = AttributeValueSerializer(many=True, read_only=True)
 
     class Meta:
