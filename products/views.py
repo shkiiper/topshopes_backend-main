@@ -452,17 +452,15 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 #         )
 #         return queryset
 
-class DiscountedProductView(viewsets.ViewSet):
-    @action(detail=False, methods=['get'])
-    def get(self, request):
-        # Retrieve all products
-        products = Product.objects.all()
+class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Product.objects.all()
 
+    def get_queryset(self):
         # Create an empty list to store filtered products
         discounted_products = []
 
         # Iterate through all products and filter those with discounts
-        for product in products:
+        for product in self.queryset:
             for variant in product.variants.all():
                 if variant.discount_price is not None:
                     discounted_products.append(product)
@@ -472,8 +470,7 @@ class DiscountedProductView(viewsets.ViewSet):
         discounted_products = sorted(discounted_products, key=lambda product: product.variants.filter(
             discount_price__isnull=False).first().discount_price)
 
-        # Return the filtered products as a QuerySet
-        return Product.objects.filter(id__in=[product.id for product in discounted_products])
+        return discounted_products
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
