@@ -454,26 +454,27 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 class DiscountedProductView(APIView):
     def get(self, request, format=None):
-        # Получаем все продукты
+        # Retrieve all products
         products = Product.objects.all()
 
-        # Создаем пустой список для хранения отфильтрованных продуктов
+        # Create an empty list to store filtered products
         discounted_products = []
 
-        # Итерируемся по всем продуктам и фильтруем те, у которых есть скидка
+        # Iterate through all products and filter those with discounts
         for product in products:
             for variant in product.variants.all():
                 if variant.discount_price is not None:
                     discounted_products.append(product)
                     break
 
-        # Сортируем отфильтрованные продукты по discount_price
-        discounted_products = sorted(discounted_products, key=lambda product: product.variants.filter(discount_price__isnull=False).first().discount_price)
+        # Sort the filtered products by discount_price
+        discounted_products = sorted(discounted_products, key=lambda product: product.variants.filter(
+            discount_price__isnull=False).first().discount_price)
 
-        # Используем сериализатор для сериализации отфильтрованных продуктов
+        # Use a serializer to serialize the filtered products
         serializer = ProductSerializer(discounted_products, many=True)
 
-        # Возвращаем сериализованные данные в виде Response
+        # Return the serialized data as a Response
         return Response(serializer.data)
 
 
