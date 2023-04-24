@@ -472,11 +472,8 @@ class DiscountedProductView(viewsets.ViewSet):
         discounted_products = sorted(discounted_products, key=lambda product: product.variants.filter(
             discount_price__isnull=False).first().discount_price)
 
-        # Use a serializer to serialize the filtered products with the request object as context
-        serializer = ProductSerializer(discounted_products, many=True, context={'request': request})
-
-        # Return the serialized data as a queryset
-        return serializer.data
+        # Return the filtered products as a QuerySet
+        return Product.objects.filter(id__in=[product.id for product in discounted_products])
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
