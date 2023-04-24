@@ -7,6 +7,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Coalesce
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+import requests
+from django.http import HttpResponse
 from django.db.models import Subquery, OuterRef, Sum, Value
 from .filters import ProductFilter
 from rest_framework.exceptions import NotFound
@@ -200,23 +203,6 @@ class ProductVariantViewSet(
         if self.action in ["create", "update", "partial_update"]:
             return CreateProductVariantSerializer
         return ProductVariantSerializer
-
-    @action(detail=True, methods=['get'])
-    def thumbnail(self, request, pk=None):
-        """
-        Метод GET для получения thumbnail'а продуктового варианта.
-        """
-        variant = get_object_or_404(ProductVariant, id=pk)
-        thumbnail_url = variant.thumbnail.url
-
-        # получаем содержимое картинки
-        image_data = requests.get(thumbnail_url).content
-
-        # создаем HttpResponse с содержимым картинки и устанавливаем заголовок Access-Control-Allow-Origin
-        response = HttpResponse(image_data, content_type='image/jpeg')
-        response['Access-Control-Allow-Origin'] = '*'
-
-        return response
 
 
 @extend_schema(
@@ -510,13 +496,6 @@ class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ProductSerializer
 
 
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-
-import requests
-from django.http import HttpResponse
-
-
 class ProductVariantThumbnailView(viewsets.ViewSet):
     """
     Эндпоинт для получения thumbnail'а продуктового варианта.
@@ -530,10 +509,8 @@ class ProductVariantThumbnailView(viewsets.ViewSet):
         variant = get_object_or_404(ProductVariant, id=pk)
         thumbnail_url = variant.thumbnail.url
 
-        # получаем содержимое картинки
         image_data = requests.get(thumbnail_url).content
 
-        # создаем HttpResponse с содержимым картинки и устанавливаем заголовок Access-Control-Allow-Origin
         response = HttpResponse(image_data, content_type='image/jpeg')
         response['Access-Control-Allow-Origin'] = '*'
 
