@@ -440,31 +440,29 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
-class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = ProductVariantSerializer
-
-    def get_queryset(self):
-        queryset = (
-            ProductVariant.objects.filter(discount__gt=0)
-            .annotate(
-                discounted_price=F("price") - (F("price") * F("discount") / 100),
-                price_annotation=F("price"),
-            )
-            .order_by("-discounted_price")
-            # .values("product")
-        )
-        return queryset
-
-# class DiscountedProductView(generics.ListAPIView):
-#     serializer_class = ProductSerializer
+# class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     serializer_class = ProductVariantSerializer
 #
 #     def get_queryset(self):
-#         queryset = Product.objects.filter(is_published=True, variants__discount_price__gt=0).order_by(
-#             '-variants__discount_price')
+#         queryset = (
+#             ProductVariant.objects.filter(discount__gt=0)
+#             .annotate(
+#                 discounted_price=F("price") - (F("price") * F("discount") / 100),
+#                 price_annotation=F("price"),
+#             )
+#             .order_by("-discounted_price")
+#             .values("product")
+#         )
 #         return queryset
-#
-#     def list(self, request, *args, **kwargs):
-#         return super().list(request, *args, **kwargs)
+
+class DiscountedProductView(generics.ListAPIView):
+    def get(self, request):
+        products = Product.objects.filter(is_published=True)  # Фильтруем только опубликованные продукты
+        sorted_products = products.order_by(
+            'variants__discount_price')  # Сортируем по discount_price в ProductVariant модели
+        serializer = ProductSerializer(sorted_products,
+                                       many=True)  # Преобразуем queryset в сериализованный список продуктов
+        return Response(serializer.data)
 
 
 class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
