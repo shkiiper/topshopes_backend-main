@@ -496,15 +496,16 @@ class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
 from django.shortcuts import get_object_or_404
 
 
-class ProductVariantThumbnailView(APIView):
+class ProductVariantThumbnailView(viewsets.ViewSet):
     """
     Эндпоинт для получения thumbnail'а продуктового варианта.
     """
 
-    def get(self, request, variant_id):
+    @action(detail=True, methods=['get'])
+    def thumbnail(self, request, pk=None):
         """
         Метод GET для получения thumbnail'а продуктового варианта.
         """
-        variant = get_object_or_404(ProductVariant, id=variant_id)
+        variant = get_object_or_404(ProductVariant, id=pk)
         thumbnail_url = variant.thumbnail.url
         return Response({'thumbnail_url': thumbnail_url})

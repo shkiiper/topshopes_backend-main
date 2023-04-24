@@ -20,7 +20,7 @@ router.register(
     r"products/variants/attributes", AttributeValueViewset, basename="attributes"
 )
 
-router.register(r'product-variants/(?P<variant_id>\d+)/thumbnail', ProductVariantThumbnailView, basename='productvariant-thumbnail')
+router.register(r'product-variants', ProductVariantThumbnailView, basename='productvariant')
 
 router.register(r"products/variants", ProductVariantViewSet, basename="variant")
 router.register(r"products", ShopProductViewSet, basename="product")
