@@ -201,6 +201,23 @@ class ProductVariantViewSet(
             return CreateProductVariantSerializer
         return ProductVariantSerializer
 
+    @action(detail=True, methods=['get'])
+    def thumbnail(self, request, pk=None):
+        """
+        Метод GET для получения thumbnail'а продуктового варианта.
+        """
+        variant = get_object_or_404(ProductVariant, id=pk)
+        thumbnail_url = variant.thumbnail.url
+
+        # получаем содержимое картинки
+        image_data = requests.get(thumbnail_url).content
+
+        # создаем HttpResponse с содержимым картинки и устанавливаем заголовок Access-Control-Allow-Origin
+        response = HttpResponse(image_data, content_type='image/jpeg')
+        response['Access-Control-Allow-Origin'] = '*'
+
+        return response
+
 
 @extend_schema(
     description="Viewset to edit user's shop",
@@ -496,9 +513,9 @@ class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
-
 import requests
 from django.http import HttpResponse
+
 
 class ProductVariantThumbnailView(viewsets.ViewSet):
     """
