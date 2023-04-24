@@ -494,7 +494,11 @@ class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 
+
+import requests
+from django.http import HttpResponse
 
 class ProductVariantThumbnailView(viewsets.ViewSet):
     """
@@ -508,4 +512,12 @@ class ProductVariantThumbnailView(viewsets.ViewSet):
         """
         variant = get_object_or_404(ProductVariant, id=pk)
         thumbnail_url = variant.thumbnail.url
-        return Response({'thumbnail_url': thumbnail_url})
+
+        # получаем содержимое картинки
+        image_data = requests.get(thumbnail_url).content
+
+        # создаем HttpResponse с содержимым картинки и устанавливаем заголовок Access-Control-Allow-Origin
+        response = HttpResponse(image_data, content_type='image/jpeg')
+        response['Access-Control-Allow-Origin'] = '*'
+
+        return response
