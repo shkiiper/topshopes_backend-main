@@ -20,8 +20,8 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = ["*"]
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_METHODS = ['GET', 'POST']
-CORS_ALLOW_HEADERS = ['*']
+# CORS_ALLOW_METHODS = ['GET', 'POST']
+# CORS_ALLOW_HEADERS = ['*']
 
 # ALLOWED_HOSTS = config(
 #     "ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")]
