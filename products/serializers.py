@@ -118,6 +118,7 @@ class CreateProductVariantSerializer(serializers.ModelSerializer):
             "thumbnail",
             "stock",
             "status",
+            'ordering'
         ]
 
 
@@ -145,6 +146,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
             "thumbnail",
             "attribute_values",
             "images",
+            'ordering',
         ]
 
 
