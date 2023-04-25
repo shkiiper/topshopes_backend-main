@@ -180,6 +180,13 @@ class ProductVariant(models.Model):
         upload_to=PathAndRename("products/thumbnails/"),
         verbose_name="Product variant thumbnail",
     )
+    ordering = models.IntegerField(
+        max_length=100,
+        verbose_name='ordering',
+        default=None,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.product.name

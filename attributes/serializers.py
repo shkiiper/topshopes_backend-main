@@ -42,7 +42,7 @@ class AttributeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Attribute
-        fields = ["id", "name"]
+        fields = ["id", "name",]
 
 
 class AttributeValueSerializer(serializers.ModelSerializer):
@@ -55,7 +55,7 @@ class AttributeValueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AttributeValue
-        fields = ["id", "product_variant", "attribute", "value"]
+        fields = ["id", "product_variant", "attribute", "value", 'ordering']
 
 
 class CreateAttributeValueSerializer(serializers.ModelSerializer):

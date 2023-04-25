@@ -33,6 +33,13 @@ class AttributeValue(models.Model):
         related_name="values",
     )
     value = models.CharField(max_length=100, verbose_name="Attribute value")
+    ordering = models.IntegerField(
+        max_length=100,
+        verbose_name='ordering',
+        default=None,
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return f"{self.value}"
