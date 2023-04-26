@@ -9,7 +9,6 @@ from .views import (
     ProductVariantViewSet,
     ProductViewSet,
     ShopProductViewSet,
-    LatestProductsAPIView, TopratedproductsAPIView, DiscountedProductView, BestSellingProductViewSet,
     ProductVariantThumbnailView
 )
 
@@ -28,7 +27,3 @@ router.register(r"products", ShopProductViewSet, basename="product")
 router.register(r"shops/categories", CategoryViewSet, basename="category")
 router.register(r"shops/brand", BrandViewSet, basename="brand")
 router.register(r"shops/products", ProductViewSet, basename="products")
-router.register('latest-products', LatestProductsAPIView, basename='latest-products')
-router.register('top-rated-products', TopratedproductsAPIView, basename='top-rated-products')
-router.register('discounted-products', DiscountedProductView, basename='discounted-products')
-router.register(r'best-selling-products', BestSellingProductViewSet, basename='best-selling-products')

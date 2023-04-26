@@ -396,48 +396,48 @@ class BrandViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             raise NotFound("Brands not found")
 
 
-class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = ProductSerializer
-    queryset = Product.objects.filter(is_published=True).order_by('-created_at')
+# class LatestProductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     serializer_class = ProductSerializer
+#     queryset = Product.objects.filter(is_published=True).order_by('-created_at')
+#
+#     def get_queryset(self):
+#         queryset = (
+#             self.queryset
+#             .prefetch_related("variants")
+#             .annotate(
+#                 price=Subquery(
+#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                         "price"
+#                     )[:1]
+#                 )
+#             )
+#         )
+#         return queryset
+#
+#     def list(self, request, *args, **kwargs):
+#         return super().list(request, *args, **kwargs)
 
-    def get_queryset(self):
-        queryset = (
-            self.queryset
-            .prefetch_related("variants")
-            .annotate(
-                price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "price"
-                    )[:1]
-                )
-            )
-        )
-        return queryset
 
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-
-
-class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    serializer_class = ProductSerializer
-    queryset = Product.objects.filter(is_published=True).order_by('-rating')
-
-    def get_queryset(self):
-        queryset = (
-            self.queryset
-            .prefetch_related("variants")
-            .annotate(
-                price=Subquery(
-                    ProductVariant.objects.filter(product=OuterRef("pk")).values(
-                        "price"
-                    )[:1]
-                ),
-            )
-        )
-        return queryset
-
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+# class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     serializer_class = ProductSerializer
+#     queryset = Product.objects.filter(is_published=True).order_by('-rating')
+#
+#     def get_queryset(self):
+#         queryset = (
+#             self.queryset
+#             .prefetch_related("variants")
+#             .annotate(
+#                 price=Subquery(
+#                     ProductVariant.objects.filter(product=OuterRef("pk")).values(
+#                         "price"
+#                     )[:1]
+#                 ),
+#             )
+#         )
+#         return queryset
+#
+#     def list(self, request, *args, **kwargs):
+#         return super().list(request, *args, **kwargs)
 
 
 # class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
@@ -455,45 +455,45 @@ class TopratedproductsAPIView(mixins.ListModelMixin, viewsets.GenericViewSet):
 #         )
 #         return queryset
 
-class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer  # Replace with your actual serializer
-
-    def get_queryset(self):
-        # Create an empty list to store filtered products
-        discounted_products = []
-
-        # Iterate through all products and filter those with discounts
-        for product in self.queryset:
-            for variant in product.variants.all():
-                if variant.discount_price is not None:
-                    discounted_products.append(product)
-                    break
-
-        # Sort the filtered products by discount_price
-        discounted_products = sorted(discounted_products, key=lambda product: product.variants.filter(
-            discount_price__isnull=False).first().discount_price)
-
-        return discounted_products
-
-
-class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    View set to retrieve best selling products
-    """
-    queryset = (
-        Product.objects.filter(is_published=True)
-        .annotate(
-            price=Subquery(
-                ProductVariant.objects.filter(
-                    product=OuterRef("pk")
-                ).values("price")[:1]
-            ),
-            total_sales=Sum("variants__orders__quantity"),
-        )
-        .order_by("-total_sales")
-    )
-    serializer_class = ProductSerializer
+# class DiscountedProductView(mixins.ListModelMixin, viewsets.GenericViewSet):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer  # Replace with your actual serializer
+#
+#     def get_queryset(self):
+#         # Create an empty list to store filtered products
+#         discounted_products = []
+#
+#         # Iterate through all products and filter those with discounts
+#         for product in self.queryset:
+#             for variant in product.variants.all():
+#                 if variant.discount_price is not None:
+#                     discounted_products.append(product)
+#                     break
+#
+#         # Sort the filtered products by discount_price
+#         discounted_products = sorted(discounted_products, key=lambda product: product.variants.filter(
+#             discount_price__isnull=False).first().discount_price)
+#
+#         return discounted_products
+#
+#
+# class BestSellingProductViewSet(viewsets.ReadOnlyModelViewSet):
+#     """
+#     View set to retrieve best selling products
+#     """
+#     queryset = (
+#         Product.objects.filter(is_published=True)
+#         .annotate(
+#             price=Subquery(
+#                 ProductVariant.objects.filter(
+#                     product=OuterRef("pk")
+#                 ).values("price")[:1]
+#             ),
+#             total_sales=Sum("variants__orders__quantity"),
+#         )
+#         .order_by("-total_sales")
+#     )
+#     serializer_class = ProductSerializer
 
 
 class ProductVariantThumbnailView(viewsets.ViewSet):
