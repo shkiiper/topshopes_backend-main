@@ -37,6 +37,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             "avatar",
             "is_superuser",
             "is_seller",
+            "special",
         ]
 
 
