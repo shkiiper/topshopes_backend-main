@@ -79,6 +79,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "quantity",
             "address",
             "payment",
+            "tax",
         ]
 
     def get_tax(self, obj):
