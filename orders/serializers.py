@@ -141,8 +141,10 @@ class OrderTotalPriceSerializer(serializers.ModelSerializer):
     def get_profit(self, obj):
         order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
         category = order_with_product_variant.product_variant.product.category
+        customer = obj.user
 
-        if isinstance(obj.user, Customer) and obj.user.special:
+        # check if the customer has the special field set to true
+        if customer.special:
             tax = 10
         else:
             tax = category.tax
