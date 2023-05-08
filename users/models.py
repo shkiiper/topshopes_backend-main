@@ -21,6 +21,7 @@ class Customer(AbstractUser):
     )
     phone = models.CharField(max_length=30)
     is_seller = models.BooleanField(default=False)
+    special = models.BooleanField(default=False)
 
     USERNAME_FIELD: str = "email"
     REQUIRED_FIELDS: List[str] = []
@@ -38,7 +39,6 @@ class Seller(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     roles = models.ManyToManyField(to="roles.Role", related_name="users")
     verified = models.BooleanField(default=False)
-    special = models.BooleanField(default=False)
 
 
 class Address(models.Model):
