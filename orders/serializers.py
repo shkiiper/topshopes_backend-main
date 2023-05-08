@@ -88,8 +88,6 @@ class OrderSerializer(serializers.ModelSerializer):
         """
         if obj.user.special:
             tax_rate = 0.1  # установка ставки налога 10%, если пользователь имеет специальный статус
-        else:
-            tax_rate = 0.15  # установка ставки налога 15%, если пользователь не имеет специального статуса
 
         total_price = float(obj.total_price)
         tax = total_price * tax_rate  # вычисление налога на основе ставки налога и общей стоимости заказа
@@ -149,10 +147,11 @@ class CreateOrderSerializer(serializers.ModelSerializer):
 
 class OrderTotalPriceSerializer(serializers.ModelSerializer):
     profit = serializers.SerializerMethodField()
+    tax = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ['id', 'created_at', 'total_price', 'profit']
+        fields = ['id', 'created_at', 'total_price', 'profit', ]
 
     def get_profit(self, obj):
         order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
