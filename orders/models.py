@@ -55,6 +55,10 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.user} - {self.shop}"
 
+    @property
+    def special(self):
+        return self.user.special if self.user else False
+
     class Meta:
         ordering = ["-created_at"]
 
