@@ -62,7 +62,6 @@ class OrderSerializer(serializers.ModelSerializer):
     product = ProductSerializer(
         read_only=True, source="product_variant.product")
     address = AddressSerializer(read_only=True)
-    tax = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -79,20 +78,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "quantity",
             "address",
             "payment",
-            "tax",
         ]
-
-    def get_tax(self, obj):
-        """
-        Вычисляет налог на основе дохода и ставки налога, учитывая специальный статус пользователя
-        """
-        if obj.user.special:
-            tax_rate = 10  # установка ставки налога 10%, если пользователь имеет специальный статус
-
-        total_price = float(obj.total_price)
-        tax = total_price * tax_rate/100  # вычисление налога на основе ставки налога и общей стоимости заказа
-
-        return tax
 
 
 class CreateOrderSerializer(serializers.ModelSerializer):
