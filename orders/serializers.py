@@ -42,6 +42,7 @@ class OrderSerializer(serializers.ModelSerializer):
     product = ProductSerializer(
         read_only=True, source="product_variant.product")
     address = AddressSerializer(read_only=True)
+    tax = CategorySerializer
 
     class Meta:
         model = Order
@@ -58,6 +59,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "quantity",
             "address",
             "payment",
+            "tax",
         ]
 
 
