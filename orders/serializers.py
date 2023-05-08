@@ -6,6 +6,7 @@ from payments.models import Payment
 from products.serializers import ProductSerializer, ProductVariantSerializer, CategorySerializer, \
     CategoryReadOnlySerializer
 from shops.serializers import ShopSerializer
+from users.models import Customer
 from users.serializers import AddressSerializer, CustomerSerializer
 import redis
 from django.conf import settings
@@ -140,10 +141,9 @@ class OrderTotalPriceSerializer(serializers.ModelSerializer):
     def get_profit(self, obj):
         order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
         category = order_with_product_variant.product_variant.product.category
-        tax = category.tax
-        customer = order_with_product_variant.user.customer
-        special = customer.special
 
-        if special:
+        if isinstance(obj.user, Customer) and obj.user.special:
             tax = 10
+        else:
+            tax = category.tax
         return str(obj.total_price - ((obj.total_price / 100) * tax))
