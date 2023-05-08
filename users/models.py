@@ -38,6 +38,7 @@ class Seller(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     roles = models.ManyToManyField(to="roles.Role", related_name="users")
     verified = models.BooleanField(default=False)
+    special = models.BooleanField(default=False)
 
 
 class Address(models.Model):

@@ -272,6 +272,7 @@ class SingleCategorySerializer(serializers.ModelSerializer):
     """
 
     attributes = AttributeSerializer(many=True, read_only=True)
+    special = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
@@ -286,4 +287,15 @@ class SingleCategorySerializer(serializers.ModelSerializer):
             "featured",
             "attributes",
             "tax",
+            "special",
         ]
+
+    def get_special(self, obj):
+        # check if the seller is special
+        return obj.seller.special if obj.seller else False
+
+    def get_tax(self, obj):
+        # set tax to 10 if the seller is special
+        if obj.seller and obj.seller.special:
+            return 10
+        return obj.tax
