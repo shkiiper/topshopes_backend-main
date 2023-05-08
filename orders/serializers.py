@@ -16,6 +16,26 @@ from products.models import ProductVariant, Product, Category
 from .models import Order
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    """
+    Category serializer
+    Return id, name, icon, image, slug, parent, description, featured fields
+    """
+
+    class Meta:
+        model = Category
+        fields = [
+            "id",
+            "slug",
+            "name",
+            "icon",
+            "image",
+            "attributes",
+            "featured",
+            "tax",
+        ]
+
+
 class OrderInfoSerializer(serializers.ModelSerializer):
     """
     Order serializers for read only
@@ -111,26 +131,6 @@ class CreateOrderSerializer(serializers.ModelSerializer):
             lock.release()
 
         return order
-
-
-class CategorySerializer(serializers.ModelSerializer):
-    """
-    Category serializer
-    Return id, name, icon, image, slug, parent, description, featured fields
-    """
-
-    class Meta:
-        model = Category
-        fields = [
-            "id",
-            "slug",
-            "name",
-            "icon",
-            "image",
-            "attributes",
-            "featured",
-            "tax",
-        ]
 
 
 class OrderTotalPriceSerializer(serializers.ModelSerializer):
