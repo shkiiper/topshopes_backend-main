@@ -18,6 +18,7 @@ class CreateCustomerSerializer(serializers.ModelSerializer):
             "phone",
             "avatar",
             "password",
+            "special",
         ]
 
 
