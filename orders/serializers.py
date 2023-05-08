@@ -42,7 +42,7 @@ class OrderSerializer(serializers.ModelSerializer):
     product = ProductSerializer(
         read_only=True, source="product_variant.product")
     address = AddressSerializer(read_only=True)
-    tax = CategorySerializer
+    tax = CategorySerializer(read_only=True)
 
     class Meta:
         model = Order
