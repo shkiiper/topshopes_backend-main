@@ -91,7 +91,8 @@ class OrderSerializer(serializers.ModelSerializer):
         else:
             tax_rate = 0.15  # установка ставки налога 15%, если пользователь не имеет специального статуса
 
-        tax = obj.total_price * tax_rate  # вычисление налога на основе ставки налога и общей стоимости заказа
+        total_price = float(obj.total_price)
+        tax = total_price * tax_rate  # вычисление налога на основе ставки налога и общей стоимости заказа
 
         return tax
 
