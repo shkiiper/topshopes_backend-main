@@ -272,7 +272,6 @@ class SingleCategorySerializer(serializers.ModelSerializer):
     """
 
     attributes = AttributeSerializer(many=True, read_only=True)
-    special = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
