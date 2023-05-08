@@ -292,10 +292,10 @@ class SingleCategorySerializer(serializers.ModelSerializer):
 
     def get_special(self, obj):
         # check if the seller is special
-        return obj.seller.special if obj.seller else False
+        return obj.customer.special if obj.customer else False
 
     def get_tax(self, obj):
         # set tax to 10 if the seller is special
-        if obj.seller and obj.seller.special:
+        if obj.customer and obj.customer.special:
             return 10
         return obj.tax
