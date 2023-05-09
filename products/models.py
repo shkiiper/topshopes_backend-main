@@ -196,14 +196,17 @@ class ProductVariant(models.Model):
             self.discount_price = self.price - (self.price * Decimal(self.discount) / Decimal(100))
         else:
             self.discount_price = 0
+
+        self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
+
         if self.product.shop.user.special:
             self.overall_price = self.discount_price - (self.discount_price * 10 / 100)
-        else:
-            self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
-            self.tax_price = self.discount_price * self.product.category.tax / 100
+
+        self.tax_price = self.discount_price * self.product.category.tax / 100
 
         if self.stock == 0:
             self.status = "unavailable"
+
         super().save(*args, **kwargs)
 
     class Meta:
