@@ -61,7 +61,7 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         # self.total_price = self.product_variant.discount_price * self.quantity
         if self.product_variant.discount_price == 0:
-            self.total_price = self.product_price * self.quantity
+            self.total_price = self.product_variant.price * self.quantity
         else:
             self.total_price = self.product_variant.discount_price * self.quantity
 
