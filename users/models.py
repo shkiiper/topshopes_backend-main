@@ -22,6 +22,11 @@ class Customer(AbstractUser):
     phone = models.CharField(max_length=30)
     is_seller = models.BooleanField(default=False)
     special = models.BooleanField(default=False)
+    STATUS_CHOICES = (
+        ('special', 'Special'),
+        ('regular', 'Regular')
+    )
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='regular')
 
     USERNAME_FIELD: str = "email"
     REQUIRED_FIELDS: List[str] = []

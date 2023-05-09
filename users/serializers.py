@@ -18,7 +18,6 @@ class CreateCustomerSerializer(serializers.ModelSerializer):
             "phone",
             "avatar",
             "password",
-            "special",
         ]
 
 
@@ -38,7 +37,6 @@ class CustomerSerializer(serializers.ModelSerializer):
             "avatar",
             "is_superuser",
             "is_seller",
-            "special",
         ]
 
 
