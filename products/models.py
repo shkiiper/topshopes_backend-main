@@ -196,14 +196,12 @@ class ProductVariant(models.Model):
             self.discount_price = self.price - (self.price * Decimal(self.discount) / Decimal(100))
         else:
             self.discount_price = 0
-        print("self.product.shop.user.special:", self.product.shop.user.special)
-
-        self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
-        print("self.product.shop.user.special:", self.product.shop.user.special)
 
         if self.product.shop.user.special:
             self.overall_price = self.discount_price - (self.discount_price * 10 / 100)
-        print("self.product.shop.user.special:", self.product.shop.user.special)
+
+        if not self.product.shop.user.special:
+            self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
 
         self.tax_price = self.discount_price * self.product.category.tax / 100
 
