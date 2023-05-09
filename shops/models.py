@@ -37,6 +37,11 @@ class Shop(models.Model):
     profile_picture = models.ImageField(
         upload_to=PathAndRename("shop/profiles/"), verbose_name="Shop's profile picture"
     )
+    STATUS_CHOICES = (
+        ('special', 'Special'),
+        ('regular', 'Regular')
+    )
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='regular')
 
     def __str__(self):
         return self.name
