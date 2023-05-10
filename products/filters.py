@@ -9,7 +9,8 @@ class ProductFilter(django_filters.FilterSet):
     brand = django_filters.ModelMultipleChoiceFilter(
         field_name='brand__name',
         to_field_name='name',
-        queryset=Brand.objects.all()
+        queryset=Brand.objects.all(),
+        lookup_expr='exact'
     )
 
     class Meta:

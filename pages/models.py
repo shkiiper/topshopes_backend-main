@@ -51,8 +51,6 @@ class SiteSettings(models.Model):
 
     def __str__(self):
         return self.email
-    
-
 
     def save(self, *args, **kwargs):
         if self.__class__.objects.count() > 1:
