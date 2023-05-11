@@ -2,7 +2,8 @@ from rest_framework import serializers
 from rest_framework.serializers import Field
 
 from attributes.serializers import AttributeSerializer, AttributeValueSerializer
-from orders.serializers import OrderSerializer
+from orders.models import Order
+from django.db.models import Sum
 from products.models import Brand, BrandType, Category, Image, Product, ProductVariant
 from reviews.serializers import ReviewSerializer
 from shops.models import Shop
@@ -197,7 +198,13 @@ class SingleProductSerializer(serializers.ModelSerializer):
     discount_price = serializers.DecimalField(
         read_only=True, max_digits=10, decimal_places=2
     )
-    quantity = OrderSerializer(read_only=True)
+    sold_quantity = serializers.SerializerMethodField()
+
+    def get_sold_quantity(self, product):
+        # Получаем общее количество проданных товаров для данного продукта
+        sold_quantity = Order.objects.filter(product_variant__product=product).aggregate(Sum('quantity'))[
+            'quantity__sum']
+        return sold_quantity or 0
 
     class Meta:
         model = Product
@@ -218,7 +225,7 @@ class SingleProductSerializer(serializers.ModelSerializer):
             'created_at',
             "is_published",
             "discount_price",
-            "quantity",
+            "sold_quantity",
         ]
 
 
