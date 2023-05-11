@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import Field
 
 from attributes.serializers import AttributeSerializer, AttributeValueSerializer
+from orders.serializers import OrderSerializer
 from products.models import Brand, BrandType, Category, Image, Product, ProductVariant
 from reviews.serializers import ReviewSerializer
 from shops.models import Shop
@@ -196,6 +197,7 @@ class SingleProductSerializer(serializers.ModelSerializer):
     discount_price = serializers.DecimalField(
         read_only=True, max_digits=10, decimal_places=2
     )
+    quantity = OrderSerializer(read_only=True)
 
     class Meta:
         model = Product
@@ -216,6 +218,7 @@ class SingleProductSerializer(serializers.ModelSerializer):
             'created_at',
             "is_published",
             "discount_price",
+            "quantity",
         ]
 
 
