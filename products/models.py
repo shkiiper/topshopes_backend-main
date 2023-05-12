@@ -200,10 +200,21 @@ class ProductVariant(models.Model):
             self.overall_price = self.price - (self.price * self.product.category.tax / 100)
 
         self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
-
         if self.product.shop.status == "special":
             self.product.category.tax = 10
-            self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
+            if not self.discount_price:
+                self.overall_price = self.price - (self.price * self.product.category.tax / 100)
+            else:
+                self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
+        else:
+            if not self.discount_price:
+                self.overall_price = self.price - (self.price * self.product.category.tax / 100)
+            else:
+                self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
+
+        # if self.product.shop.status == "special":
+        #     self.product.category.tax = 10
+        #     self.overall_price = self.discount_price - (self.discount_price * self.product.category.tax / 100)
 
         # if self.discount_price == 0:
         #     self.overall_price = self.price - (self.price * self.product.category.tax/100)
