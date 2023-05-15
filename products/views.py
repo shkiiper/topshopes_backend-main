@@ -6,9 +6,10 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Coalesce
-from rest_framework.views import APIView
+from django.db.models import F
 from django.shortcuts import get_object_or_404
 import requests
+from random import random
 from django.http import HttpResponse
 from django.db.models import Subquery, OuterRef, Sum, Value
 from .filters import ProductFilter
@@ -93,7 +94,7 @@ class ProductViewSet(
                     Sum("variants__orders__quantity"), Value(0)
                 ),
             )
-
+            qs = qs.order_by(F('id').annotate(random_ordering=F('id') * random()))
             return qs
         return Product.objects.all().prefetch_related("variants", "reviews")
 
