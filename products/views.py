@@ -95,23 +95,6 @@ class ProductViewSet(
                 ),
             )
 
-            ordering = self.request.query_params.get("ordering", "")
-            if ordering == "random":
-                random_qs = list(qs)
-
-                # Shuffle the list randomly
-                random.shuffle(random_qs)
-
-                # Return the shuffled queryset
-                return random_qs
-
-            # Validate and return the queryset ordered by the specified field
-            if ordering in self.ordering_fields:
-                return qs.order_by(ordering)
-
-            # Return the queryset ordered by the default field
-            return qs.order_by("name")
-
         return Product.objects.all().prefetch_related("variants", "reviews")
 
     def get_serializer_class(self):
