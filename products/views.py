@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Coalesce
 import random
-
+from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 import requests
 from django.http import HttpResponse
@@ -99,7 +99,9 @@ class ProductViewSet(
             if ordering == "random":
                 qs_list = list(qs)
                 random.shuffle(qs_list)
-                return qs_list
+                qs = QuerySet(model=Product)
+                qs._result_cache = qs_list
+                return qs
 
             return qs
 
