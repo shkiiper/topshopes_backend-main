@@ -105,8 +105,12 @@ class ProductViewSet(
                 # Return the shuffled queryset
                 return random_qs
 
-            # Otherwise, return the queryset ordered by the specified field (or by the default ordering)
-            return qs.order_by(ordering)
+            # Validate and return the queryset ordered by the specified field
+            if ordering in self.ordering_fields:
+                return qs.order_by(ordering)
+
+            # Return the queryset ordered by the default field
+            return qs.order_by("name")
 
         return Product.objects.all().prefetch_related("variants", "reviews")
 
