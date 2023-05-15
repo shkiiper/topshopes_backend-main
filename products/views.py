@@ -99,8 +99,7 @@ class ProductViewSet(
             if ordering == "random":
                 qs_list = list(qs)
                 random.shuffle(qs_list)
-                qs = qs.model.objects.filter(pk__in=[product.pk for product in qs_list]).prefetch_related("variants",
-                                                                                                          "reviews")
+                return qs_list
 
             return qs
 
