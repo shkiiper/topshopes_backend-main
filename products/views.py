@@ -64,7 +64,7 @@ class ProductViewSet(
     filterset_class = ProductFilter
     filterset_fields = ["id", "category", ]
     search_fields = ["name", "id", "shop__name", "category__name", ]
-    ordering_fields = ["name", "rating", "created_at", "price", "discount_price", "total_sales"]
+    ordering_fields = ["name", "rating", "created_at", "price", "discount_price", "total_sales", "random"]
 
     def get_queryset(self):
         if self.action == "list":
@@ -96,6 +96,13 @@ class ProductViewSet(
             )
 
         return Product.objects.all().prefetch_related("variants", "reviews")
+
+    def get_ordering(self):
+        ordering = super().get_ordering()
+        if self.request.GET.get("ordering") == "random":
+            # Возвращаем случайный порядок
+            ordering = "?"
+        return ordering
 
     def get_serializer_class(self):
         if self.action == "retrieve":
