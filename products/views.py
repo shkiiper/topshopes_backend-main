@@ -6,7 +6,8 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Coalesce
-from rest_framework.views import APIView
+from django.db.models import Func, F
+from django.utils.crypto import get_random_string
 from django.shortcuts import get_object_or_404
 import requests
 from django.http import HttpResponse
@@ -93,7 +94,24 @@ class ProductViewSet(
                     Sum("variants__orders__quantity"), Value(0)
                 ),
             )
-            return qs
+
+            ordering = self.request.query_params.get("ordering", "")
+            if ordering == "random":
+                # Генерируем случайную строку для использования в качестве зерна для случайной сортировки
+                # Длина строки произвольная
+                seed = get_random_string(length=10)
+
+                # Используем зерно для генерации случайного порядка запроса
+                random_qs = list(qs.annotate(
+                    random_ordering=Func(F("id"), seed, function="RANDOM")
+                ).order_by("random_ordering"))
+
+                # Возвращаем запрос, отсортированный в случайном порядке
+                return random_qs
+
+            # В противном случае возвращаем запрос, отсортированный по заданному полю (или по умолчанию)
+            return qs.order_by(self.get_ordering())
+
         return Product.objects.all().prefetch_related("variants", "reviews")
 
     def get_serializer_class(self):
