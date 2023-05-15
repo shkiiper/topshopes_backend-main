@@ -6,7 +6,7 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Coalesce
-import random
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 import requests
 from django.http import HttpResponse
@@ -93,7 +93,7 @@ class ProductViewSet(
                     Sum("variants__orders__quantity"), Value(0)
                 ),
             )
-            qs = random.sample(list(qs), len(qs))
+
             return qs
         return Product.objects.all().prefetch_related("variants", "reviews")
 
