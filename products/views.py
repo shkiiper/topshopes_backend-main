@@ -6,8 +6,7 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Coalesce
-import random
-from django.db.models.query import QuerySet
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 import requests
 from django.http import HttpResponse
@@ -64,7 +63,7 @@ class ProductViewSet(
     filterset_class = ProductFilter
     filterset_fields = ["id", "category", ]
     search_fields = ["name", "id", "shop__name", "category__name", ]
-    ordering_fields = ["name", "rating", "created_at", "price", "discount_price", "total_sales", "random"]
+    ordering_fields = ["name", "rating", "created_at", "price", "discount_price", "total_sales"]
 
     def get_queryset(self):
         if self.action == "list":
@@ -94,16 +93,8 @@ class ProductViewSet(
                     Sum("variants__orders__quantity"), Value(0)
                 ),
             )
-
-            ordering = self.request.GET.get("ordering")
-            if ordering == "random":
-                qs_list = list(qs)
-                random.shuffle(qs_list)
-                qs = QuerySet(model=Product)
-                qs._result_cache = qs_list
-                return qs
-
             return qs
+        return Product.objects.all().prefetch_related("variants", "reviews")
 
     def get_serializer_class(self):
         if self.action == "retrieve":
