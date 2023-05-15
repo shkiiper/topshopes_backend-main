@@ -95,14 +95,14 @@ class ProductViewSet(
                 ),
             )
 
-        return Product.objects.all().prefetch_related("variants", "reviews")
+            ordering = self.request.GET.get("ordering")
+            if ordering == "random":
+                qs_list = list(qs)
+                random.shuffle(qs_list)
+                qs = qs.model.objects.filter(pk__in=[product.pk for product in qs_list]).prefetch_related("variants",
+                                                                                                          "reviews")
 
-    def get_ordering(self):
-        ordering = super().get_ordering()
-        if self.request.GET.get("ordering") == "random":
-            # Возвращаем случайный порядок
-            ordering = "?"
-        return ordering
+            return qs
 
     def get_serializer_class(self):
         if self.action == "retrieve":
