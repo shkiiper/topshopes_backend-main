@@ -6,8 +6,8 @@ from rest_framework import filters, mixins, permissions, serializers, status, vi
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Coalesce
-from django.db.models import Func, F
-from django.utils.crypto import get_random_string
+import random
+
 from django.shortcuts import get_object_or_404
 import requests
 from django.http import HttpResponse
@@ -97,20 +97,16 @@ class ProductViewSet(
 
             ordering = self.request.query_params.get("ordering", "")
             if ordering == "random":
-                # Генерируем случайную строку для использования в качестве зерна для случайной сортировки
-                # Длина строки произвольная
-                seed = get_random_string(length=10)
+                random_qs = list(qs)
 
-                # Используем зерно для генерации случайного порядка запроса
-                random_qs = list(qs.annotate(
-                    random_ordering=Func(F("id"), seed, function="RANDOM")
-                ).order_by("random_ordering"))
+                # Shuffle the list randomly
+                random.shuffle(random_qs)
 
-                # Возвращаем запрос, отсортированный в случайном порядке
+                # Return the shuffled queryset
                 return random_qs
 
-            # В противном случае возвращаем запрос, отсортированный по заданному полю (или по умолчанию)
-            return qs.order_by(self.get_ordering())
+            # Otherwise, return the queryset ordered by the specified field (or by the default ordering)
+            return qs.order_by(ordering)
 
         return Product.objects.all().prefetch_related("variants", "reviews")
 
