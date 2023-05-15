@@ -93,8 +93,7 @@ class ProductViewSet(
                     Sum("variants__orders__quantity"), Value(0)
                 ),
             )
-            qs = list(qs)
-            random.shuffle(qs)
+            qs = list(qs.order_by("?"))
             return qs
         return Product.objects.all().prefetch_related("variants", "reviews")
 
