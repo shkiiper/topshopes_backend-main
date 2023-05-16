@@ -1,13 +1,13 @@
 import uuid
 from decimal import Decimal
-from django.core.exceptions import ValidationError
+
 from django.db import models
 from django.utils.text import slugify
 from mptt.models import MPTTModel, TreeForeignKey
-from django.core.validators import FileExtensionValidator
+
 from core.helpers import PathAndRename
 from shops.models import Shop
-from django.utils.deconstruct import deconstructible
+
 
 class BrandType(models.Model):
     """
@@ -140,15 +140,6 @@ class Product(models.Model):
         verbose_name = "Product"
         verbose_name_plural = "Products"
 
-@deconstructible
-class MaxFileSizeValidator:
-    def __init__(self, max_size):
-        self.max_size = max_size
-
-    def __call__(self, value):
-        if value.size > self.max_size:
-            raise ValidationError(f"Максимальный размер файла должен быть не более {self.max_size} байт.")
-
 
 class ProductVariant(models.Model):
     STATUS_CHOICES = (
@@ -188,11 +179,6 @@ class ProductVariant(models.Model):
     thumbnail = models.ImageField(
         upload_to=PathAndRename("products/thumbnails/"),
         verbose_name="Product variant thumbnail",
-        validators=[
-            FileExtensionValidator(["jpg", "jpeg", "png"]),
-            MaxFileSizeValidator(5 * 1024 * 1024)  # 5 МБ в байтах
-        ],
-
     )
     ordering = models.IntegerField(
         max_length=100,
