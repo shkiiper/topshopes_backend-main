@@ -92,11 +92,6 @@ class CategorySerializer(serializers.ModelSerializer):
             "tax",
         ]
 
-    def get_tax(self, instance):
-        if instance.product.shop.status == "special":
-            return '10.00'
-        return instance.tax
-
 
 class CategoryReadOnlySerializer(serializers.ModelSerializer):
     """
@@ -179,6 +174,13 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "featured",
             "is_published",
         ]
+
+    def get_tax(self, obj):
+        if obj.shop.status == "special":
+            obj.category.tax = 10
+        else:
+            obj.category.tax = 15
+        return obj.category.tax
 
 
 class BrandReadSerializer(serializers.ModelSerializer):
