@@ -77,7 +77,6 @@ class CategorySerializer(serializers.ModelSerializer):
     """
 
     slug = serializers.ReadOnlyField()
-    tax = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
