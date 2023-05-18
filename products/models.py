@@ -130,7 +130,6 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-
     def save(self, *args, **kwargs):
         slug = self.shop.name + "-" + self.name
         self.slug = slugify(slug)
@@ -190,7 +189,7 @@ class ProductVariant(models.Model):
     )
 
     def __str__(self):
-        return self.product.name,
+        return self.product.name
 
     def save(self, *args, **kwargs):
 
