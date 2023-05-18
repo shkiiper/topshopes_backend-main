@@ -104,11 +104,10 @@ class TransferMoneySerializer(serializers.ModelSerializer):
 class ReportSerializer(serializers.ModelSerializer):
     total_tax = serializers.SerializerMethodField()
     total_amount = serializers.SerializerMethodField()
-    overall_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Shop
-        fields = ['id', 'name', 'total_tax', 'total_amount' ,'overall_price']
+        fields = ['id', 'name', 'total_tax', 'total_amount']
 
     def get_total_tax(self, obj):
         year = self.context['request'].data.get('year')
@@ -124,15 +123,3 @@ class ReportSerializer(serializers.ModelSerializer):
         return obj.transfermoney_set.filter(
             created_at__year=year,
             created_at__month=month).aggregate(Sum('amount'))['amount__sum']
-
-    def get_overall_price(self, obj):
-        year = self.context['request'].data.get('year')
-        month = self.context['request'].data.get('month')
-
-        orders = obj.order_set.filter(
-            created_at__year=year,
-            created_at__month=month
-        )
-        overall_price = sum(order.product_variant.overall_price for order in orders)
-
-        return overall_price
