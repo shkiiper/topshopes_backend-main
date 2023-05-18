@@ -181,6 +181,7 @@ class ProductVariant(models.Model):
         verbose_name="Product variant thumbnail",
     )
     ordering = models.IntegerField(
+        max_length=100,
         verbose_name='ordering',
         default=None,
         null=True,

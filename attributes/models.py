@@ -34,6 +34,7 @@ class AttributeValue(models.Model):
     )
     value = models.CharField(max_length=100, verbose_name="Attribute value")
     ordering = models.IntegerField(
+        max_length=100,
         verbose_name='ordering',
         default=None,
         null=True,
