@@ -77,6 +77,7 @@ class CategorySerializer(serializers.ModelSerializer):
     """
 
     slug = serializers.ReadOnlyField()
+    tax = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
@@ -91,10 +92,10 @@ class CategorySerializer(serializers.ModelSerializer):
             "tax",
         ]
 
-    def get_tax(self, tax=None):
-        if Product.shop.status == "special":
+    def get_tax(self, instance):
+        if instance.product.shop.status == "special":
             return '10.00'
-        return tax
+        return instance.tax
 
 
 class CategoryReadOnlySerializer(serializers.ModelSerializer):
