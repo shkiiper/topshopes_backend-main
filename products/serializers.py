@@ -161,6 +161,13 @@ class CreateProductSerializer(serializers.ModelSerializer):
 
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
 
+    def create(self, validated_data):
+        shop_status = self.context['request'].data.get('shop_status')
+        if shop_status == 'special':
+            validated_data['category'].tax = 10
+
+        return Product.objects.create(**validated_data)
+
     class Meta:
         model = Product
         fields = [
@@ -173,13 +180,6 @@ class CreateProductSerializer(serializers.ModelSerializer):
             "featured",
             "is_published",
         ]
-
-    def get_tax(self, obj):
-        if obj.shop.status == "special":
-            obj.category.tax = 10
-        else:
-            obj.category.tax = 15
-        return obj.category.tax
 
 
 class BrandReadSerializer(serializers.ModelSerializer):
