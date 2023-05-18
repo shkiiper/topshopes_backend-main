@@ -128,7 +128,8 @@ class Product(models.Model):
     is_published = models.BooleanField(default=False, verbose_name="Is_published")
 
     def __str__(self):
-        return f"{self.name} - {self.slug}"
+        return self.name
+
 
     def save(self, *args, **kwargs):
         slug = self.shop.name + "-" + self.name
