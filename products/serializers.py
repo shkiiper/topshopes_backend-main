@@ -161,12 +161,12 @@ class CreateProductSerializer(serializers.ModelSerializer):
 
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
 
-    def create(self, validated_data):
-        shop_status = self.context['request'].data.get('shop_status')
-        if shop_status == 'special':
-            validated_data['category'].tax = 10
-
-        return Product.objects.create(**validated_data)
+    # def create(self, validated_data):
+    #     shop_status = self.context['request'].data.get('shop_status')
+    #     if shop_status == 'special':
+    #         validated_data['category'].tax = 10
+    #
+    #     return Product.objects.create(**validated_data)
 
     class Meta:
         model = Product
