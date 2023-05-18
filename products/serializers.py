@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import Field
 
+import products.serializers
 from attributes.serializers import AttributeSerializer, AttributeValueSerializer
 from orders.models import Order
 from django.db.models import Sum
@@ -90,10 +91,10 @@ class CategorySerializer(serializers.ModelSerializer):
             "tax",
         ]
 
-    def get_tax(self, instance):
-        if instance.product.shop.status == "special":
+    def get_tax(self, tax=None):
+        if Product.shop.status == "special":
             return '10.00'
-        return instance.tax
+        return tax
 
 
 class CategoryReadOnlySerializer(serializers.ModelSerializer):
