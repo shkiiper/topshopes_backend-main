@@ -120,11 +120,11 @@ class ReportSerializer(serializers.ModelSerializer):
         year = self.context['request'].data.get('year')
         month = self.context['request'].data.get('month')
 
-        transfermoney_objects = obj.transfermoney_set.filter(
+        orders = obj.order_set.filter(
             created_at__year=year,
             created_at__month=month
         )
-        total_tax = sum(transfermoney.tax for transfermoney in transfermoney_objects)
+        total_tax = sum(order.product_variant.overall_price for order in orders)
 
         return total_tax
 
