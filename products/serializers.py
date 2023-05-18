@@ -91,7 +91,7 @@ class CategorySerializer(serializers.ModelSerializer):
         ]
 
     def get_tax(self, instance):
-        if instance.product.shops.status == "special":
+        if instance.products.shops.status == "special":
             return '10.00'
         return instance.tax
 
