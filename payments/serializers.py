@@ -90,11 +90,15 @@ class TransferMoneySerializer(serializers.ModelSerializer):
         model = TransferMoney
         fields = ["id", "payment", "amount", "shop", "tax", "confirm_photo", "profit"]
 
+    # def get_profit(self, obj):
+    #     order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
+    #     category = order_with_product_variant.product_variant.product.category
+    #     tax = category.tax
+    #     return str(obj.total_price - ((obj.total_price / 100) * tax))
     def get_profit(self, obj):
         order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
-        category = order_with_product_variant.product_variant.product.category
-        tax = category.tax
-        return str(obj.total_price - ((obj.total_price / 100) * tax))
+        tax = order_with_product_variant.product_variant.overall_price
+        return str(tax)
 
 
 class ReportSerializer(serializers.ModelSerializer):
