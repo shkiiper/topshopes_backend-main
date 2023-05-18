@@ -109,13 +109,24 @@ class ReportSerializer(serializers.ModelSerializer):
         model = Shop
         fields = ['id', 'name', 'total_tax', 'total_amount']
 
+    # def get_total_tax(self, obj):
+    #     year = self.context['request'].data.get('year')
+    #     month = self.context['request'].data.get('month')
+    #     return obj.transfermoney_set.filter(
+    #         created_at__year=year,
+    #         created_at__month=month
+    #     ).aggregate(Sum('tax'))['tax__sum']
     def get_total_tax(self, obj):
         year = self.context['request'].data.get('year')
         month = self.context['request'].data.get('month')
-        return obj.transfermoney_set.filter(
+
+        transfermoney_objects = obj.transfermoney_set.filter(
             created_at__year=year,
             created_at__month=month
-        ).aggregate(Sum('tax'))['tax__sum']
+        )
+        total_tax = sum(transfermoney.tax for transfermoney in transfermoney_objects)
+
+        return total_tax
 
     def get_total_amount(self, obj):
         year = self.context['request'].data.get('year')
