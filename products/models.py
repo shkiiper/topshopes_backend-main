@@ -63,8 +63,6 @@ class Category(MPTTModel):
         return f"{self.name} category"
 
     def save(self, *args, **kwargs):
-        if self.products.shop.status == "special":
-            self.tax = Decimal("10.00")
         self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
