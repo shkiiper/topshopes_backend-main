@@ -229,7 +229,6 @@ class SingleProductSerializer(serializers.ModelSerializer):
             "is_published",
             "discount_price",
             "sold_quantity",
-            "tax_price",
         ]
 
 
