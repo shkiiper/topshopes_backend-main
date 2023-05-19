@@ -71,7 +71,7 @@ class Order(models.Model):
             from payments.models import TransferMoney
 
             # tax = self.product_variant.tax_price * self.quantity
-            tax = self.product_variant.overall_price * self.quantity
+            tax = (self.product_variant.price - self.product_variant.overall_price) * self.quantity
             TransferMoney.objects.create(
                 payment=self.payment,
                 shop=self.shop,
