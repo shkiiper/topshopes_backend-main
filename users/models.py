@@ -21,7 +21,6 @@ class Customer(AbstractUser):
     )
     phone = models.CharField(max_length=30)
     is_seller = models.BooleanField(default=False)
-    special = models.BooleanField(default=False)
     USERNAME_FIELD: str = "email"
     REQUIRED_FIELDS: List[str] = []
     objects = CustomManager()
