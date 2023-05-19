@@ -84,20 +84,20 @@ class TransferMoneySerializer(serializers.ModelSerializer):
         model = TransferMoney
         fields = ["id", "payment", "amount", "shop", "tax", "confirm_photo", "profit"]
 
-    # def get_profit(self, obj):
-    #     order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
-    #     category = order_with_product_variant.product_variant.product.category
-    #     tax = category.tax
-    #     return str(obj.total_price - ((obj.total_price / 100) * tax))
     def get_profit(self, obj):
-        order = Order.objects.select_related('product_variant__product__category').get(id=obj.id)
-        shop_status = obj.shop.status
-        if shop_status == "special":
-            tax = order.product_variant.product.category.special_tax
-        else:
-            tax = order.product_variant.product.category.tax
-
+        order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
+        category = order_with_product_variant.product_variant.product.category
+        tax = category.tax
         return str(obj.total_price - ((obj.total_price / 100) * tax))
+    # def get_profit(self, obj):
+    #     order = Order.objects.select_related('product_variant__product__category').get(id=obj.id)
+    #     shop_status = obj.shop.status
+    #     if shop_status == "special":
+    #         tax = order.product_variant.product.category.special_tax
+    #     else:
+    #         tax = order.product_variant.product.category.tax
+    #
+    #     return str(obj.total_price - ((obj.total_price / 100) * tax))
 
 
 class ReportSerializer(serializers.ModelSerializer):
