@@ -151,6 +151,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
             "attribute_values",
             "images",
             'ordering',
+            'special_tax',
         ]
 
 

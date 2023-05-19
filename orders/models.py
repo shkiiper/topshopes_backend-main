@@ -70,7 +70,8 @@ class Order(models.Model):
         if self.status == "paid":
             from payments.models import TransferMoney
 
-            tax = self.product_variant.tax_price * self.quantity
+            # tax = self.product_variant.tax_price * self.quantity
+            tax = self.product_variant.overall_price * self.quantity
             TransferMoney.objects.create(
                 payment=self.payment,
                 shop=self.shop,
