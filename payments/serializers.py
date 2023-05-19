@@ -94,7 +94,7 @@ class TransferMoneySerializer(serializers.ModelSerializer):
         shop_status = obj.shop.status
 
         if shop_status == "special":
-            tax = 10
+            tax = obj.shop.special_tax
         else:
             tax = order.product_variant.product.category.tax
 
