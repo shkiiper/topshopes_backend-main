@@ -93,7 +93,7 @@ class TransferMoneySerializer(serializers.ModelSerializer):
         order = Order.objects.select_related('product_variant__product__category').get(id=obj.id)
         shop_status = obj.shop.status
         if shop_status == "special":
-            tax = obj.shop.special_tax
+            tax = order.product_variant.product.category.special_tax
         else:
             tax = order.product_variant.product.category.tax
 
