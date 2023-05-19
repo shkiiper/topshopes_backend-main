@@ -92,7 +92,6 @@ class TransferMoneySerializer(serializers.ModelSerializer):
     def get_profit(self, obj):
         order = Order.objects.select_related('product_variant__product__category').get(id=obj.id)
         shop_status = obj.shop.status
-
         if shop_status == "special":
             tax = obj.shop.special_tax
         else:
