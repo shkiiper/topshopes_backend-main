@@ -1,15 +1,9 @@
 from django.db.models import Sum
-from rest_framework import serializers
-from datetime import datetime
-
-from head.serializers import AdminShopSerializer
 from orders.models import Order
-from orders.serializers import OrderSerializer
 from shops.models import Shop
-from .models import Payment, TransferMoney
 
 from rest_framework import serializers
-from orders.serializers import OrderSerializer, OrderInfoSerializer
+from orders.serializers import OrderSerializer
 from .models import Payment, TransferMoney
 from head.serializers import AdminShopSerializer
 
@@ -90,15 +84,21 @@ class TransferMoneySerializer(serializers.ModelSerializer):
         model = TransferMoney
         fields = ["id", "payment", "amount", "shop", "tax", "confirm_photo", "profit"]
 
-    def get_profit(self, obj):
-        order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
-        category = order_with_product_variant.product_variant.product.category
-        tax = category.tax
-        return str(obj.total_price - ((obj.total_price / 100) * tax))
     # def get_profit(self, obj):
     #     order_with_product_variant = Order.objects.select_related('product_variant__product').get(id=obj.id)
-    #     tax = order_with_product_variant.product_variant.overall_price
-    #     return str(tax)
+    #     category = order_with_product_variant.product_variant.product.category
+    #     tax = category.tax
+    #     return str(obj.total_price - ((obj.total_price / 100) * tax))
+    def get_profit(self, obj):
+        order = Order.objects.select_related('product_variant__product__category').get(id=obj.id)
+        shop_status = obj.shop.status
+
+        if shop_status == "special":
+            tax = 10
+        else:
+            tax = order.product_variant.product.category.tax
+
+        return str(obj.total_price - ((obj.total_price / 100) * tax))
 
 
 class ReportSerializer(serializers.ModelSerializer):
