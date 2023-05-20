@@ -137,7 +137,7 @@ class OrderTotalPriceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'created_at', 'total_price', 'profit', ]
+        fields = ['id', 'created_at', 'total_price', 'profit', 'tax' ]
 
     def get_profit(self, obj):
         order = Order.objects.select_related('product_variant__product__category').get(id=obj.id)
