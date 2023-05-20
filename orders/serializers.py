@@ -139,7 +139,7 @@ class OrderTotalPriceSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['id', 'created_at', 'total_price', 'profit', 'tax',]
 
-    def get_tax(self, obj):
+    def get_profit(self, obj):
         order = Order.objects.select_related('product_variant__product__category').get(id=obj.id)
         shop_status = obj.shop.status
         if shop_status == "special":
@@ -147,4 +147,4 @@ class OrderTotalPriceSerializer(serializers.ModelSerializer):
         else:
             tax = order.product_variant.product.category.tax
 
-        return tax
+        return str(obj.total_price - ((obj.total_price / 100) * tax))
