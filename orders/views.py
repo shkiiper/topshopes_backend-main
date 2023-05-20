@@ -3,17 +3,13 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, permissions
 from rest_framework.viewsets import GenericViewSet
 from django_filters.rest_framework import DjangoFilterBackend
-
 from core.permissions import HasShop, IsOwner
-
 from .serializers import OrderSerializer, CreateOrderSerializer, OrderTotalPriceSerializer
-
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Order
-
 from django.utils.dateparse import parse_date
 from rest_framework import filters
 from .filters import OrderFilter
