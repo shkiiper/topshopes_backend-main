@@ -2,7 +2,7 @@
 
 ## Overview
 
-It's a simple marketplace for selling and buying products. For now, it's only a backend part of the project.
+It's a simple marketplace for selling and buying products. 
 Functionality:
 
 - User registration
@@ -54,18 +54,3 @@ Functionality:
 - MEDIA_ROOT - Media root
 - MEDIA_URL - Media url
 - STATIC_URL - Static url
-
-## TODO
-
-- User roles
-- Setting up .env file
-- Configuring Swagger
-- Tests
-- Configuring PostgreSQL
-- Configuring gunicorn
-- Configuring nginx
-- Configuring Docker
-- Configuring CI/CD
-- Configuring Redis
-- Configuring Celery
-- Configuring Hostinger.com
